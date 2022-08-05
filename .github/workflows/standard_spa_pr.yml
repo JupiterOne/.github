@@ -1,0 +1,128 @@
+name: Standard SPA PR
+
+on:
+  workflow_call:
+    inputs:
+      use_chromatic:
+        required: true
+        type: boolean
+      use_magic_url:
+        required: true
+        type: boolean
+    secrets:
+      CHROMATIC_PROJECT_TOKEN:
+        required: false
+      AWS_ROLE:
+        required: false
+      AWS_REGION:
+        required: false
+      AWS_APPS_BUCKET:
+        required: false
+
+# Save Money :money_with_wings:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.repository.name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  cache-yarn:
+    name: Cache Yarn
+    runs-on: jupiterone-dev
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Cache yarn dependencies
+        uses: actions/cache@v2
+        id: yarn-cache
+        with:
+          path: |
+            ${{ steps.yarn-cache-dir-path.outputs.dir }}
+            **/node_modules
+          key: cache-yarn-${{ hashFiles('**/yarn.lock') }}
+      - name: Install Dependencies
+        if: steps.yarn-cache.outputs.cache-hit != 'true'
+        # Eventually we want to flip to npm and use `npm ci` here
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}" > .npmrc
+          yarn --frozen-lockfile
+
+  validate:
+    name: Validate
+    runs-on: jupiterone-dev
+    needs: cache-yarn
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Fetch Yarn Cache
+        uses: actions/cache@v2
+        id: yarn-cache
+        with:
+          path: |
+            ${{ steps.yarn-cache-dir-path.outputs.dir }}
+            **/node_modules
+          key: cache-yarn-${{ hashFiles('**/yarn.lock') }}
+      - name: Validating
+        # By design all SPAs are required to validate
+        # This should include all required CI checks
+        run: yarn validate:ci
+      - name: Validate Runtime Modules Types
+        run: |
+          if [[ -f "node_modules/@jupiterone/web-runtime-modules/cli/testInterfaceRuntimeModules.js" ]]; then
+            npx testInterfaceRuntimeModules;
+            echo "No breaking changes found";
+          else
+            echo "Skipping, @jupiterone/web-runtime-modules not installed";
+          fi
+
+  chromatic-deployment:
+    runs-on: jupiterone-dev
+    if: ${{ inputs.use_chromatic }}
+    needs: cache-yarn
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Fetch Yarn Cache
+        uses: actions/cache@v2
+        id: yarn-cache
+        with:
+          path: |
+            ${{ steps.yarn-cache-dir-path.outputs.dir }}
+            **/node_modules
+          key: cache-yarn-${{ hashFiles('**/yarn.lock') }}
+      - name: Publish to Chromatic
+        uses: chromaui/action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          onlyChanged: true
+
+  deploy_magic_url:
+    name: Deploy Magic URL
+    runs-on: jupiterone-dev
+    needs: cache-yarn
+    if: ${{ inputs.use_magic_url }}
+    permissions:
+      id-token: write
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Fetch Yarn Cache
+        uses: actions/cache@v2
+        id: yarn-cache
+        with:
+          path: |
+            ${{ steps.yarn-cache-dir-path.outputs.dir }}
+            **/node_modules
+          key: cache-yarn-${{ hashFiles('**/yarn.lock') }}
+      - name: Building
+        run: yarn build
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE }}
+          role-session-name: ${{ github.event.repository.name }}-magic-url-role-session
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Deploy
+        run: aws s3 sync deploy/dist s3://${{ secrets.AWS_APPS_BUCKET }}/static/manual-deploy/${{ github.event.repository.name }}/PR-${{ github.event.number }}/
