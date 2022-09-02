@@ -1,0 +1,111 @@
+name: NPM Package Release using NPM
+# This ships an npm package to the npm lib and also uses npm for installing npm packages
+
+on:
+  workflow_call:
+    inputs:
+      runs_on:
+        description: "What github runner should be used (e.g. jupiterone-dev)"
+        required: true
+        type: string
+      use_chromatic:
+        description: "Does this release include chromatic"
+        required: true
+        type: boolean
+      use_esbuild:
+        description: "If using esbuild, insure its required build scripts are run"
+        required: false
+        type: boolean
+    secrets:
+      NPM_TOKEN:
+        description: "A J1 npm.com Publish token"
+        required: true
+      CHROMATIC_PROJECT_TOKEN:
+        description: "The Chromatic API token"
+        required: false
+      AUTO_GITHUB_PAT_TOKEN:
+        description: "This is a GitHuh PAT that let's auto write back to main after npm versioning"
+        required: true
+
+jobs:
+  validate:
+    name: Validate
+    runs-on: ${{ inputs.runs_on }}
+    timeout-minutes: 15
+    if: "!contains(github.event.head_commit.message, 'ci skip') && !contains(github.event.head_commit.message, 'skip ci')"
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: "npm"
+        env:
+          NODE_NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      # Never install npm packages with build scrips!
+      # This is an easy way for attackers to get read out the process.env
+      # or inject code into the bundle
+      - run: npm ci --ignore-scripts
+      - name: Validate
+        run: npm run validate:ci
+
+  release:
+    needs: validate
+    runs-on: ${{ inputs.runs_on }}
+    timeout-minutes: 15
+    name: Deploy to NPM
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.AUTO_GITHUB_PAT_TOKEN }}
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: "npm"
+        env:
+          NODE_NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      # Only allow production deps be installed in the final build!
+      - run: npm ci --ignore-scripts --omit=dev --omit=peer
+      # run the esbuild build scrips
+      - run: npm rebuild esbuild
+        if: ${{ inputs.use_esbuild }}
+
+      - name: Run build
+        run: npm run build
+
+      # TODO: This is where security should add a security code scan
+      # This is only what will be shipped to production and not any
+      # testing deps. Hopefully this will gives us an accurate listing
+      # of our shipped risks
+
+      # This should live in the runner by default
+      - name: Add Auto to globals
+        run: npm install -g auto@10.37.4
+
+      - name: Deploy to NPM
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GH_TOKEN: ${{ secrets.AUTO_GITHUB_PAT_TOKEN }}
+        run: npx auto shipit
+
+  chromatic-deployment:
+    runs-on: ${{ inputs.runs_on }}
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: "npm"
+      - run: npm ci --ignore-scripts
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish to Chromatic
+        uses: chromaui/action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          onlyChanged: true
+          autoAcceptChanges: true
