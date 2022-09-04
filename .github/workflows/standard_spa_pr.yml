@@ -3,20 +3,41 @@ name: Standard SPA PR
 on:
   workflow_call:
     inputs:
+      runs_on:
+        description: "What github runner should be used (e.g. jupiterone-dev)"
+        required: true
+        type: string
+      install_yarn:
+        description: "In house runners may not have yarn installed"
+        required: false
+        type: boolean
+      use_validate:
+        description: "Run test, in most case we want this"
+        required: true
+        type: boolean
       use_chromatic:
+        description: "Run VRT Storybook tests with chromatic"
         required: true
         type: boolean
       use_magic_url:
+        description: "Deploy to dev via a query param, required for normal SPAs"
         required: true
         type: boolean
     secrets:
+      NPM_TOKEN:
+        description: "A J1 npm.com Publish token"
+        required: true
       CHROMATIC_PROJECT_TOKEN:
+        description: "The Chromatic API token"
         required: false
       AWS_ROLE:
+        description: "J1 AWS role with deploy permissions to dev"
         required: false
       AWS_REGION:
+        description: "The current region of the dev env"
         required: false
       AWS_APPS_BUCKET:
+        description: "What bucket to deploy the magic url"
         required: false
 
 # Save Money :money_with_wings:
@@ -25,45 +46,31 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  cache-yarn:
-    name: Cache Yarn
-    runs-on: jupiterone-dev
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Cache yarn dependencies
-        uses: actions/cache@v2
-        id: yarn-cache
-        with:
-          path: |
-            ${{ steps.yarn-cache-dir-path.outputs.dir }}
-            **/node_modules
-          key: cache-yarn-${{ hashFiles('**/yarn.lock') }}
-      - name: Install Dependencies
-        if: steps.yarn-cache.outputs.cache-hit != 'true'
-        # Eventually we want to flip to npm and use `npm ci` here
-        run: |
-          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}" > .npmrc
-          yarn --frozen-lockfile
-
   validate:
     name: Validate
-    runs-on: jupiterone-dev
-    needs: cache-yarn
+    runs-on: ${{ inputs.runs_on }}
+    timeout-minutes: 15
+    if: ${{ inputs.use_validate }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Fetch Yarn Cache
-        uses: actions/cache@v2
-        id: yarn-cache
+      - uses: actions/checkout@v3
+      # This should be part of the runner
+      ## Install yarn START
+      - uses: actions/setup-node@v3
         with:
-          path: |
-            ${{ steps.yarn-cache-dir-path.outputs.dir }}
-            **/node_modules
-          key: cache-yarn-${{ hashFiles('**/yarn.lock') }}
-      - name: Validating
-        # By design all SPAs are required to validate
-        # This should include all required CI checks
+          node-version: 16
+        if: ${{ inputs.install_yarn }}
+      - run: npm install -g yarn
+        if: ${{ inputs.install_yarn }}
+      ## Install yarn STOP
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: "yarn"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - run: yarn --frozen-lockfile --ignore-optional
+
+      - name: Validate
         run: yarn validate:ci
       - name: Validate Runtime Modules Types
         run: |
@@ -75,20 +82,30 @@ jobs:
           fi
 
   chromatic-deployment:
-    runs-on: jupiterone-dev
+    runs-on: ${{ inputs.runs_on }}
+    timeout-minutes: 15
     if: ${{ inputs.use_chromatic }}
-    needs: cache-yarn
     steps:
-      - name: Checkout
-        uses: actions/checkout@v1
-      - name: Fetch Yarn Cache
-        uses: actions/cache@v2
-        id: yarn-cache
+      - uses: actions/checkout@v3
         with:
-          path: |
-            ${{ steps.yarn-cache-dir-path.outputs.dir }}
-            **/node_modules
-          key: cache-yarn-${{ hashFiles('**/yarn.lock') }}
+          fetch-depth: 0
+      # This should be part of the runner
+      ## Install yarn START
+      - uses: actions/setup-node@v3
+        if: ${{ inputs.install_yarn }}
+        with:
+          node-version: 16
+      - run: npm install -g yarn
+        if: ${{ inputs.install_yarn }}
+      ## Install yarn STOP
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: "yarn"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - run: yarn --frozen-lockfile --ignore-optional
+
       - name: Publish to Chromatic
         uses: chromaui/action@v1
         with:
@@ -98,24 +115,33 @@ jobs:
 
   deploy_magic_url:
     name: Deploy Magic URL
-    runs-on: jupiterone-dev
-    needs: cache-yarn
+    runs-on: ${{ inputs.runs_on }}
+    timeout-minutes: 15
     if: ${{ inputs.use_magic_url }}
     permissions:
       id-token: write
       contents: read
       pull-requests: write
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Fetch Yarn Cache
-        uses: actions/cache@v2
-        id: yarn-cache
+      - uses: actions/checkout@v3
+      # This should be part of the runner
+      ## Install yarn START
+      - uses: actions/setup-node@v3
+        if: ${{ inputs.install_yarn }}
         with:
-          path: |
-            ${{ steps.yarn-cache-dir-path.outputs.dir }}
-            **/node_modules
-          key: cache-yarn-${{ hashFiles('**/yarn.lock') }}
+          node-version: 16
+      - run: npm install -g yarn
+        if: ${{ inputs.install_yarn }}
+      ## Install yarn STOP
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: "yarn"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      # Only allow production deps be installed in the final build!
+      - run: yarn --frozen-lockfile --production --ignore-optional
+
       - name: Building
         run: yarn build
       - name: configure aws credentials
@@ -125,4 +151,5 @@ jobs:
           role-session-name: ${{ github.event.repository.name }}-magic-url-role-session
           aws-region: ${{ secrets.AWS_REGION }}
       - name: Deploy
+        # This bucket file location is static and editing it will break the Magic URL
         run: aws s3 sync deploy/dist s3://${{ secrets.AWS_APPS_BUCKET }}/static/manual-deploy/${{ github.event.repository.name }}/PR-${{ github.event.number }}/
