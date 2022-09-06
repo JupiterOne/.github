@@ -66,6 +66,7 @@ jobs:
         with:
           node-version: 16
           cache: "yarn"
+          registry-url: "https://registry.npmjs.org"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - run: yarn --frozen-lockfile --ignore-optional
@@ -102,6 +103,7 @@ jobs:
         with:
           node-version: 16
           cache: "yarn"
+          registry-url: "https://registry.npmjs.org"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - run: yarn --frozen-lockfile --ignore-optional
@@ -137,6 +139,7 @@ jobs:
         with:
           node-version: 16
           cache: "yarn"
+          registry-url: "https://registry.npmjs.org"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       # Only allow production deps be installed in the final build!
