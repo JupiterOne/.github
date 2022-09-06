@@ -84,7 +84,7 @@ jobs:
 
       - name: Deploy to NPM
         env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           GH_TOKEN: ${{ secrets.AUTO_GITHUB_PAT_TOKEN }}
         run: npx auto shipit
 
