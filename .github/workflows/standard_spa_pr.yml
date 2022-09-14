@@ -114,6 +114,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
           onlyChanged: true
+          exitOnceUploaded: true
 
   deploy_magic_url:
     name: Deploy Magic URL
