@@ -46,6 +46,8 @@ jobs:
       - run: npm ci --ignore-scripts
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - run: npm rebuild esbuild
+        if: ${{ inputs.use_esbuild }}
       - name: Validate
         run: npm run validate:ci
 
@@ -106,6 +108,8 @@ jobs:
       - run: npm ci --ignore-scripts
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - run: npm rebuild esbuild
+        if: ${{ inputs.use_esbuild }}
 
       - name: Publish to Chromatic
         uses: chromaui/action@v1
