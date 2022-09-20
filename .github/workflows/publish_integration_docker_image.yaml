@@ -1,6 +1,19 @@
 name: Publish integration image to DockerHub
 # Builds and publishes graph integration project to DockerHub
 
+# EXAMPLE USAGE: the following is a yaml job statement using this re-usable workflow
+#   publish-image:
+#    uses: jupiterone/.github/.github/workflows/publish_integration_docker_image.yaml@main
+#    with:
+#      runs_on: ubuntu-latest
+#      package-name: 'jupiterone/graph-kubernetes'
+#      # https://medium.com/@sohail.ra5/github-actions-passing-boolean-input-variables-to-reusable-workflow-call-42d39bf7342e
+#      push-to-registry: ${{ github.event_name != 'pull_request' }}
+#    secrets:
+#      DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+#      DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}
+
+
 on:
   workflow_call:
     inputs:
