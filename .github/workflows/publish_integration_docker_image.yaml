@@ -10,6 +10,7 @@ name: Publish integration image to DockerHub
 #      # https://medium.com/@sohail.ra5/github-actions-passing-boolean-input-variables-to-reusable-workflow-call-42d39bf7342e
 #      push-to-registry: ${{ github.event_name != 'pull_request' }}
 #    secrets:
+#      # We HIGHLY recommend that these values are derived using your repos' action secrets
 #      DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
 #      DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}
 
