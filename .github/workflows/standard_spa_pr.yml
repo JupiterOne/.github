@@ -70,6 +70,7 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - run: yarn --frozen-lockfile --ignore-optional
+      
       - name: Validate
         run: yarn validate:ci
       # Check if we should skip validating runtime types
