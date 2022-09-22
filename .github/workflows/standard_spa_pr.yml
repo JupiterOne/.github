@@ -53,6 +53,8 @@ jobs:
     if: ${{ inputs.use_validate }}
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
       # This should be part of the runner
       ## Install yarn START
       - uses: actions/setup-node@v3
@@ -74,9 +76,6 @@ jobs:
       - name: Validate
         run: yarn validate:ci
       # Check if we should skip validating runtime types
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 2
       - name: Check For Skip
         run: |
           if [[ $(git log -2 --pretty=format:'%s' | grep "\[skip remote-type-check\]")  ]]; then 
