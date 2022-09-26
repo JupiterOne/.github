@@ -5,7 +5,6 @@ name: Publish integration image to Docker Hub
 #   publish-image:
 #    uses: jupiterone/.github/.github/workflows/publish_integration_docker_image.yaml@main
 #    with:
-#      runs_on: ubuntu-latest
 #      package-name: 'jupiterone/graph-kubernetes'
 #      # https://medium.com/@sohail.ra5/github-actions-passing-boolean-input-variables-to-reusable-workflow-call-42d39bf7342e
 #      push-to-registry: ${{ github.event_name != 'pull_request' }}
