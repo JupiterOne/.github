@@ -27,9 +27,9 @@ on:
         required: true
         type: string
       push-to-registry:
-        description: "Determines if the built image should be pushed to the registry (default is `false`)"
+        description: "Determines if the built image should be pushed to the registry (will only push on a merge by default)"
         required: false
-        default: false
+        default: ${{github.event_name != 'pull_request'}}
         type: boolean
     secrets:
       DOCKER_USERNAME:
