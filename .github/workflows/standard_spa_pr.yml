@@ -167,5 +167,5 @@ jobs:
       - name: Deploy
         # This bucket file location is static and editing it will break the Magic URL
         run: |
-          mv deploy/dist/${{ github.event.repository.name }}-remote-types.tgz deploy/dist/remote-types.tgz
+          [ -f deploy/dist/${{ github.event.repository.name }}-remote-types.tgz ] && mv deploy/dist/${{ github.event.repository.name }}-remote-types.tgz deploy/dist/remote-types.tgz
           aws s3 sync deploy/dist s3://${{ secrets.AWS_APPS_BUCKET }}/static/manual-deploy/${{ github.event.repository.name }}/PR-${{ github.event.number }}/
