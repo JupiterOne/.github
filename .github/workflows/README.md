@@ -29,7 +29,7 @@ using defaults
 
 ```yaml
    publish-image:
-    uses: jupiterone/.github/.github/workflows/publish_integration_docker_image.yaml@1.0.0
+    uses: jupiterone/.github/.github/workflows/publish_integration_docker_image.yaml@v1.0.0
     with:
       package-name: 'jupiterone/graph-kubernetes'
     secrets:
@@ -41,7 +41,7 @@ overriding defaults
 
 ```yaml
    publish-image:
-    uses: jupiterone/.github/.github/workflows/publish_integration_docker_image.yaml@1.0.0
+    uses: jupiterone/.github/.github/workflows/publish_integration_docker_image.yaml@v1.0.0
     with:
       runs_on: 'my-special-runner'
       package-name: 'jupiterone/graph-kubernetes'
