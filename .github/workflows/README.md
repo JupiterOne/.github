@@ -2,7 +2,8 @@
 
 ## Publish Integration Image to Docker Hub
 
-[This workflow](https://github.com/JupiterOne/.github/blob/main/.github/workflows/publish_integration_docker_image.yaml) builds and publishes graph integration project to Docker Hub
+[This workflow](https://github.com/JupiterOne/.github/blob/main/.github/workflows/publish_integration_docker_image.yaml) builds and publishes graph integration project to Docker Hub.
+It is recommended that you only run this workflows on commits to your main branch, and on pushed tags following semver syntax. It need not run on PRs.
 
 ### Inputs
 
@@ -29,6 +30,7 @@ using defaults
 
 ```yaml
    publish-image:
+    if: ${{github.event_name != 'pull_request'}}
     uses: jupiterone/.github/.github/workflows/publish_integration_docker_image.yaml@v1.0.0
     with:
       package-name: 'jupiterone/graph-kubernetes'
@@ -41,6 +43,7 @@ overriding defaults
 
 ```yaml
    publish-image:
+    if: ${{github.event_name != 'pull_request'}}
     uses: jupiterone/.github/.github/workflows/publish_integration_docker_image.yaml@v1.0.0
     with:
       runs_on: 'my-special-runner'
