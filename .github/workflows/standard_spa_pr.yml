@@ -3,6 +3,11 @@ name: Standard SPA PR
 on:
   workflow_call:
     inputs:
+      working_directory:
+        description: "The working directory from which to run the workflow commands"
+        required: false
+        type: string
+        default: '.'
       runs_on:
         description: "What github runner should be used (e.g. jupiterone-dev)"
         required: true
@@ -47,6 +52,9 @@ concurrency:
 
 jobs:
   validate:
+    defaults:
+      run:
+        working-directory: ${{ inputs.working_directory }}
     name: Validate
     runs-on: ${{ inputs.runs_on }}
     timeout-minutes: 15
@@ -93,6 +101,9 @@ jobs:
         if: ${{ !env.HAS_SKIP }}
 
   chromatic-deployment:
+    defaults:
+      run:
+        working-directory: ${{ inputs.working_directory }}
     runs-on: ${{ inputs.runs_on }}
     timeout-minutes: 15
     if: ${{ inputs.use_chromatic }}
@@ -127,6 +138,9 @@ jobs:
           exitOnceUploaded: true
 
   deploy_magic_url:
+    defaults:
+      run:
+        working-directory: ${{ inputs.working_directory }}
     name: Deploy Magic URL
     runs-on: ${{ inputs.runs_on }}
     timeout-minutes: 15
