@@ -1,0 +1,155 @@
+name: Standard SPA PR (NPM)
+
+on:
+  workflow_call:
+    inputs:
+      working_directory:
+        description:
+          'The working directory from which to run the workflow commands'
+        required: false
+        type: string
+        default: '.'
+      runs_on:
+        description: 'What github runner should be used (e.g. jupiterone-dev)'
+        required: true
+        type: string
+      use_validate:
+        description: 'Run test, in most case we want this'
+        required: true
+        type: boolean
+      use_chromatic:
+        description: 'Run VRT Storybook tests with chromatic'
+        required: true
+        type: boolean
+      use_magic_url:
+        description: 'Deploy to dev via a query param, required for normal SPAs'
+        required: true
+        type: boolean
+    secrets:
+      NPM_TOKEN:
+        description: 'A J1 npm.com Publish token'
+        required: true
+      CHROMATIC_PROJECT_TOKEN:
+        description: 'The Chromatic API token'
+        required: false
+      AWS_ROLE:
+        description: 'J1 AWS role with deploy permissions to dev'
+        required: false
+      AWS_REGION:
+        description: 'The current region of the dev env'
+        required: false
+      AWS_APPS_BUCKET:
+        description: 'What bucket to deploy the magic url'
+        required: false
+
+# Save Money :money_with_wings:
+concurrency:
+  group:
+    ${{ github.workflow }}-${{ github.event.repository.name }}-${{
+    github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    defaults:
+      run:
+        working-directory: ${{ inputs.working_directory }}
+    name: Validate
+    runs-on: ${{ inputs.runs_on }}
+    timeout-minutes: 15
+    if: ${{ inputs.use_validate }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - run: npm ci
+
+      - name: Validate
+        run: npm run validate:ci
+      # Check if we should skip validating runtime types
+      - name: Check For Skip
+        run: |
+          if [[ $(git log -2 --pretty=format:'%s' | grep "\[skip remote-type-check\]")  ]]; then 
+            echo "HAS_SKIP=true" >> $GITHUB_ENV
+          fi
+      # Validate runtime types (if applicable)
+      - name: Validate Runtime Modules Types
+        run: |
+          if [[ -f "node_modules/@jupiterone/web-runtime-modules/cli/testInterfaceRuntimeModules.js" ]]; then
+            npx testInterfaceRuntimeModules;
+            echo "No breaking changes found";
+          else
+            echo "Skipping, @jupiterone/web-runtime-modules not installed";
+          fi
+        if: ${{ !env.HAS_SKIP }}
+
+  chromatic-deployment:
+    defaults:
+      run:
+        working-directory: ${{ inputs.working_directory }}
+    runs-on: ${{ inputs.runs_on }}
+    timeout-minutes: 15
+    if: ${{ inputs.use_chromatic }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - run: npm ci
+
+      - name: Publish to Chromatic
+        uses: chromaui/action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          onlyChanged: true
+          exitOnceUploaded: true
+
+  deploy_magic_url:
+    defaults:
+      run:
+        working-directory: ${{ inputs.working_directory }}
+    name: Deploy Magic URL
+    runs-on: ${{ inputs.runs_on }}
+    timeout-minutes: 15
+    if: ${{ inputs.use_magic_url }}
+    permissions:
+      id-token: write
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - run: npm ci
+
+      - name: Building
+        run: npm run build
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE }}
+          role-session-name:
+            ${{ github.event.repository.name }}-magic-url-role-session
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Deploy
+        # This bucket file location is static and editing it will break the Magic URL
+        run: |
+          [ -f deploy/dist/${{ github.event.repository.name }}-remote-types.tgz ] && mv deploy/dist/${{ github.event.repository.name }}-remote-types.tgz deploy/dist/remote-types.tgz
+          aws s3 sync deploy/dist s3://${{ secrets.AWS_APPS_BUCKET }}/static/manual-deploy/${{ github.event.repository.name }}/PR-${{ github.event.number }}/
