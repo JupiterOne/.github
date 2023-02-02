@@ -1,0 +1,89 @@
+name: Publish image to Docker and GHCR
+
+on:
+  workflow_call:
+    inputs:
+      runs_on:
+        description: "What Github runner should be used (defaults to ubuntu-latest)"
+        type: string
+        required: false
+        default: "ubuntu-latest"
+      package-name:
+        description: "Name of package to publish to Docker Hub"
+        required: true
+        type: string
+      push-to-registry:
+        description:
+          "Determines if the built image should be pushed to the registry (will
+          only push on a merge by default)"
+        required: false
+        default: ${{github.event_name != 'pull_request'}}
+        type: boolean
+      docker-context:
+        description: "The Docker context to use when building the image"
+        required: false
+        default: .
+        type: string
+      build-platforms:
+        description: "The platforms to build Docker images for"
+        required: false
+        default: "linux/amd64,linux/arm64"
+        type: string
+    secrets:
+      DOCKER_USERNAME:
+        description: "Docker username to authenticate and publish with"
+        required: true
+      DOCKER_PASSWORD:
+        description: "Docker password to authenticate and publish with"
+        required: true
+      GHCR_USERNAME:
+        description: "GHCR Username to authenticate and publish with"
+        required: true
+      GHCR_PASSWORD:
+        description: "GHCR password to authenticate and publish with"
+jobs:
+  build-image:
+    name: build image
+    runs-on: ${{ inputs.runs_on }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            ${{ inputs.package-name }}
+            ghcr.io/${{ inputs.package-name }}
+          # generate Docker tags based on the following events/attributes
+          tags: |
+            type=schedule
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            type=sha
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Login to GHCR
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.GHCR_USERNAME }}
+          password: ${{ secrets.GHCR_PASSWORD }}
+      - name: Build and publish
+        uses: docker/build-push-action@v3
+        with:
+          context: ${{ inputs.docker-context }}
+          platforms: ${{ inputs.build-platforms }}
+          push: ${{ inputs.push-to-registry == true }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
