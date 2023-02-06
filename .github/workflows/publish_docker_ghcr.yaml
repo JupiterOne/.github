@@ -68,7 +68,7 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: |
-            name=${{ inputs.package-name }},enable=${{ inputs.publish-to-docker }}
+            name=docker.io/${{ inputs.package-name }},enable=${{ inputs.publish-to-docker }}
             name=ghcr.io/${{ inputs.package-name }},enable=${{ inputs.publish-to-ghcr }}
           # generate Docker tags based on the following events/attributes
           tags: |
