@@ -37,7 +37,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
           cache: "npm"
           registry-url: "https://registry.npmjs.org"
       # Never install npm packages with build scrips!
@@ -63,7 +63,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
           cache: "npm"
           registry-url: "https://registry.npmjs.org"
       # Only allow production deps be installed in the final build!
@@ -102,7 +102,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
           cache: "npm"
           registry-url: "https://registry.npmjs.org"
       - run: npm ci --ignore-scripts
