@@ -27,7 +27,6 @@ on:
         type: boolean
       use_e2e:
         description: "Run E2E test, in most case we want this"
-        required: true
         type: boolean
       e2e_containers:
         description: "The number of tests that you want Cypress to run in parallel (ex. 1, 2, 3, ...)"
@@ -55,13 +54,10 @@ on:
         required: false
       CYPRESS_RECORD_KEY:
         description: "The record key associated with the project in Cypress"
-        required: true
       CYPRESS_PROJECT_ID:
         description: "The project ID associated with the project in Cypress"
-        required: true
       CYPRESS_PASSWORD:
         description: "The password of the E2E username"
-        required: true
 
 # Save Money :money_with_wings:
 concurrency:
