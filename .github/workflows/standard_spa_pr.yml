@@ -28,6 +28,18 @@ on:
         description: "Deploy to dev via a query param, required for normal SPAs"
         required: true
         type: boolean
+      use_e2e:
+        description: "Run E2E test, in most case we want this"
+        required: true
+        type: boolean
+      e2e_containers:
+        description: "The number of tests that you want Cypress to run in parallel (ex. 1, 2, 3, ...)"
+        type: string
+        default: '["1"]'
+      e2e_continue_on_error:
+        description: "Continue the workflow even if the E2E test fail"
+        type: boolean
+        default: true
     secrets:
       NPM_TOKEN:
         description: "A J1 npm.com Publish token"
@@ -44,6 +56,15 @@ on:
       AWS_APPS_BUCKET:
         description: "What bucket to deploy the magic url"
         required: false
+      CYPRESS_RECORD_KEY:
+        description: "The record key associated with the project in Cypress"
+        required: true
+      CYPRESS_PROJECT_ID:
+        description: "The project ID associated with the project in Cypress"
+        required: true
+      CYPRESS_PASSWORD:
+        description: "The password of the E2E username"
+        required: true
 
 # Save Money :money_with_wings:
 concurrency:
@@ -183,3 +204,48 @@ jobs:
         run: |
           [ -f deploy/dist/${{ github.event.repository.name }}-remote-types.tgz ] && mv deploy/dist/${{ github.event.repository.name }}-remote-types.tgz deploy/dist/remote-types.tgz
           aws s3 sync deploy/dist s3://${{ secrets.AWS_APPS_BUCKET }}/static/manual-deploy/${{ github.event.repository.name }}/PR-${{ github.event.number }}/
+
+
+  cypress-run:
+    defaults:
+      run:
+        working-directory: ${{ inputs.working_directory }}
+    runs-on: ${{ inputs.runs_on }}
+    timeout-minutes: 15
+    if: ${{ inputs.use_e2e }}
+    continue-on-error: ${{ inputs.e2e_continue_on_error }}
+    strategy:
+      # when one test fails, DO NOT cancel the other
+      # containers, because this will kill Cypress processes
+      # leaving Cypress Cloud hanging ...
+      # https://github.com/cypress-io/github-action/issues/48
+      fail-fast: false
+      matrix:
+        # run copies of the current job in parallel
+        containers: ${{ fromJson(inputs.e2e_containers) }}
+        node: [18]
+    steps:
+      - name: Check pw
+        run: echo "test look ${{ secrets.CYPRESS_PASSWORD }}"
+      - uses: actions/checkout@v3
+      # Solution found here: https://github.com/cypress-io/github-action/issues/569
+      - name: Authenticate with npm registry
+        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+      - name: Cypress run
+        uses: cypress-io/github-action@v5
+        timeout-minutes: 60
+        with:
+          record: true
+          parallel: true
+          group: 'PR'
+          ci-build-id: '${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}'
+          browser: chrome
+          tag: PR
+        env:
+          CYPRESS_ENVIRONMENT_NAME: jupiterone-dev-us
+          CYPRESS_MAILINATOR_API_KEY: ${{ secrets.CYPRESS_MAILINATOR_API_KEY }}
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
+          CYPRESS_PASSWORD: ${{ secrets.CYPRESS_PASSWORD }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
