@@ -15,6 +15,11 @@ on:
         description: 'The J1 accountId to upload jetpack data into'
         required: true
         type: string
+      jetpack_command:
+        description: 'The jetpack command to run'
+        required: false
+        type: string
+        default: 'launch -v'
       jetpack_docker_image:
         description: 'The jetpack docker image to run in this workflow. This is set by default, so unless overriding on purpose, please do not supply this value.'
         type: string
@@ -88,4 +93,4 @@ jobs:
           -e J1_API_TOKEN="${{ secrets.J1_API_TOKEN }}" \
           -e J1_API_ENV="${{ inputs.api_env }}" \
           -v `pwd`:`pwd` \
-          ${{ inputs.jetpack_docker_image }} launch
+          ${{ inputs.jetpack_docker_image }} ${{ inputs.jetpack_command }}
