@@ -1,0 +1,91 @@
+name: Jetpack Run for Frontend Projects
+
+on:
+  workflow_call:
+    inputs:
+      api_env:
+        description: 'The api environment for execution of this jetpack run.'
+        required: true
+        default: 'prod'
+        type: choice
+        options:
+          - dev
+          - prod
+      j1_account_id:
+        description: 'The J1 accountId to upload jetpack data into'
+        required: true
+        type: string
+      jetpack_docker_image:
+        description: 'The jetpack docker image to run in this workflow. This is set by default, so unless overriding on purpose, please do not supply this value.'
+        type: string
+        default: 'ghcr.io/jupiterone/jetpack-frontend-deploy:initial-2'
+      repo_name:
+        description: 'The name of the repo this run of jetpack is executed in'
+        type: string
+        required: true
+
+    secrets:
+      GHCR_USERNAME:
+        description: 'The username to use to log into GHCR'
+        required: true
+      GHCR_PASSWORD:
+        description: 'The password to use to log into GHCR'
+        required: true
+      J1_API_TOKEN:
+        description: 'A J1 Api token'
+        required: true
+      NPM_TOKEN:
+        description: 'A J1 npm.com Publish token'
+        required: true
+
+jobs:
+  run_jetpack:
+    name: Run Jetpack
+    permissions:
+      contents: read
+      packages: read
+    runs-on: ubuntu-latest
+    timeout-minutes: 20 # Could run long with a big test suite
+    steps:
+      - name: Check out code repo source code
+        uses: actions/checkout@v3
+          with:
+            fetch-depth: 2
+
+      - id: setup-node
+        name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Login to GHCR
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.GHCR_USERNAME }}
+          password: ${{ secrets.GHCR_PASSWORD }}
+
+      - name: Pull docker image for jetpack frontend deploy
+        run: docker pull ${{ inputs.jetpack_docker_image }}
+
+      - name: Run jetpack in docker
+        run: |
+          docker run \
+          --user root \
+          -v /var/run/docker.sock:/var/run/docker.sock \
+          -v `pwd`:`pwd` \
+          -e J1_SCOPE="${{ inputs.repo_name }}-jetpack" \
+          -e J1_REPO_NAME="${{ inputs.repo_name}}" \
+          -e J1_WORKING_DIR=`pwd` \
+          -e J1_ACCOUNT="${{ inputs.j1_account_id }}" \
+          -e J1_API_TOKEN="${{ secrets.J1_API_TOKEN }}" \
+          -e J1_API_ENV="${{ inputs.api_env }}" \
+          -v `pwd`:`pwd` \
+          ${{ inputs.jetpack_docker_image }} launch
