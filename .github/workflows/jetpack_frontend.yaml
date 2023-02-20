@@ -4,13 +4,10 @@ on:
   workflow_call:
     inputs:
       api_env:
-        description: 'The api environment for execution of this jetpack run.'
+        description: 'The api environment for execution of this jetpack run. Should be dev or prod.'
         required: true
         default: 'prod'
-        type: choice
-        options:
-          - dev
-          - prod
+        type: string
       j1_account_id:
         description: 'The J1 accountId to upload jetpack data into'
         required: true
@@ -54,8 +51,8 @@ jobs:
     steps:
       - name: Check out code repo source code
         uses: actions/checkout@v3
-          with:
-            fetch-depth: 2
+        with:
+          fetch-depth: 2
 
       - id: setup-node
         name: Setup Node
