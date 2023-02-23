@@ -234,7 +234,8 @@ jobs:
         run: |
           [ -f deploy/dist/${{ github.event.repository.name }}-remote-types.tgz ] && mv deploy/dist/${{ github.event.repository.name }}-remote-types.tgz deploy/dist/remote-types.tgz
           aws s3 sync deploy/dist s3://${{ secrets.AWS_APPS_BUCKET }}/static/manual-deploy/${{ github.event.repository.name }}/PR-${{ github.event.number }}/
-prepare_for_e2e_test:
+  
+  prepare_for_e2e_test:
     defaults:
       run:
         working-directory: ${{ inputs.working_directory }}
