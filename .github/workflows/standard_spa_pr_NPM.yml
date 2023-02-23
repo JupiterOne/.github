@@ -39,7 +39,7 @@ on:
         type: string
         default: '["1"]'
       e2e_pass_on_error:
-        description: "Continue the workflow even if the E2E test fail"
+        description: "Pass the workflow even if the E2E test fail"
         type: boolean
         default: true
       e2e_artemis_config_path:
