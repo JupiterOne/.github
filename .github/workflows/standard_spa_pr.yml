@@ -328,14 +328,13 @@ prepare_for_e2e_test:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
           CYPRESS_PASSWORD: ${{ secrets.CYPRESS_PASSWORD }}
+          CYPRESS_ENVIRONMENT_NAME: jupiterone-dev
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           PR_NUMBER: ${{ inputs.external_pr_number || github.event.pull_request.number }}
           REPO_NAME: ${{ inputs.external_pr_repo_name || github.event.repository.name }}
           SPEC: ${{ inputs.spec_to_run }}
           ACCOUNT: ${{ needs.prepare_for_e2e_test.outputs.output }}
-          # Leaving environment name commented out for now as we currently only support one environment
-          # CYPRESS_ENVIRONMENT_NAME: jupiterone-dev
       # We have to manually output an exit code of 0 to ensure the action passes if e2e_pass_on_error is true
       - name: Pass with failures
         if: ${{ inputs.e2e_pass_on_error }}
