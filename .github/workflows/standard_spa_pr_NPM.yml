@@ -5,24 +5,24 @@ on:
     inputs:
       working_directory:
         description:
-          'The working directory from which to run the workflow commands'
+          "The working directory from which to run the workflow commands"
         required: false
         type: string
         default: '.'
       runs_on:
-        description: 'What github runner should be used (e.g. jupiterone-dev)'
+        description: "What github runner should be used (e.g. jupiterone-dev)"
         required: true
         type: string
       use_validate:
-        description: 'Run test, in most case we want this'
+        description: "Run test, in most case we want this"
         required: true
         type: boolean
       use_chromatic:
-        description: 'Run VRT Storybook tests with chromatic'
+        description: "Run VRT Storybook tests with chromatic"
         required: true
         type: boolean
       use_magic_url:
-        description: 'Deploy to dev via a query param, required for normal SPAs'
+        description: "Deploy to dev via a query param, required for normal SPAs"
         required: true
         type: boolean
       use_e2e:
@@ -70,19 +70,19 @@ on:
         default: 'cypress/e2e/**/*.feature'
     secrets:
       NPM_TOKEN:
-        description: 'A J1 npm.com Publish token'
+        description: "A J1 npm.com Publish token"
         required: true
       CHROMATIC_PROJECT_TOKEN:
-        description: 'The Chromatic API token'
+        description: "The Chromatic API token"
         required: false
       AWS_ROLE:
-        description: 'J1 AWS role with deploy permissions to dev'
+        description: "J1 AWS role with deploy permissions to dev"
         required: false
       AWS_REGION:
-        description: 'The current region of the dev env'
+        description: "The current region of the dev env"
         required: false
       AWS_APPS_BUCKET:
-        description: 'What bucket to deploy the magic url'
+        description: "What bucket to deploy the magic url"
         required: false
       CYPRESS_RECORD_KEY:
         description: "The record key associated with the project in Cypress"
