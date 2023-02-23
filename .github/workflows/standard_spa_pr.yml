@@ -4,8 +4,7 @@ on:
   workflow_call:
     inputs:
       working_directory:
-        description:
-          'The working directory from which to run the workflow commands'
+        description: "The working directory from which to run the workflow commands"
         required: false
         type: string
         default: '.'
