@@ -334,6 +334,7 @@ jobs:
       - name: Get author name
         run: echo "COMMIT_INFO_AUTHOR=$(git show -s --pretty=%an)" >> $GITHUB_ENV
       - name: Trigger Workflow and Wait
+        continue-on-error: ${{ inputs.e2e_pass_on_error }}
         uses: convictional/trigger-workflow-and-wait@v1.6.5
         with:
           owner: JupiterOne
