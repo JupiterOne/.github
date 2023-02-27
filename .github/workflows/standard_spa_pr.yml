@@ -118,14 +118,14 @@ jobs:
       ## Install yarn START
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
         if: ${{ inputs.install_yarn }}
       - run: npm install -g yarn
         if: ${{ inputs.install_yarn }}
       ## Install yarn STOP
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
           cache: "yarn"
           registry-url: "https://registry.npmjs.org"
         env:
@@ -167,13 +167,13 @@ jobs:
       - uses: actions/setup-node@v3
         if: ${{ inputs.install_yarn }}
         with:
-          node-version: 16
+          node-version: 18
       - run: npm install -g yarn
         if: ${{ inputs.install_yarn }}
       ## Install yarn STOP
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
           cache: "yarn"
           registry-url: "https://registry.npmjs.org"
         env:
@@ -207,13 +207,13 @@ jobs:
       - uses: actions/setup-node@v3
         if: ${{ inputs.install_yarn }}
         with:
-          node-version: 16
+          node-version: 18
       - run: npm install -g yarn
         if: ${{ inputs.install_yarn }}
       ## Install yarn STOP
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
           cache: "yarn"
           registry-url: "https://registry.npmjs.org"
         env:
