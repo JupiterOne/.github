@@ -261,7 +261,7 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - run: npm ci
+      - run: yarn --frozen-lockfile --ignore-optional
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
