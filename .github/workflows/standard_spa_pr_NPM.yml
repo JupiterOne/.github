@@ -336,8 +336,8 @@ jobs:
         run: exit 0
       - name: Set test status variables
         run: |
-          if [[ ${{ steps.cypress_run.outputs }} == 0 ]]; then
-            echo "TEST_STATUS_STATE='success'" >> $GITHUB_ENV
+          if [[ ${{ steps.cypress_run.outcome }} == 'success' ]]; then
+            echo "TEST_STATUS_STATE=success" >> $GITHUB_ENV
             echo "TEST_STATUS_DESCRIPTION='E2E test passed'" >> $GITHUB_ENV
           else
             echo "TEST_STATUS_STATE=failure" >> $GITHUB_ENV
@@ -389,8 +389,8 @@ jobs:
         run: exit 0
       - name: Set test status variables
         run: |
-          if [[ ${{ steps.trigger_run.outputs }} == 0 ]]; then
-            echo "TEST_STATUS_STATE='success'" >> $GITHUB_ENV
+          if [[ ${{ steps.trigger_run.outcome }} == 'success' ]]; then
+            echo "TEST_STATUS_STATE=success" >> $GITHUB_ENV
             echo "TEST_STATUS_DESCRIPTION='E2E test passed'" >> $GITHUB_ENV
           else
             echo "TEST_STATUS_STATE=failure" >> $GITHUB_ENV
