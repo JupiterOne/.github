@@ -329,7 +329,7 @@ jobs:
           PR_NUMBER: ${{ inputs.external_pr_number || github.event.pull_request.number }}
           REPO_NAME: ${{ inputs.external_pr_repo_name || github.event.repository.name }}
           SPEC: ${{ inputs.spec_to_run }}
-          ACCOUNT: ${{ needs.prepare_for_e2e_test.outputs.output }}
+          ACCOUNT: ${{ needs.prepare_for_e2e_test.outputs.artemisAccount }}
       # We have to manually output an exit code of 0 to ensure the action passes if e2e_pass_on_error is true
       - name: Pass with failures
         if: ${{ inputs.e2e_pass_on_error }}
