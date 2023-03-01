@@ -71,7 +71,7 @@ on:
       magic_url_route: 
         description: 'The relative route the magic url should go to'
         type: string
-        default: ''
+        default: '/'
     secrets:
       NPM_TOKEN:
         description: "A J1 npm.com Publish token"
@@ -225,7 +225,7 @@ jobs:
           state: 'success'
           context: 'Magic URL'
           description: "Use the 'Details' link to view this PR in dev"
-          target_url: https://apps.dev.jupiterone.io/${{ inputs.magic_url_route }}?magic=%7B%${{ github.event.repository.name }}%22:%22PR-${{ github.event.pull_request.number }}%22%7D
+          target_url: https://apps.dev.jupiterone.io${{ inputs.magic_url_route }}?magic=https://j1dev.apps.dev.jupiterone.io/insights?magic=%7B%22${{ github.event.repository.name }}%22:%22PR-${{ github.event.pull_request.number }}%22%7D
           sha: ${{github.event.pull_request.head.sha || github.sha}}
 
   prepare_for_e2e_test:
