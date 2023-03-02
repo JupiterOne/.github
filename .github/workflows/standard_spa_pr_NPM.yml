@@ -244,7 +244,7 @@ jobs:
       contents: read
       pull-requests: write
     outputs:
-      output: ${{ steps.outputStep.outputs.artemisData }}
+      artemisAccount: ${{ steps.outputStep.outputs.artemisAccount }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
@@ -266,7 +266,7 @@ jobs:
         run: npx artemis-launch -c ${{ inputs.e2e_artemis_config_path }} --action=launch --outputFilename=artemis-run
       - id: outputStep
         # Use jq to extract the accountName from the json file in a raw form
-        run: echo "artemisData=$(jq -r .[0].metadata.accountName < artemis-run.json)" >> $GITHUB_OUTPUT
+        run: echo "artemisAccount=$(jq -r .[0].metadata.accountName < artemis-run.json)" >> $GITHUB_OUTPUT
 
   # Kicks off tests this repo
   run-e2e-tests:
@@ -293,7 +293,7 @@ jobs:
         node: [18]
     steps:
       - name: Log E2E Info
-        run: echo "Running E2E test for PR with title of ${{ inputs.external_pr_title || github.event.pull_request.title }} and number being ${{ inputs.external_pr_number || github.event.pull_request.number }}. The following account will be used ${{ needs.prepare_for_e2e_test.outputs.output }}."
+        run: echo "Running E2E test for PR with title of ${{ inputs.external_pr_title || github.event.pull_request.title }} and number being ${{ inputs.external_pr_number || github.event.pull_request.number }}. The following account will be used ${{ needs.prepare_for_e2e_test.outputs.artemisAccount }}."
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
@@ -329,7 +329,7 @@ jobs:
           PR_NUMBER: ${{ inputs.external_pr_number || github.event.pull_request.number }}
           REPO_NAME: ${{ inputs.external_pr_repo_name || github.event.repository.name }}
           SPEC: ${{ inputs.spec_to_run }}
-          ACCOUNT: ${{ needs.prepare_for_e2e_test.outputs.output }}
+          ACCOUNT: ${{ needs.prepare_for_e2e_test.outputs.artemisAccount }}
       # We have to manually output an exit code of 0 to ensure the action passes if e2e_pass_on_error is true
       - name: Pass with failures
         if: ${{ inputs.e2e_pass_on_error }}
