@@ -11,6 +11,8 @@ on:
         default: '.'
       runs_on:
         description: "What github runner should be used (e.g. jupiterone-dev)"
+        type: string
+      runs_on_default:
         default: "['jupiterone-dev', 'amd64']"
         type: string
       use_validate:
@@ -107,7 +109,7 @@ jobs:
       run:
         working-directory: ${{ inputs.working_directory }}
     name: Creates shared variables used by the the jobs below based on whether the jobs were triggered by another repo or internally
-    runs-on: ${{ fromJson(inputs.runs_on) }}
+    runs-on: ${{ inputs.runs_on || fromJson(inputs.runs_on_default) }}
     timeout-minutes: 15
     outputs:
       groupId: ${{ steps.outputStep.outputs.groupId }}
@@ -128,7 +130,7 @@ jobs:
       run:
         working-directory: ${{ inputs.working_directory }}
     name: Validate
-    runs-on: ${{ fromJson(inputs.runs_on) }}
+    runs-on: ${{ inputs.runs_on || fromJson(inputs.runs_on_default) }}
     timeout-minutes: 15
     concurrency:
       group: validate-${{ needs.create-shared-vars.outputs.groupId }}
@@ -171,7 +173,7 @@ jobs:
     defaults:
       run:
         working-directory: ${{ inputs.working_directory }}
-    runs-on: ${{ fromJson(inputs.runs_on) }}
+    runs-on: ${{ inputs.runs_on || fromJson(inputs.runs_on_default) }}
     timeout-minutes: 15
     concurrency:
       group: chromatic-deployment-${{ needs.create-shared-vars.outputs.groupId }}
@@ -204,7 +206,7 @@ jobs:
       run:
         working-directory: ${{ inputs.working_directory }}
     name: Deploy Magic URL
-    runs-on: ${{ fromJson(inputs.runs_on) }}
+    runs-on: ${{ inputs.runs_on || fromJson(inputs.runs_on_default) }}
     timeout-minutes: 15
     concurrency:
       group: deploy-magic-url-${{ needs.create-shared-vars.outputs.groupId }}
@@ -243,7 +245,7 @@ jobs:
 
   magic_url:
     name: Post Magic URL
-    runs-on: ${{ fromJson(inputs.runs_on) }}
+    runs-on: ${{ inputs.runs_on || fromJson(inputs.runs_on_default) }}
     timeout-minutes: 1
     concurrency:
       group: magic-url-${{ needs.create-shared-vars.outputs.groupId }}
@@ -266,7 +268,7 @@ jobs:
       run:
         working-directory: ${{ inputs.working_directory }}
     name: Prepare For E2E Tests
-    runs-on: ${{ fromJson(inputs.runs_on) }}
+    runs-on: ${{ inputs.runs_on || fromJson(inputs.runs_on_default) }}
     timeout-minutes: 15
     concurrency:
       group: prepare-for-e2e-test-${{ needs.create-shared-vars.outputs.groupId }}
@@ -311,7 +313,7 @@ jobs:
       run:
         working-directory: ${{ inputs.working_directory }}
     name: Run E2E Tests for ${{ needs.create-shared-vars.outputs.e2eJobDescription }}
-    runs-on: ${{ fromJson(inputs.runs_on) }}
+    runs-on: ${{ inputs.runs_on || fromJson(inputs.runs_on_default) }}
     container:
       image: cypress/browsers:node18.12.0-chrome106-ff106
       options: --platform linux/amd64 --privileged
@@ -412,7 +414,7 @@ jobs:
     defaults:
       run:
         working-directory: ${{ inputs.working_directory }}
-    runs-on: ${{ fromJson(inputs.runs_on) }}
+    runs-on: ${{ inputs.runs_on || fromJson(inputs.runs_on_default) }}
     timeout-minutes: 60
     concurrency:
       group: validate-${{ needs.create-shared-vars.outputs.groupId }}
