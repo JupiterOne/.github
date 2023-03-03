@@ -67,6 +67,10 @@ on:
       external_pr_repo_name:
         description: 'Used by the e2e_trigger to tag builds in Cypress with the appropriate repo name (used to associate a repo with a test run)'
         type: string
+      externally_triggered:
+        description: 'True if E2E tests are triggered from another repo'
+        default: false
+        type: boolean
       spec_to_run:
         description: 'Used to determine which test to run'
         type: string
@@ -96,12 +100,28 @@ on:
       E2E_AUTO:
         description: "A J1 token for kicking off cypress tests"
 
-# Save Money :money_with_wings:
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event.repository.name }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
-
 jobs:
+  create-shared-vars:
+    defaults:
+      run:
+        working-directory: ${{ inputs.working_directory }}
+    name: Creates shared variables used by the the jobs below based on whether the jobs were triggered by another repo or internally
+    runs-on: ${{ inputs.runs_on }}
+    timeout-minutes: 15
+    outputs:
+      groupId: ${{ steps.outputStep.outputs.groupId }}
+      e2eJobDescription: ${{ steps.outputStep.outputs.e2eJobDescription }}
+    steps:
+      - id: outputStep
+        run: |
+          if [[ ${{ inputs.externally_triggered }} == true ]]; then
+            echo "groupId=$(date +'%Y-%m-%d %H:%M:%S %s')" >> $GITHUB_OUTPUT
+            echo "e2eJobDescription=external repo ${{ inputs.external_pr_repo_name }} - ${{ inputs.external_pr_branch }}" >> $GITHUB_OUTPUT 
+          else
+            echo "groupId=${{ github.workflow }}-${{ github.event.repository.name }}-${{ github.event.pull_request.number || github.ref }}" >> $GITHUB_OUTPUT
+            echo "e2eJobDescription=${{ github.event.repository.name }}" >> $GITHUB_OUTPUT         
+          fi
+  
   validate:
     defaults:
       run:
@@ -109,6 +129,10 @@ jobs:
     name: Validate
     runs-on: ${{ inputs.runs_on }}
     timeout-minutes: 15
+    concurrency:
+      group: validate-${{ needs.create-shared-vars.outputs.groupId }}
+      cancel-in-progress: true
+    needs: [create-shared-vars]
     if: ${{ inputs.use_validate }}
     steps:
       - uses: actions/checkout@v3
@@ -157,6 +181,10 @@ jobs:
         working-directory: ${{ inputs.working_directory }}
     runs-on: ${{ inputs.runs_on }}
     timeout-minutes: 15
+    concurrency:
+      group: chromatic-deployment-${{ needs.create-shared-vars.outputs.groupId }}
+      cancel-in-progress: true
+    needs: [create-shared-vars]
     if: ${{ inputs.use_chromatic }}
     steps:
       - uses: actions/checkout@v3
@@ -195,6 +223,10 @@ jobs:
     name: Deploy Magic URL
     runs-on: ${{ inputs.runs_on }}
     timeout-minutes: 15
+    concurrency:
+      group: deploy-magic-url-${{ needs.create-shared-vars.outputs.groupId }}
+      cancel-in-progress: true
+    needs: [create-shared-vars]
     if: ${{ inputs.use_magic_url }}
     permissions:
       id-token: write
@@ -242,6 +274,10 @@ jobs:
     name: Prepare For E2E Tests
     runs-on: ${{ inputs.runs_on }}
     timeout-minutes: 15
+    concurrency:
+      group: prepare-for-e2e-test-${{ needs.create-shared-vars.outputs.groupId }}
+      cancel-in-progress: true
+    needs: [create-shared-vars]
     # We need this job to run even if the magic url is skipped which occurs via the e2e_trigger.yml
     if: |
       always()
@@ -280,13 +316,16 @@ jobs:
     defaults:
       run:
         working-directory: ${{ inputs.working_directory }}
-    name: Run E2E Tests
+    name: Run E2E Tests for ${{ needs.create-shared-vars.outputs.e2eJobDescription }}
     runs-on: ${{ inputs.runs_on }}
     timeout-minutes: 15
+    concurrency:
+      group: run-e2e-tests-${{ needs.create-shared-vars.outputs.groupId }}
+      cancel-in-progress: true
     if: |
       always()
       && inputs.use_e2e
-    needs: [deploy_magic_url, prepare_for_e2e_test]
+    needs: [create-shared-vars, deploy_magic_url, prepare_for_e2e_test]
     continue-on-error: ${{ inputs.e2e_pass_on_error }}
     strategy:
       # when one test fails, DO NOT cancel the other
@@ -301,6 +340,14 @@ jobs:
     steps:
       - name: Log E2E Info
         run: echo "Running E2E test for PR with title of ${{ inputs.external_pr_title || github.event.pull_request.title }} and number being ${{ inputs.external_pr_number || github.event.pull_request.number }}. The following account will be used ${{ needs.prepare_for_e2e_test.outputs.artemisAccount }}."
+      - name: Log groupId
+        run: echo "groupId - ${{ needs.create-shared-vars.outputs.groupId }}"
+      - name: Log status of prepare_for_e2e_test job
+        run: echo "prepare status - ${{ needs.prepare_for_e2e_test.result }}"
+      # Fail the rest of the job if the prepare_for_e2e_test job failed (needed since we use always)
+      - name: Check status of prepare_for_e2e_test job
+        if: ${{ needs.prepare_for_e2e_test.result != 'success' }}
+        run: exit 1
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
@@ -367,8 +414,11 @@ jobs:
         working-directory: ${{ inputs.working_directory }}
     runs-on: ${{ inputs.runs_on }}
     timeout-minutes: 60
+    concurrency:
+      group: validate-${{ needs.create-shared-vars.outputs.groupId }}
+      cancel-in-progress: true
     if: ${{ inputs.use_e2e_trigger }}
-    needs: deploy_magic_url
+    needs: [create-shared-vars, deploy_magic_url]
     strategy:
       matrix:
         repos: ${{ fromJson(inputs.repos_to_test) }}
