@@ -390,15 +390,16 @@ jobs:
       - name: Pass with failures
         if: ${{ inputs.e2e_pass_on_error }}
         run: exit 0
-      - name: Set test status variables
+      - name: Set success vars
+        if: ${{ contains(steps.cypress_run.outcome, 'success') }}
         run: |
-          if [[ ${{ steps.cypress_run.outcome }} == 'success' ]]; then
-            echo "TEST_STATUS_STATE=success" >> $GITHUB_ENV
-            echo "TEST_STATUS_DESCRIPTION='E2E test passed'" >> $GITHUB_ENV
-          else
-            echo "TEST_STATUS_STATE=failure" >> $GITHUB_ENV
-            echo "TEST_STATUS_DESCRIPTION='E2E test failed'" >> $GITHUB_ENV
-          fi
+          echo "TEST_STATUS_STATE=success" >> $GITHUB_ENV
+          echo "TEST_STATUS_DESCRIPTION='E2E test passed'" >> $GITHUB_ENV
+      - name: Set failure vars
+        if: ${{ !contains(steps.cypress_run.outcome, 'success') }}
+        run: |
+          echo "TEST_STATUS_STATE=failure" >> $GITHUB_ENV
+          echo "TEST_STATUS_DESCRIPTION='E2E test failed'" >> $GITHUB_ENV
       - name: E2E Test Status
         uses: Sibz/github-status-action@v1
         continue-on-error: ${{ inputs.e2e_pass_on_error }}
@@ -446,15 +447,16 @@ jobs:
       - name: Pass with failures
         if: ${{ inputs.e2e_pass_on_error }}
         run: exit 0
-      - name: Set test status variables
+      - name: Set success vars
+        if: ${{ steps.trigger_run.outcome }} == 'success'
         run: |
-          if [[ ${{ steps.trigger_run.outcome }} == 'success' ]]; then
-            echo "TEST_STATUS_STATE=success" >> $GITHUB_ENV
-            echo "TEST_STATUS_DESCRIPTION='E2E test passed'" >> $GITHUB_ENV
-          else
-            echo "TEST_STATUS_STATE=failure" >> $GITHUB_ENV
-            echo "TEST_STATUS_DESCRIPTION='E2E test failed'" >> $GITHUB_ENV
-          fi
+          echo "TEST_STATUS_STATE=success" >> $GITHUB_ENV
+          echo "TEST_STATUS_DESCRIPTION='E2E test passed'" >> $GITHUB_ENV
+      - name: Set failure vars
+        if: ${{ steps.trigger_run.outcome }} != 'success'
+        run: |
+          echo "TEST_STATUS_STATE=failure" >> $GITHUB_ENV
+          echo "TEST_STATUS_DESCRIPTION='E2E test failed'" >> $GITHUB_ENV
       - name: E2E Test Status
         uses: Sibz/github-status-action@v1
         continue-on-error: ${{ inputs.e2e_pass_on_error }}
