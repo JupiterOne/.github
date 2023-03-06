@@ -339,6 +339,7 @@ jobs:
       cancel-in-progress: true
     if: |
       always()
+      && !cancelled()
       && inputs.use_e2e
     needs: [create-shared-vars, magic_url, prepare_for_e2e_test]
     continue-on-error: ${{ inputs.e2e_pass_on_error }}
