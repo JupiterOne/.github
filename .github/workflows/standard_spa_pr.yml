@@ -9,7 +9,7 @@ on:
         type: string
         default: '.'
       runs_on:
-        description: "What github runner should be used (e.g. jupiterone-dev)"
+        description: "Deprecated noop - To be removed"
         type: string
       use_github_runner:
         description: "If true will levarege ubuntu-latest, otherwise will fall back to the J1 in-house runner"
