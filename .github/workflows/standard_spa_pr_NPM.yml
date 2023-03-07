@@ -295,7 +295,7 @@ jobs:
       contents: read
       pull-requests: write
     outputs:
-      artemisAccount: ${{ steps.outputStep.outputs.artemisAccount }}
+      artemisAccountName: ${{ steps.outputStep.outputs.artemisAccountName }}
       artemisAccountId: ${{ steps.outputStep.outputs.artemisAccountId }}
       # compact JSON of [{csrf:string,secret:string,subject:string},...]
       artemisUsers: ${{ steps.outputStep.outputs.artemisUsers }}
@@ -321,7 +321,7 @@ jobs:
       - id: outputStep
         # Use jq to extract the accountId and user sessions from the json file in a raw form
         run: |
-          echo "artemisAccount=$(jq -r .[0].id < artemis-run.json)" >> $GITHUB_OUTPUT
+          echo "artemisAccountName=$(jq -r .[0].metadata.accountName < artemis-run.json)" >> $GITHUB_OUTPUT
           echo "artemisAccountId=$(jq -r .[0].id < artemis-run.json)" >> $GITHUB_OUTPUT
           echo "artemisUsers=$(jq -c 'map((select(. | .metadata.type == "user-session")) | { secret: .metadata.secret, csrf: .metadata.csrf, subject: .metadata.subject })' < artemis-run.json)" >> $GITHUB_OUTPUT
 
@@ -357,7 +357,7 @@ jobs:
         node: [18]
     steps:
       - name: Log E2E Info
-        run: echo "Running E2E test for PR with title of ${{ inputs.external_pr_title || github.event.pull_request.title }} and number being ${{ inputs.external_pr_number || github.event.pull_request.number }}. The following account will be used ${{ needs.prepare_for_e2e_test.outputs.artemisAccount }} (${{ needs.prepare_for_e2e_test.outputs.artemisAccountId }})."
+        run: echo "Running E2E test for PR with title of ${{ inputs.external_pr_title || github.event.pull_request.title }} and number being ${{ inputs.external_pr_number || github.event.pull_request.number }}. The following account will be used ${{ needs.prepare_for_e2e_test.outputs.artemisAccountName }} (${{ needs.prepare_for_e2e_test.outputs.artemisAccountId }})."
       - name: Log groupId
         run: echo "groupId - ${{ needs.create-shared-vars.outputs.groupId }}"
       - name: Log status of prepare_for_e2e_test job
@@ -404,7 +404,7 @@ jobs:
           PR_NUMBER: ${{ inputs.external_pr_number || github.event.pull_request.number }}
           REPO_NAME: ${{ inputs.external_pr_repo_name || github.event.repository.name }}
           SPEC: ${{ inputs.spec_to_run }}
-          ACCOUNT: ${{ needs.prepare_for_e2e_test.outputs.artemisAccount }}
+          ACCOUNT: ${{ needs.prepare_for_e2e_test.outputs.artemisAccountName }}
           ACCOUNT_ID: ${{ needs.prepare_for_e2e_test.outputs.artemisAccountId }}
           USERS: ${{ needs.prepare_for_e2e_test.outputs.artemisUsers }}
       # We have to manually output an exit code of 0 to ensure the action passes if e2e_pass_on_error is true
