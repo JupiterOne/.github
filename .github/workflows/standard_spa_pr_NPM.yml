@@ -43,6 +43,9 @@ on:
       use_e2e_trigger:
         description: "Trigger E2E tests in other repos"
         type: boolean
+      e2e_filter_tags:
+        description: "Tests will be filtered based on the tags defined here"
+        type: string
       repos_to_test:
         description: "Kick off a n+ spec files within n+ repos"
         type: string
@@ -407,6 +410,7 @@ jobs:
           ACCOUNT: ${{ needs.prepare_for_e2e_test.outputs.artemisAccountName }}
           ACCOUNT_ID: ${{ needs.prepare_for_e2e_test.outputs.artemisAccountId }}
           USERS: ${{ needs.prepare_for_e2e_test.outputs.artemisUsers }}
+          TAGS: ${{ inputs.e2e_filter_tags }}
       # We have to manually output an exit code of 0 to ensure the action passes if e2e_pass_on_error is true
       - name: Pass with failures
         if: ${{ inputs.e2e_pass_on_error }}
