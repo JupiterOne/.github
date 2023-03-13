@@ -94,6 +94,6 @@ jobs:
           -e J1_ACCOUNT="${{ inputs.j1_account_id }}" \
           -e J1_API_TOKEN="${{ secrets.J1_API_TOKEN }}" \
           -e J1_API_ENV="${{ inputs.api_env }}" \
-          -e J1_ESLINT_ENTRYPOINT="${{ inputs.eslint_entrypoint }}"
+          -e J1_ESLINT_ENTRYPOINT="${{ inputs.eslint_entrypoint }}" \
           -v `pwd`:`pwd` \
           ${{ inputs.jetpack_docker_image }} ${{ inputs.jetpack_command }}
