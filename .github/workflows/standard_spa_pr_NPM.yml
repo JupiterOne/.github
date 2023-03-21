@@ -463,7 +463,7 @@ jobs:
     runs-on: ${{ inputs.use_github_runner && inputs.github_runner || fromJson(inputs.default_runner) }}
     timeout-minutes: 60
     concurrency:
-      group: validate-${{ needs.create-shared-vars.outputs.groupId }}
+      group: run-e2e-integration-tests-${{ needs.create-shared-vars.outputs.groupId }}
       cancel-in-progress: true
     if: ${{ inputs.use_e2e_trigger }}
     needs: [create-shared-vars, magic_url]
