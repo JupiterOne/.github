@@ -306,7 +306,7 @@ jobs:
       artemisAccountId: ${{ steps.outputStep.outputs.artemisAccountId }}
       # compact JSON of [{csrf:string,secret:string,subject:string},...]
       artemisUsers: ${{ steps.outputStep.outputs.artemisUsers }}
-      # TODO: Remove legacy when repos are updated to new schema
+      # TODO: Remove via APP-11658
       artemisUsersLegacy: ${{ steps.outputStep.outputs.artemisUsersLegacy }}
     steps:
       - uses: actions/checkout@v3
@@ -419,7 +419,7 @@ jobs:
           SPEC: ${{ inputs.spec_to_run }}
           ACCOUNT: ${{ needs.prepare_for_e2e_test.outputs.artemisAccountName }}
           ACCOUNT_ID: ${{ needs.prepare_for_e2e_test.outputs.artemisAccountId }}
-          # TODO: Remove legacy when repos are updated to new schema
+          # TODO: Remove via APP-11658
           USERS: ${{ needs.prepare_for_e2e_test.outputs.artemisUsers || needs.prepare_for_e2e_test.outputs.artemisUsersLegacy }}
           TAGS: ${{ inputs.e2e_filter_tags }}
       # We have to manually output an exit code of 0 to ensure the action passes if e2e_pass_on_error is true
