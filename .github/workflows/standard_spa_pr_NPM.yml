@@ -327,7 +327,7 @@ jobs:
         id: updateArtemisConfig
         run: npx update-artemis-config --pathToArtemisConfig=${{ inputs.e2e_artemis_config_path }} --usersCount=${{ needs.create-shared-vars.outputs.usersCount }}
         continue-on-error: true
-      - name: launch artemis (new flow)
+      - name: launch artemis
         if: steps.updateArtemisConfig.outcome == 'success'
         run: npx artemis-launch -c tmp/artemis-config-updated.yaml --action=launch --outputFilename=artemis-run
       # TODO: Remove via APP-11658
@@ -429,7 +429,6 @@ jobs:
           SPEC: ${{ inputs.spec_to_run }}
           ACCOUNT: ${{ needs.prepare_for_e2e_test.outputs.artemisAccountName }}
           ACCOUNT_ID: ${{ needs.prepare_for_e2e_test.outputs.artemisAccountId }}
-          # TODO: Remove via APP-11658
           USERS: ${{ needs.prepare_for_e2e_test.outputs.artemisUsers }}
           TAGS: ${{ inputs.e2e_filter_tags }}
       # We have to manually output an exit code of 0 to ensure the action passes if e2e_pass_on_error is true
