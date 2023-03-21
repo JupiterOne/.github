@@ -335,9 +335,6 @@ jobs:
           echo "artemisAccountName=$(jq -r .[0].metadata.accountName < artemis-run.json)" >> $GITHUB_OUTPUT
           echo "artemisAccountId=$(jq -r .[0].id < artemis-run.json)" >> $GITHUB_OUTPUT
           echo "artemisUsers=$(jq -c 'map((select(. | .type == "User")) | { tokenSecret: .metadata.token.tokenSecret, tokenCsrf: .metadata.token.tokenCsrf, groupName: .metadata.groupName })' < artemis-run.json)" >> $GITHUB_OUTPUT
-      # TODO: Remove legacy when repos are updated to new schema
-      - id: outputStepLegacy
-        run: |
           echo "artemisUsersLegacy=$(jq -c 'map((select(. | .metadata.type == "user-session")) | { secret: .metadata.secret, csrf: .metadata.csrf, subject: .metadata.subject })' < artemis-run.json)" >> $GITHUB_OUTPUT
 
   # Kicks off tests this repo
@@ -351,9 +348,6 @@ jobs:
       image: cypress/browsers:node18.12.0-chrome106-ff106
       options: --platform linux/amd64 --privileged
     timeout-minutes: 15
-    concurrency:
-      group: run-e2e-tests-${{ needs.create-shared-vars.outputs.groupId }}
-      cancel-in-progress: true
     if: |
       always()
       && !cancelled()
@@ -370,6 +364,9 @@ jobs:
         # run copies of the current job in parallel
         containers: ${{ fromJson(inputs.e2e_containers) }}
         node: [18]
+    concurrency:
+      group: run-e2e-tests-${{ needs.create-shared-vars.outputs.groupId }}-${{ matrix.containers }}
+      cancel-in-progress: true
     steps:
       - name: Log E2E Info
         run: echo "Running E2E test for PR with title of ${{ inputs.external_pr_title || github.event.pull_request.title }} and number being ${{ inputs.external_pr_number || github.event.pull_request.number }}. The following account will be used ${{ needs.prepare_for_e2e_test.outputs.artemisAccountName }} (${{ needs.prepare_for_e2e_test.outputs.artemisAccountId }}). The following matrix container is being used ${{ matrix.containers }}"
