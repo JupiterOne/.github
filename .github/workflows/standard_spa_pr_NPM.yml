@@ -182,12 +182,8 @@ jobs:
       # Validate runtime types (if applicable)
       - name: Validate Runtime Modules Types
         run: |
-          if [[ -f "node_modules/@jupiterone/web-runtime-modules/cli/testInterfaceRuntimeModules.js" ]]; then
-            npx testInterfaceRuntimeModules;
-            echo "No breaking changes found";
-          else
-            echo "Skipping, @jupiterone/web-runtime-modules not installed";
-          fi
+          npx -p @jupiterone/web-runtime-modules testInterfaceRuntimeModules;
+          echo "No breaking changes found";
         if: ${{ !env.HAS_SKIP }}
 
   chromatic-deployment:
