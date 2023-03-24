@@ -1,0 +1,91 @@
+name: Trigger E2E Tests In Another Repo
+
+on:
+  workflow_call:
+    inputs:
+      working_directory:
+        description:
+          'The working directory from which to run the workflow commands'
+        required: false
+        type: string
+        default: '.'
+      default_runner:
+        default: "['jupiterone-dev', 'arm64']"
+        type: string
+      e2e_pass_on_error:
+        description: "Pass the workflow even if the E2E test fail"
+        type: boolean
+        default: true
+      github_runner:
+        default: "ubuntu-latest"
+        type: string
+      repos_to_test:
+        description: "Kick off a n+ spec files within n+ repos"
+        type: string
+      use_github_runner:
+        description: "If true will levarege ubuntu-latest, otherwise will fall back to the J1 in-house runner"
+        default: false
+        type: boolean
+      use_e2e_trigger:
+        description: "Trigger E2E tests in other repos"
+        type: boolean
+    secrets:
+      E2E_AUTO:
+        description: "A J1 token for kicking off cypress tests"
+        required: false
+
+jobs:
+  run-e2e-integration-tests:
+    defaults:
+      run:
+        working-directory: ${{ inputs.working_directory }}
+    runs-on: ${{ inputs.use_github_runner && inputs.github_runner || fromJson(inputs.default_runner) }}
+    timeout-minutes: 60
+    concurrency:
+      group: run-e2e-integration-tests
+      cancel-in-progress: true
+    if: ${{ inputs.use_e2e_trigger }}
+    strategy:
+      matrix:
+        repos: ${{ fromJson(inputs.repos_to_test) }}
+    continue-on-error: ${{ inputs.e2e_pass_on_error }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Log E2E Info
+        run: echo "In the ${{ matrix.repos.repo.name }} repo, run the following test ${{ matrix.repos.repo.spec }}"
+      - name: Get author name
+        run: echo "COMMIT_INFO_AUTHOR=$(git show -s --pretty=%an)" >> $GITHUB_ENV
+      - name: Trigger Workflow and Wait
+        id: trigger_run
+        continue-on-error: ${{ inputs.e2e_pass_on_error }}
+        uses: convictional/trigger-workflow-and-wait@v1.6.5
+        with:
+          owner: JupiterOne
+          repo: ${{ matrix.repos.repo.name }}
+          github_token: ${{ secrets.E2E_AUTO }}
+          workflow_file_name: e2e_trigger.yml
+          propagate_failure: ${{ !inputs.e2e_pass_on_error }}
+          client_payload: '{"spec_to_run":"${{ matrix.repos.repo.spec }}","external_pr_number":"${{ github.event.pull_request.number }}","external_pr_title":"${{ github.event.pull_request.title }}","external_pr_repo_name":"${{ github.event.repository.name }}","external_pr_branch":"${{ github.event.pull_request.head.ref }}","external_pr_author":"${{ env.COMMIT_INFO_AUTHOR }}","external_pr_sha":"${{ github.event.pull_request.base.sha }}"}'
+      # We have to manually output an exit code of 0 to ensure the action passes if e2e_pass_on_error is true
+      - name: Pass with failures
+        if: ${{ inputs.e2e_pass_on_error }}
+        run: exit 0
+      - name: Set success vars
+        if: ${{ steps.trigger_run.outcome }} == 'success'
+        run: |
+          echo "TEST_STATUS_STATE=success" >> $GITHUB_ENV
+          echo "TEST_STATUS_DESCRIPTION='E2E test passed'" >> $GITHUB_ENV
+      - name: Set failure vars
+        if: ${{ steps.trigger_run.outcome }} != 'success'
+        run: |
+          echo "TEST_STATUS_STATE=failure" >> $GITHUB_ENV
+          echo "TEST_STATUS_DESCRIPTION='E2E test failed'" >> $GITHUB_ENV
+      - name: E2E Test Status
+        uses: Sibz/github-status-action@v1
+        continue-on-error: ${{ inputs.e2e_pass_on_error }}
+        with:
+          authToken: ${{secrets.GITHUB_TOKEN}}
+          context: 'E2E Test Status'
+          description: ${{ env.TEST_STATUS_DESCRIPTION }}
+          state: ${{ env.TEST_STATUS_STATE }}
+          sha: ${{github.event.pull_request.head.sha || github.sha}}
