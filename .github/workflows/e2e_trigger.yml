@@ -23,7 +23,7 @@ on:
         description: "Kick off a n+ spec files within n+ repos"
         type: string
       use_github_runner:
-        description: "If true will levarege ubuntu-latest, otherwise will fall back to the J1 in-house runner"
+        description: "If true will leverage ubuntu-latest, otherwise will fall back to the J1 in-house runner"
         default: false
         type: boolean
       use_e2e_trigger:
