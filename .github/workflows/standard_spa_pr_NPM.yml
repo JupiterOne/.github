@@ -459,7 +459,7 @@ jobs:
     runs-on: ${{ inputs.use_github_runner && inputs.github_runner || fromJson(inputs.default_runner) }}
     timeout-minutes: 60
     concurrency:
-      group: validate-${{ needs.create-shared-vars.outputs.groupId }}
+      group: run-e2e-integration-tests-${{ needs.create-shared-vars.outputs.groupId }}
       cancel-in-progress: true
     if: ${{ inputs.use_e2e_trigger }}
     needs: [create-shared-vars, magic_url]
@@ -489,12 +489,12 @@ jobs:
         if: ${{ inputs.e2e_pass_on_error }}
         run: exit 0
       - name: Set success vars
-        if: ${{ steps.trigger_run.outcome }} == 'success'
+        if: ${{ contains(steps.trigger_run.outcome, 'success') }}
         run: |
           echo "TEST_STATUS_STATE=success" >> $GITHUB_ENV
           echo "TEST_STATUS_DESCRIPTION='E2E test passed'" >> $GITHUB_ENV
       - name: Set failure vars
-        if: ${{ steps.trigger_run.outcome }} != 'success'
+        if: ${{ !contains(steps.trigger_run.outcome, 'success') }}
         run: |
           echo "TEST_STATUS_STATE=failure" >> $GITHUB_ENV
           echo "TEST_STATUS_DESCRIPTION='E2E test failed'" >> $GITHUB_ENV
