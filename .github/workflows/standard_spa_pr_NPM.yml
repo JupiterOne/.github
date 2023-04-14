@@ -222,7 +222,7 @@ jobs:
     defaults:
       run:
         working-directory: ${{ inputs.working_directory }}
-    name: Deploy Magic URL
+    name: Deploy To Dev
     runs-on: ${{ inputs.use_github_runner && inputs.github_runner || fromJson(inputs.default_runner) }}
     timeout-minutes: 15
     concurrency:
@@ -284,7 +284,7 @@ jobs:
     defaults:
       run:
         working-directory: ${{ inputs.working_directory }}
-    name: Prepare For E2E Tests
+    name: Prepare Artemis
     runs-on: ${{ inputs.use_github_runner && inputs.github_runner || fromJson(inputs.default_runner) }}
     timeout-minutes: 15
     concurrency:
