@@ -182,7 +182,7 @@ jobs:
       # Validate runtime types (if applicable)
       - name: Validate Runtime Modules Types
         run: |
-          npx -p @jupiterone/web-tools-remote-types@latest remote-types test --skip-validation
+          npx -p @jupiterone/web-tools-remote-types@latest remote-types test
           echo "No breaking changes found";
         if: ${{ !env.HAS_SKIP }}
 
