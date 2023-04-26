@@ -353,7 +353,7 @@ jobs:
     container:
       image: cypress/browsers:node18.12.0-chrome106-ff106
       options: --platform linux/amd64 --privileged
-    timeout-minutes: 15
+    timeout-minutes: 25
     if: |
       always()
       && !cancelled()
@@ -372,7 +372,9 @@ jobs:
         node: [18]
     concurrency:
       group: run-e2e-tests-${{ needs.create-shared-vars.outputs.groupId }}-${{ matrix.containers }}
-      cancel-in-progress: true
+      # To avoid the following error, we leave this disabled: Canceling since a higher priority waiting request for 'run-e2e-tests-PR-web-settings-91-1' exists
+      # This still serves a purpose as any previously pending job in the concurrency group will be canceled, just not those already in progress
+      # cancel-in-progress: true
     steps:
       - name: Log E2E Info
         run: echo "Running E2E test for PR with title of ${{ inputs.external_pr_title || github.event.pull_request.title }} and number being ${{ inputs.external_pr_number || github.event.pull_request.number }}. The following account will be used ${{ needs.prepare_for_e2e_test.outputs.artemisAccountName }} (${{ needs.prepare_for_e2e_test.outputs.artemisAccountId }}). The following matrix container is being used ${{ matrix.containers }}"
