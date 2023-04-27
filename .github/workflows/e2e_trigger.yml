@@ -29,6 +29,8 @@ on:
       use_e2e_trigger:
         description: "Trigger E2E tests in other repos"
         type: boolean
+      group_id:
+        type: string
     secrets:
       E2E_AUTO:
         description: "A J1 token for kicking off cypress tests"
@@ -42,7 +44,7 @@ jobs:
     runs-on: ${{ inputs.use_github_runner && inputs.github_runner || fromJson(inputs.default_runner) }}
     timeout-minutes: 60
     concurrency:
-      group: run-e2e-integration-tests
+      group: run-e2e-integration-tests-${{ inputs.group_id || github.head_ref || github.run_id }}
       cancel-in-progress: true
     if: ${{ inputs.use_e2e_trigger }}
     strategy:
@@ -71,12 +73,12 @@ jobs:
         if: ${{ inputs.e2e_pass_on_error }}
         run: exit 0
       - name: Set success vars
-        if: ${{ steps.trigger_run.outcome }} == 'success'
+        if: ${{ contains(steps.trigger_run.outcome, 'success') }}
         run: |
           echo "TEST_STATUS_STATE=success" >> $GITHUB_ENV
           echo "TEST_STATUS_DESCRIPTION='E2E test passed'" >> $GITHUB_ENV
       - name: Set failure vars
-        if: ${{ steps.trigger_run.outcome }} != 'success'
+        if: ${{ !contains(steps.trigger_run.outcome, 'success') }}
         run: |
           echo "TEST_STATUS_STATE=failure" >> $GITHUB_ENV
           echo "TEST_STATUS_DESCRIPTION='E2E test failed'" >> $GITHUB_ENV

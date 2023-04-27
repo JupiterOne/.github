@@ -444,57 +444,16 @@ jobs:
 
   # Kicks off tests in other repos
   run-e2e-integration-tests:
-    defaults:
-      run:
-        working-directory: ${{ inputs.working_directory }}
-    runs-on: ${{ inputs.use_github_runner && inputs.github_runner || fromJson(inputs.default_runner) }}
-    timeout-minutes: 60
-    concurrency:
-      group: run-e2e-integration-tests-${{ needs.create-shared-vars.outputs.groupId }}
-      cancel-in-progress: true
-    if: ${{ inputs.use_e2e_trigger }}
+    uses: ./.github/workflows/e2e_trigger.yml
     needs: [create-shared-vars, magic_url]
-    strategy:
-      matrix:
-        repos: ${{ fromJson(inputs.repos_to_test) }}
-    continue-on-error: ${{ inputs.e2e_pass_on_error }}
-    steps:
-      - uses: actions/checkout@v3
-      - name: Log E2E Info
-        run: echo "In the ${{ matrix.repos.repo.name }} repo, run the following test ${{ matrix.repos.repo.spec }}"
-      - name: Get author name
-        run: echo "COMMIT_INFO_AUTHOR=$(git show -s --pretty=%an)" >> $GITHUB_ENV
-      - name: Trigger Workflow and Wait
-        id: trigger_run
-        continue-on-error: ${{ inputs.e2e_pass_on_error }}
-        uses: convictional/trigger-workflow-and-wait@v1.6.5
-        with:
-          owner: JupiterOne
-          repo: ${{ matrix.repos.repo.name }}
-          github_token: ${{ secrets.E2E_AUTO }}
-          workflow_file_name: e2e_trigger.yml
-          propagate_failure: ${{ !inputs.e2e_pass_on_error }}
-          client_payload: '{"spec_to_run":"${{ matrix.repos.repo.spec }}","external_pr_number":"${{ github.event.pull_request.number }}","external_pr_title":"${{ github.event.pull_request.title }}","external_pr_repo_name":"${{ github.event.repository.name }}","external_pr_branch":"${{ github.event.pull_request.head.ref }}","external_pr_author":"${{ env.COMMIT_INFO_AUTHOR }}","external_pr_sha":"${{ github.event.pull_request.base.sha }}"}'
-      # We have to manually output an exit code of 0 to ensure the action passes if e2e_pass_on_error is true
-      - name: Pass with failures
-        if: ${{ inputs.e2e_pass_on_error }}
-        run: exit 0
-      - name: Set success vars
-        if: ${{ contains(steps.trigger_run.outcome, 'success') }}
-        run: |
-          echo "TEST_STATUS_STATE=success" >> $GITHUB_ENV
-          echo "TEST_STATUS_DESCRIPTION='E2E test passed'" >> $GITHUB_ENV
-      - name: Set failure vars
-        if: ${{ !contains(steps.trigger_run.outcome, 'success') }}
-        run: |
-          echo "TEST_STATUS_STATE=failure" >> $GITHUB_ENV
-          echo "TEST_STATUS_DESCRIPTION='E2E test failed'" >> $GITHUB_ENV
-      - name: E2E Test Status
-        uses: Sibz/github-status-action@v1
-        continue-on-error: ${{ inputs.e2e_pass_on_error }}
-        with:
-          authToken: ${{secrets.GITHUB_TOKEN}}
-          context: 'E2E Test Status'
-          description: ${{ env.TEST_STATUS_DESCRIPTION }}
-          state: ${{ env.TEST_STATUS_STATE }}
-          sha: ${{github.event.pull_request.head.sha || github.sha}}
+    with:
+      working_directory: ${{ inputs.working_directory }}
+      default_runner: ${{ inputs.default_runner }}
+      e2e_pass_on_error: ${{ inputs.e2e_pass_on_error }}
+      github_runner: ${{ inputs.github_runner }}
+      repos_to_test: ${{ inputs.repos_to_test }}
+      use_github_runner: ${{ inputs.use_github_runner }}
+      use_e2e_trigger: ${{ inputs.use_e2e_trigger }}
+      group_id: ${{ needs.create-shared-vars.outputs.groupId }}
+    secrets:
+      E2E_AUTO: ${{ secrets.E2E_AUTO }}
