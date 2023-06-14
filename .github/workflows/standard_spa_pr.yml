@@ -447,17 +447,17 @@ jobs:
           sha: ${{github.event.pull_request.head.sha || github.sha}}
 
   # Kicks off tests in other repos
-  # run-e2e-integration-tests:
-    # uses: ./.github/workflows/e2e_trigger.yml
-    # needs: [create-shared-vars, magic_url]
-    # with:
-      # working_directory: ${{ inputs.working_directory }}
-      # default_runner: ${{ inputs.default_runner }}
-      # e2e_pass_on_error: ${{ inputs.e2e_pass_on_error }}
-      # github_runner: ${{ inputs.github_runner }}
-      # repos_to_test: ${{ inputs.repos_to_test }}
-      # use_github_runner: ${{ inputs.use_github_runner }}
-      # use_e2e_trigger: ${{ inputs.use_e2e_trigger }}
-      # group_id: ${{ needs.create-shared-vars.outputs.groupId }}
-    # secrets:
-      # E2E_AUTO: ${{ secrets.E2E_AUTO }}
+  run-e2e-integration-tests:
+    uses: ./.github/workflows/e2e_trigger.yml
+    needs: [create-shared-vars, magic_url]
+    with:
+      working_directory: ${{ inputs.working_directory }}
+      default_runner: ${{ inputs.default_runner }}
+      e2e_pass_on_error: ${{ inputs.e2e_pass_on_error }}
+      github_runner: ${{ inputs.github_runner }}
+      repos_to_test: ${{ inputs.repos_to_test }}
+      use_github_runner: ${{ inputs.use_github_runner }}
+      use_e2e_trigger: ${{ inputs.use_e2e_trigger }}
+      group_id: ${{ needs.create-shared-vars.outputs.groupId }}
+    secrets:
+      E2E_AUTO: ${{ secrets.E2E_AUTO }}
