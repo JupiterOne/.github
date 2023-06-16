@@ -1,2 +1,4 @@
 * @jupiterone/security
+/.github/workflows/ @jupiterone/sre
+/workflow-templates/ @jupiterone/sre
 CODEOWNERS @jupiterone/security
