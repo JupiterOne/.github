@@ -76,6 +76,8 @@ jobs:
 
       - name: Run build
         run: npm run build
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       # TODO: This is where security should add a security code scan
       # This is only what will be shipped to production and not any
