@@ -55,6 +55,8 @@ jobs:
       - run: npm rebuild esbuild
         if: ${{ inputs.use_esbuild }}
       - run: npm run build
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   chromatic-deployment:
     runs-on: ${{ inputs.runs_on }}
