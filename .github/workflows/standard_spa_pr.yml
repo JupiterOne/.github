@@ -396,7 +396,7 @@ jobs:
           record: true
           parallel: true
           group: PR
-          ci-build-id: '${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}-${{ inputs.external_pr_number || github.event.pull_request.number }}'
+          ci-build-id: "${{ inputs.external_pr_sha || github.sha }}-${{ github.workflow }}-${{ github.event_name }}-${{ inputs.external_pr_number || github.event.pull_request.number }}"
           browser: chrome
           tag: ${{ inputs.external_pr_repo_name || github.event.repository.name }},${{ github.event_name }}
         env:
