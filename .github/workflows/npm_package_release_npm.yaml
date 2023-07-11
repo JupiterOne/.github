@@ -67,7 +67,7 @@ jobs:
           cache: "npm"
           registry-url: "https://registry.npmjs.org"
       # Only allow production deps be installed in the final build!
-      - run: npm ci --ignore-scripts --omit=dev --omit=peer
+      - run: npm ci --ignore-scripts --omit=dev
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       # run the esbuild build scrips
