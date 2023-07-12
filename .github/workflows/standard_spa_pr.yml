@@ -451,7 +451,7 @@ jobs:
 
   # Kicks off tests in other repos
   run-e2e-integration-tests:
-    uses: ./.github/workflows/frontend/trigger_e2e.yml
+    uses: ./.github/workflows/e2e_trigger.yml
     needs: [create-shared-vars, magic_url]
     with:
       working_directory: ${{ inputs.working_directory }}
