@@ -304,6 +304,7 @@ jobs:
     outputs:
       artemisAccountName: ${{ steps.accountInfo.outputs.artemisAccountName }}
       artemisAccountId: ${{ steps.accountInfo.outputs.artemisAccountId }}
+      artemisAccountSubdomain: ${{ steps.accountInfo.outputs.artemisAccountSubdomain }}
       # compact JSON of [{csrf:string,secret:string,subject:string},...]
       artemisUsers: ${{ steps.userInfo.outputs.artemisUsers }}
     steps:
@@ -331,6 +332,7 @@ jobs:
         # Use jq to extract the accountId and user sessions from the json file in a raw form
         run: |
           echo "artemisAccountName=$(jq -r .[0].metadata.accountName < artemis-run.json)" >> $GITHUB_OUTPUT
+          echo "artemisAccountSubdomain=$(jq -r .[0].metadata.accountSubdomain < artemis-run.json)" >> $GITHUB_OUTPUT
           echo "artemisAccountId=$(jq -r .[0].id < artemis-run.json)" >> $GITHUB_OUTPUT
       - id: userInfo
         run: |
@@ -419,6 +421,7 @@ jobs:
           REPO_NAME: ${{ inputs.external_pr_repo_name || github.event.repository.name }}
           SPEC: ${{ inputs.spec_to_run }}
           ACCOUNT: ${{ needs.prepare_for_e2e_test.outputs.artemisAccountName }}
+          ACCOUNT_SUBDOMAIN: ${{ needs.prepare_for_e2e_test.outputs.artemisAccountSubdomain }}
           ACCOUNT_ID: ${{ needs.prepare_for_e2e_test.outputs.artemisAccountId }}
           USERS: ${{ needs.prepare_for_e2e_test.outputs.artemisUsers }}
           TAGS: ${{ inputs.e2e_filter_tags }}
@@ -448,7 +451,7 @@ jobs:
 
   # Kicks off tests in other repos
   run-e2e-integration-tests:
-    uses: ./.github/workflows/e2e_trigger.yml
+    uses: ./.github/workflows/frontend/trigger_e2e.yml
     needs: [create-shared-vars, magic_url]
     with:
       working_directory: ${{ inputs.working_directory }}
