@@ -218,7 +218,7 @@ jobs:
           onlyChanged: true
           exitOnceUploaded: true
 
-  deploy_magic_url:
+  migration_number:
     defaults:
       run:
         working-directory: ${{ inputs.working_directory }}
@@ -226,14 +226,9 @@ jobs:
     runs-on: ${{ inputs.use_github_runner && inputs.github_runner || fromJson(inputs.default_runner) }}
     timeout-minutes: 15
     concurrency:
-      group: deploy-magic-url-${{ needs.create-shared-vars.outputs.groupId }}
+      group: migration_number-${{ needs.create-shared-vars.outputs.groupId }}
       cancel-in-progress: true
     needs: [create-shared-vars]
-    if: ${{ inputs.use_magic_url }}
-    permissions:
-      id-token: write
-      contents: read
-      pull-requests: write
     outputs:
       migration: ${{ steps.packageJson.outputs.migration }}
     steps:
@@ -245,11 +240,37 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - run: npm ci
       - id: packageJson
         name: Get Package Migration Number
         run: |
           echo "migration=$(jq -r .config.migration < package.json)" >> $GITHUB_OUTPUT
+
+  deploy_magic_url:
+    defaults:
+      run:
+        working-directory: ${{ inputs.working_directory }}
+    name: Deploy To Dev
+    runs-on: ${{ inputs.use_github_runner && inputs.github_runner || fromJson(inputs.default_runner) }}
+    timeout-minutes: 15
+    concurrency:
+      group: deploy-magic-url-${{ needs.create-shared-vars.outputs.groupId }}
+      cancel-in-progress: true
+    needs: [create-shared-vars, migration_number]
+    if: ${{ inputs.use_magic_url }}
+    permissions:
+      id-token: write
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18.15.0
+          cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - run: npm ci
       - name: Building
         run: npm run build
       - name: configure aws credentials
@@ -262,7 +283,7 @@ jobs:
       - name: Deploy
         # This bucket file location is static and editing it will break the Magic URL. This pushes the entire directory which includes the bundle and remote types if applicable
         run: |
-          aws s3 sync deploy/dist s3://${{ secrets.AWS_APPS_BUCKET }}/static/manual-deploy/${{ github.event.repository.name }}@${{ steps.packageJson.outputs.migration }}/PR-${{ github.event.number }}/
+          aws s3 sync deploy/dist s3://${{ secrets.AWS_APPS_BUCKET }}/static/manual-deploy/${{ github.event.repository.name }}@${{ needs.migration_number.outputs.migration }}/PR-${{ github.event.number }}/
 
   magic_url:
     name: Post Magic URL
@@ -272,7 +293,7 @@ jobs:
       group: magic-url-${{ needs.create-shared-vars.outputs.groupId }}
       cancel-in-progress: true
     if: ${{ inputs.use_magic_url }}
-    needs: [create-shared-vars, deploy_magic_url]
+    needs: [create-shared-vars, deploy_magic_url, migration_number]
     steps:
       - name: Return Magic URL
         uses: Sibz/github-status-action@v1
@@ -281,7 +302,7 @@ jobs:
           state: 'success'
           context: 'Magic URL'
           description: "Use the 'Details' link to view this PR in dev"
-          target_url: https://apps.dev.jupiterone.io${{ inputs.magic_url_route }}?magic2=%7B%22${{ github.event.repository.name }}%40${{ needs.deploy_magic_url.outputs.migration }}%22:%22PR-${{ github.event.pull_request.number }}%22%7D
+          target_url: https://apps.dev.jupiterone.io${{ inputs.magic_url_route }}?magic2=%7B%22${{ github.event.repository.name }}%40${{ needs.migration_number.outputs.migration }}%22:%22PR-${{ github.event.pull_request.number }}%22%7D
           sha: ${{github.event.pull_request.head.sha || github.sha}}
 
   prepare_for_e2e_test:
@@ -353,7 +374,7 @@ jobs:
       always()
       && !cancelled()
       && inputs.use_e2e
-    needs: [create-shared-vars, magic_url, prepare_for_e2e_test]
+    needs: [create-shared-vars, magic_url, migration_number, prepare_for_e2e_test]
     continue-on-error: ${{ inputs.e2e_pass_on_error }}
     strategy:
       # when one test fails, DO NOT cancel the other
@@ -417,6 +438,7 @@ jobs:
           CYPRESS_ENVIRONMENT_NAME: jupiterone-dev
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          MIGRATION_NUMBER: ${{ needs.migration_number.outputs.migration }}
           PR_NUMBER: ${{ inputs.external_pr_number || github.event.pull_request.number }}
           REPO_NAME: ${{ inputs.external_pr_repo_name || github.event.repository.name }}
           SPEC: ${{ inputs.spec_to_run }}
