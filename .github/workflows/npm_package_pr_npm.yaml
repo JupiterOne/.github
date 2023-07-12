@@ -52,6 +52,8 @@ jobs:
 
       # Sanity check so we don't end up with bad builds in main
       - run: npm ci --ignore-scripts --omit=dev
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - run: npm rebuild esbuild
         if: ${{ inputs.use_esbuild }}
       - run: npm run build
