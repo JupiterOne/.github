@@ -1,0 +1,36 @@
+name: Slack Webhook Notification
+
+on:
+  workflow_call:
+    inputs:
+      payload:
+        description: "A JSON payload to send to Slack"
+        type: string
+        required: true
+    secrets:
+      SLACK_WEBHOOK_URL:
+        description: "A Slack webhook URL to send a message to"
+        required: true
+
+jobs:
+  Slack_Notification:
+    runs-on: jupiterone-dev
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+      - run: echo "j1_email=$(git --no-pager show -s --format=\'%ae\')" >> $GITHUB_ENV
+      - id: find-slack-user
+        uses: scribd/find-slack-user-action@v1
+        with:
+          slack-token: ${{ secrets.SLACK_API_TOKEN }}
+          email: ${{ env.j1_email }}
+      - run: echo ${{ steps.find-slack-user.outputs.member-id }}
+      - run: |
+          appended_json=$(echo '${{ inputs.payload }}' | jq '.userId = "${{ steps.find-slack-user.outputs.member-id }}"')
+          echo "json=$(echo $appended_json)" >> $GITHUB_ENV
+      - uses: slackapi/slack-github-action@v1.24.0
+        with:
+          payload: ${{ env.json }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
