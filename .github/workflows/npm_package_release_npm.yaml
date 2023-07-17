@@ -50,6 +50,8 @@ jobs:
         if: ${{ inputs.use_esbuild }}
       - name: Validate
         run: npm run validate:ci
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   release:
     needs: validate
