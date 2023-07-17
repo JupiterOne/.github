@@ -49,6 +49,8 @@ jobs:
         if: ${{ inputs.use_esbuild }}
 
       - run: npm run validate:ci
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       # Sanity check so we don't end up with bad builds in main
       - run: npm ci --ignore-scripts --omit=dev
