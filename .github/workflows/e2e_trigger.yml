@@ -45,7 +45,9 @@ jobs:
     timeout-minutes: 60
     concurrency:
       group: run-e2e-integration-tests-${{ inputs.group_id || github.head_ref || github.run_id }}
-      cancel-in-progress: true
+      # To avoid the following error, we leave this disabled: Canceling since a higher priority waiting request for 'run-e2e-tests-PR-web-settings-91-1' exists
+      # This still serves a purpose as any previously pending job in the concurrency group will be canceled, just not those already in progress
+      # cancel-in-progress: true
     if: ${{ inputs.use_e2e_trigger }}
     strategy:
       matrix:
