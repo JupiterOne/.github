@@ -412,7 +412,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Cypress run
         id: cypress_run
-        continue-on-error: ${{ !inputs.externally_triggered }}
+        continue-on-error: ${{ inputs.e2e_pass_on_error && !inputs.externally_triggered }}
         uses: cypress-io/github-action@v5
         timeout-minutes: 60
         with:
