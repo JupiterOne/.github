@@ -454,16 +454,17 @@ jobs:
       - name: Set success vars
         # Need to check previous TEST_STATUS_STATE to ensure it hasn't already failed
         # important if multiple containers are in use to ensure the correct status is reported
-        if: ${{ contains(steps.cypress_run.outcome, 'success') && !contains(env.TEST_STATUS_STATE, 'failure') }}
+        if: ${{ inputs.e2e_pass_on_error && contains(steps.cypress_run.outcome, 'success') && !contains(env.TEST_STATUS_STATE, 'failure') }}
         run: |
           echo "TEST_STATUS_STATE=success" >> $GITHUB_ENV
           echo "TEST_STATUS_DESCRIPTION='E2E test passed'" >> $GITHUB_ENV
       - name: Set failure vars
-        if: ${{ !contains(steps.cypress_run.outcome, 'success') }}
+        if: ${{ inputs.e2e_pass_on_error && !contains(steps.cypress_run.outcome, 'success') }}
         run: |
           echo "TEST_STATUS_STATE=failure" >> $GITHUB_ENV
           echo "TEST_STATUS_DESCRIPTION='E2E test failed'" >> $GITHUB_ENV
       - name: E2E Test Status
+        if: ${{ inputs.e2e_pass_on_error }}
         uses: Sibz/github-status-action@v1
         continue-on-error: ${{ inputs.e2e_pass_on_error }}
         with:
