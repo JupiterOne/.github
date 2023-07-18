@@ -32,7 +32,7 @@ jobs:
       - name: "Append Slack User ID and Email to JSON"
         continue-on-error: true
         run: |
-          appended_json=$(echo '${{ inputs.payload }}' | jq '.userId = "${{ steps.find-slack-user.outputs.member-id || 'unknown' }}" | .email = "${{ env.gh_email }}"')
+          appended_json=$(echo '${{ inputs.payload }}' | jq '.userId = "${{ steps.find-slack-user.outputs.member-id }}" | .email = "${{ env.gh_email }}"')
           echo "json=$(echo $appended_json)" >> $GITHUB_ENV
       - uses: slackapi/slack-github-action@v1.24.0
         if: steps.find-slack-user.outputs.member-id
