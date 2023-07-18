@@ -452,7 +452,9 @@ jobs:
         if: ${{ inputs.e2e_pass_on_error }}
         run: exit 0
       - name: Set success vars
-        if: ${{ contains(steps.cypress_run.outcome, 'success') }}
+        # Need to check previous TEST_STATUS_STATE to ensure it hasn't already failed
+        # important if multiple containers are in use to ensure the correct status is reported
+        if: ${{ contains(steps.cypress_run.outcome, 'success') && !contains(env.TEST_STATUS_STATE, 'failure') }}
         run: |
           echo "TEST_STATUS_STATE=success" >> $GITHUB_ENV
           echo "TEST_STATUS_DESCRIPTION='E2E test passed'" >> $GITHUB_ENV
