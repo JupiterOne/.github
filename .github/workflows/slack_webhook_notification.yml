@@ -1,5 +1,24 @@
 name: Slack Webhook Notification
 
+# Usage Example:
+# Assuming we want to send an alert to a Slack channel when the `pr` job fails
+# and we want to tag the GH user in the channel.
+#
+# report_failure:
+#   needs: pr
+#   if: failure()
+#   uses: jupiterone/.github/.github/workflows/slack_webhook_notification.yml
+#   with:
+#     payload: |
+#       {
+#         "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+#         "repo": "${{ github.repository }}"
+#       }
+#   secrets:
+#     # Tag user in the channel
+#     SLACK_WEBHOOK_URL: ${{ secrets.TEMP_SLACK_WEBHOOK_FAILURE }}
+#     # Tag all users in the channel with @here so we are sure this issue is seen
+#     FALLBACK_SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_FAILURE_FALLBACK }}
 on:
   workflow_call:
     inputs:
