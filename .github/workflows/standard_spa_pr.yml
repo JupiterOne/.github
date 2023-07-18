@@ -56,7 +56,7 @@ on:
       e2e_pass_on_error:
         description: "Pass the workflow even if the E2E test fail"
         type: boolean
-        default: true
+        default: false
       e2e_artemis_config_path:
         description: 'Used to determine the path to the artemis config file'
         type: string
@@ -375,7 +375,7 @@ jobs:
       && !cancelled()
       && inputs.use_e2e
     needs: [create-shared-vars, magic_url, migration_number, prepare_for_e2e_test]
-    continue-on-error: ${{ inputs.e2e_pass_on_error }}
+    continue-on-error: ${{ inputs.e2e_pass_on_error && !inputs.externally_triggered }}
     strategy:
       # when one test fails, DO NOT cancel the other
       # containers, because this will kill Cypress processes
@@ -412,7 +412,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Cypress run
         id: cypress_run
-        continue-on-error: true
+        continue-on-error: ${{ !inputs.externally_triggered }}
         uses: cypress-io/github-action@v5
         timeout-minutes: 60
         with:
@@ -447,6 +447,9 @@ jobs:
           ACCOUNT_ID: ${{ needs.prepare_for_e2e_test.outputs.artemisAccountId }}
           USERS: ${{ needs.prepare_for_e2e_test.outputs.artemisUsers }}
           TAGS: ${{ inputs.e2e_filter_tags }}
+      - name: Echo Cypress Outcomes
+        run: |
+          echo "CYPRESS OUTCOME IS ${{ steps.cypress_run.outcome }}"
       # We have to manually output an exit code of 0 to ensure the action passes if e2e_pass_on_error is true
       - name: Pass with failures
         if: ${{ inputs.e2e_pass_on_error }}
@@ -473,7 +476,7 @@ jobs:
 
   # Kicks off tests in other repos
   run-e2e-integration-tests:
-    uses: ./.github/workflows/e2e_trigger.yml
+    uses: ./.github/workflows/e2e_trigger_local.yml
     needs: [create-shared-vars, magic_url]
     with:
       working_directory: ${{ inputs.working_directory }}
