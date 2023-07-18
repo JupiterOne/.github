@@ -29,7 +29,6 @@ jobs:
         with:
           slack-token: ${{ secrets.SLACK_API_TOKEN }}
           email: ${{ env.gh_email }}
-          include-at-symbol: true
       - name: "Append Slack User ID and Email to JSON"
         continue-on-error: true
         run: |
