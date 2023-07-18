@@ -11,6 +11,9 @@ on:
       SLACK_WEBHOOK_URL:
         description: "A Slack webhook URL to send a message to"
         required: true
+      FALLBACK_SLACK_WEBHOOK_URL:
+        description: "A Slack webhook URL to send a message to if thre is no Slack user found"
+        required: false
 
 jobs:
   Slack_Notification:
@@ -19,18 +22,29 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 2
-      - run: echo "j1_email=$(git --no-pager show -s --format=\'%ae\')" >> $GITHUB_ENV
+      - run: echo "gh_email=$(git --no-pager show -s --format=\'%ae\')" >> $GITHUB_ENV
       - id: find-slack-user
         uses: scribd/find-slack-user-action@v1
+        continue-on-error: true
         with:
           slack-token: ${{ secrets.SLACK_API_TOKEN }}
-          email: ${{ env.j1_email }}
-      - run: echo ${{ steps.find-slack-user.outputs.member-id }}
-      - run: |
-          appended_json=$(echo '${{ inputs.payload }}' | jq '.userId = "${{ steps.find-slack-user.outputs.member-id }}"')
+          email: ${{ env.gh_email }}
+          include-at-symbol: true
+      - name: "Append Slack User ID and Email to JSON"
+        continue-on-error: true
+        run: |
+          appended_json=$(echo '${{ inputs.payload }}' | jq '.userId = "${{ steps.find-slack-user.outputs.member-id || 'unknown' }}" | .email = "${{ env.gh_email }}"')
           echo "json=$(echo $appended_json)" >> $GITHUB_ENV
       - uses: slackapi/slack-github-action@v1.24.0
+        if: steps.find-slack-user.outputs.member-id
         with:
           payload: ${{ env.json }}
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      # Useful if a user is not found in Slack
+      - uses: slackapi/slack-github-action@v1.24.0
+        if: ${{ !steps.find-slack-user.outputs.member-id }}
+        with:
+          payload: ${{ env.json }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.FALLBACK_SLACK_WEBHOOK_URL || secrets.SLACK_WEBHOOK_URL }}
