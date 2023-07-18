@@ -447,9 +447,6 @@ jobs:
           ACCOUNT_ID: ${{ needs.prepare_for_e2e_test.outputs.artemisAccountId }}
           USERS: ${{ needs.prepare_for_e2e_test.outputs.artemisUsers }}
           TAGS: ${{ inputs.e2e_filter_tags }}
-      - name: Echo Cypress Outcomes
-        run: |
-          echo "CYPRESS OUTCOME IS ${{ steps.cypress_run.outcome }}"
       # We have to manually output an exit code of 0 to ensure the action passes if e2e_pass_on_error is true
       - name: Pass with failures
         if: ${{ inputs.e2e_pass_on_error }}
@@ -476,7 +473,7 @@ jobs:
 
   # Kicks off tests in other repos
   run-e2e-integration-tests:
-    uses: ./.github/workflows/e2e_trigger_local.yml
+    uses: ./.github/workflows/e2e_trigger.yml
     needs: [create-shared-vars, magic_url]
     with:
       working_directory: ${{ inputs.working_directory }}
