@@ -5,7 +5,7 @@ on:
   workflow_call:
     inputs:
       runs_on:
-        description: "Depricated"
+        description: "Deprecated"
         type: string
       fallback_runner:
         description: "Use a github runner instead of a JupiterOne runner"
