@@ -5,9 +5,11 @@ on:
   workflow_call:
     inputs:
       runs_on:
-        description: "What github runner should be used (e.g. jupiterone-dev)"
-        required: true
+        description: "Deprecated"
         type: string
+      fallback_runner:
+        description: "Use a github runner instead of a JupiterOne runner"
+        type: boolean
       use_chromatic:
         description: "Run VRT Storybook tests with chromatic"
         required: true
@@ -30,7 +32,7 @@ on:
 jobs:
   validate:
     name: Validate
-    runs-on: ${{ inputs.runs_on }}
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
     timeout-minutes: 15
     if: "!contains(github.event.head_commit.message, 'ci skip') && !contains(github.event.head_commit.message, 'skip ci')"
     steps:
@@ -55,7 +57,7 @@ jobs:
 
   release:
     needs: validate
-    runs-on: ${{ inputs.runs_on }}
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
     timeout-minutes: 15
     name: Deploy to NPM
     steps:
@@ -97,7 +99,7 @@ jobs:
         run: npx auto shipit
 
   chromatic-deployment:
-    runs-on: ${{ inputs.runs_on }}
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
     timeout-minutes: 15
     if: ${{ inputs.use_chromatic }}
     steps:
