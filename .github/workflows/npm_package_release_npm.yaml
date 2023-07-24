@@ -28,6 +28,10 @@ on:
       AUTO_GITHUB_PAT_TOKEN:
         description: "This is a GitHuh PAT that let's auto write back to main after npm versioning"
         required: true
+      CORTEX_API_KEY:
+        description: "An key that allows us to push data to Cortex"
+        # We eventually want to make this required but we need to make sure we don't break the pipeline
+        # required: true
 
 jobs:
   validate:
@@ -125,3 +129,25 @@ jobs:
           onlyChanged: true
           autoAcceptChanges: true
           exitOnceUploaded: true
+
+  # This job will fail without CORTEX_API_KEY but it will not fall its parellel peer jobs
+  cortex:
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18.15.0
+          cache: "npm"
+          registry-url: "https://registry.npmjs.org"
+      - run: npm ci --ignore-scripts
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Create or update entity in Cortex
+        run: npx --yes -p @jupiterone/web-tools-platform-analytics@latest platform-analytics all
+        env:
+          CORTEX_API_KEY: ${{ secrets.CORTEX_API_KEY }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
