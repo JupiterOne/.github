@@ -5,47 +5,54 @@ on:
   workflow_call:
     inputs:
       runs_on:
-        description: "Deprecated"
+        description: 'Deprecated'
         type: string
       fallback_runner:
-        description: "Use a github runner instead of a JupiterOne runner"
+        description: 'Use a github runner instead of a JupiterOne runner'
         type: boolean
       use_chromatic:
-        description: "Run VRT Storybook tests with chromatic"
+        description: 'Run VRT Storybook tests with chromatic'
         required: true
         type: boolean
       use_esbuild:
-        description: "If using esbuild, insure its required build scripts are run"
+        description:
+          'If using esbuild, insure its required build scripts are run'
         required: false
         type: boolean
     secrets:
       NPM_TOKEN:
-        description: "A J1 npm.com Publish token"
+        description: 'A J1 npm.com Publish token'
         required: true
       CHROMATIC_PROJECT_TOKEN:
-        description: "The Chromatic API token"
+        description: 'The Chromatic API token'
         required: false
       AUTO_GITHUB_PAT_TOKEN:
-        description: "This is a GitHuh PAT that let's auto write back to main after npm versioning"
+        description:
+          "This is a GitHuh PAT that let's auto write back to main after npm
+          versioning"
         required: true
       CORTEX_API_KEY:
-        description: "An key that allows us to push data to Cortex"
+        description: 'An key that allows us to push data to Cortex'
         # We eventually want to make this required but we need to make sure we don't break the pipeline
         # required: true
 
 jobs:
   validate:
     name: Validate
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
+    runs-on:
+      ${{ (inputs.fallback_runner && 'ubuntu-latest') ||
+      fromJson('["jupiterone-dev", "arm64"]') }}
     timeout-minutes: 15
-    if: "!contains(github.event.head_commit.message, 'ci skip') && !contains(github.event.head_commit.message, 'skip ci')"
+    if:
+      "!contains(github.event.head_commit.message, 'ci skip') &&
+      !contains(github.event.head_commit.message, 'skip ci')"
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-          cache: "npm"
-          registry-url: "https://registry.npmjs.org"
+          cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
       # Never install npm packages with build scrips!
       # This is an easy way for attackers to get read out the process.env
       # or inject code into the bundle
@@ -61,7 +68,9 @@ jobs:
 
   release:
     needs: validate
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
+    runs-on:
+      ${{ (inputs.fallback_runner && 'ubuntu-latest') ||
+      fromJson('["jupiterone-dev", "arm64"]') }}
     timeout-minutes: 15
     name: Deploy to NPM
     steps:
@@ -72,8 +81,8 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-          cache: "npm"
-          registry-url: "https://registry.npmjs.org"
+          cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
       # Only allow production deps be installed in the final build!
       - run: npm ci --ignore-scripts --omit=dev
         env:
@@ -103,7 +112,9 @@ jobs:
         run: npx auto shipit
 
   chromatic-deployment:
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
+    runs-on:
+      ${{ (inputs.fallback_runner && 'ubuntu-latest') ||
+      fromJson('["jupiterone-dev", "arm64"]') }}
     timeout-minutes: 15
     if: ${{ inputs.use_chromatic }}
     steps:
@@ -113,8 +124,8 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-          cache: "npm"
-          registry-url: "https://registry.npmjs.org"
+          cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
       - run: npm ci --ignore-scripts
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -132,7 +143,9 @@ jobs:
 
   # This job will fail without CORTEX_API_KEY but it will not fall its parellel peer jobs
   cortex:
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
+    runs-on:
+      ${{ (inputs.fallback_runner && 'ubuntu-latest') ||
+      fromJson('["jupiterone-dev", "arm64"]') }}
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v3
@@ -141,13 +154,15 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18.15.0
-          cache: "npm"
-          registry-url: "https://registry.npmjs.org"
+          cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
       - run: npm ci --ignore-scripts
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Create or update entity in Cortex
-        run: npx --yes -p @jupiterone/web-tools-platform-analytics@latest platform-analytics all
+        run:
+          npx --yes -p @jupiterone/web-tools-platform-analytics@latest
+          platform-analytics all
         env:
           CORTEX_API_KEY: ${{ secrets.CORTEX_API_KEY }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

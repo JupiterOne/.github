@@ -2,8 +2,10 @@
 
 ## Publish Integration Image to Docker Hub and GHCR
 
-[This workflow](https://github.com/JupiterOne/.github/blob/main/.github/workflows/publish_docker_ghcr.yaml) builds and publishes your project to both Docker and GHCR.
-It is recommended that you only run this workflows on commits to your main branch, and on pushed tags following semver syntax. It does not need to run on PRs.
+[This workflow](https://github.com/JupiterOne/.github/blob/main/.github/workflows/publish_docker_ghcr.yaml)
+builds and publishes your project to both Docker and GHCR. It is recommended
+that you only run this workflows on commits to your main branch, and on pushed
+tags following semver syntax. It does not need to run on PRs.
 
 ### Inputs
 
@@ -21,10 +23,12 @@ This action requires uses the following inputs:
 
 ### Secrets
 
-These secrets are required to push to different image repositories. It is highly recommended to use `secrets: inherit` instead of supplying them directly.
+These secrets are required to push to different image repositories. It is highly
+recommended to use `secrets: inherit` instead of supplying them directly.
 
-> **Note**
-> Due to a limitation with how secrets are input, you must provide all four secrets even if you do not want to publish to both DockerHub and GHCR. You can use blank variables for these secrets if needed.
+> **Note** Due to a limitation with how secrets are input, you must provide all
+> four secrets even if you do not want to publish to both DockerHub and GHCR.
+> You can use blank variables for these secrets if needed.
 
 | Name              | Description                               |
 | ----------------- | ----------------------------------------- |
@@ -42,7 +46,7 @@ publish-image:
   if: ${{github.event_name != 'pull_request'}}
   uses: jupiterone/.github/.github/workflows/publish_docker_ghcr.yaml@v1.0.1
   with:
-    package-name: "jupiterone/error-reporting-service"
+    package-name: 'jupiterone/error-reporting-service'
   secrets: inherit
 ```
 
@@ -53,11 +57,11 @@ publish-image:
   if: ${{github.event_name != 'pull_request'}}
   uses: jupiterone/.github/.github/workflows/publish_docker_ghcr.yaml@v1.0.1
   with:
-    runs_on: "my-special-runner"
-    package-name: "jupiterone/error-reporting-service"
+    runs_on: 'my-special-runner'
+    package-name: 'jupiterone/error-reporting-service'
     push-to-registry: ${{github.event_name == 'merge'}}
-    build-platforms: "linux/amd64"
-    docker-context: "docker/"
+    build-platforms: 'linux/amd64'
+    docker-context: 'docker/'
   secrets:
     DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
     DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}
@@ -67,8 +71,10 @@ publish-image:
 
 ## Publish Integration Image to Docker Hub
 
-[This workflow](https://github.com/JupiterOne/.github/blob/main/.github/workflows/publish_integration_docker_image.yaml) builds and publishes graph integration project to Docker Hub.
-It is recommended that you only run this workflows on commits to your main branch, and on pushed tags following semver syntax. It need not run on PRs.
+[This workflow](https://github.com/JupiterOne/.github/blob/main/.github/workflows/publish_integration_docker_image.yaml)
+builds and publishes graph integration project to Docker Hub. It is recommended
+that you only run this workflows on commits to your main branch, and on pushed
+tags following semver syntax. It need not run on PRs.
 
 ### Inputs
 
@@ -82,7 +88,8 @@ This action requires uses the following inputs:
 
 ### Secrets
 
-We HIGHLY recommend that these values are derived using your repos' action secrets
+We HIGHLY recommend that these values are derived using your repos' action
+secrets
 
 | Name           | Description                                                   |
 | -------------- | ------------------------------------------------------------- |
@@ -98,7 +105,7 @@ publish-image:
   if: ${{github.event_name != 'pull_request'}}
   uses: jupiterone/.github/.github/workflows/publish_integration_docker_image.yaml@v1.0.0
   with:
-    package-name: "jupiterone/graph-kubernetes"
+    package-name: 'jupiterone/graph-kubernetes'
   secrets:
     DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
     DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}
@@ -111,8 +118,8 @@ publish-image:
   if: ${{github.event_name != 'pull_request'}}
   uses: jupiterone/.github/.github/workflows/publish_integration_docker_image.yaml@v1.0.0
   with:
-    runs_on: "my-special-runner"
-    package-name: "jupiterone/graph-kubernetes"
+    runs_on: 'my-special-runner'
+    package-name: 'jupiterone/graph-kubernetes'
     push-to-registry: ${{github.event_name == 'merge'}}
   secrets:
     DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}

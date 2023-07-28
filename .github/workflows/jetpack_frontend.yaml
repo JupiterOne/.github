@@ -4,7 +4,9 @@ on:
   workflow_call:
     inputs:
       api_env:
-        description: 'The api environment for execution of this jetpack run. Should be dev or prod.'
+        description:
+          'The api environment for execution of this jetpack run. Should be dev
+          or prod.'
         required: true
         default: 'prod'
         type: string
@@ -18,7 +20,10 @@ on:
         type: string
         default: 'launch -v'
       jetpack_docker_image:
-        description: 'The jetpack docker image to run in this workflow. This is set by default, so unless overriding on purpose, please do not supply this value.'
+        description:
+          'The jetpack docker image to run in this workflow. This is set by
+          default, so unless overriding on purpose, please do not supply this
+          value.'
         type: string
         default: 'ghcr.io/jupiterone/jetpack-frontend-deploy:initial-2'
       repo_name:

@@ -4,16 +4,21 @@ on:
   workflow_call:
     inputs:
       PROJECT_KEY:
-        description: LaunchDarkly project key, can be found at https://app.launchdarkly.com/settings/projects
+        description:
+          LaunchDarkly project key, can be found at
+          https://app.launchdarkly.com/settings/projects
         required: true
         type: string
     secrets:
       LD_ACCESS_TOKEN:
-        description: Access token for LaunchDarkly. Security can add this to your repository
+        description:
+          Access token for LaunchDarkly. Security can add this to your
+          repository
         required: true
 # cancel in-flight workflow run if another push was triggered
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  group:
+    ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 jobs:
   launchDarklyCodeReferences:
