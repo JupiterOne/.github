@@ -4,11 +4,10 @@ on:
   workflow_call:
     inputs:
       working_directory:
-        description:
-          'The working directory from which to run the workflow commands'
+        description: "The working directory from which to run the workflow commands"
         required: false
         type: string
-        default: '.'
+        default: "."
       runs_on:
         description: "Deprecated noop - To be removed"
         type: string
@@ -58,39 +57,39 @@ on:
         type: boolean
         default: false
       e2e_artemis_config_path:
-        description: 'Used to determine the path to the artemis config file'
+        description: "Used to determine the path to the artemis config file"
         type: string
-        default: 'cypress/artemis-config.yaml'
+        default: "cypress/artemis-config.yaml"
       external_pr_number:
-        description: 'Used by the e2e_trigger to pass in the PR number associated with the PR that triggered the flow'
+        description: "Used by the e2e_trigger to pass in the PR number associated with the PR that triggered the flow"
         type: string
       external_pr_title:
-        description: 'Used by the e2e_trigger to give builds in Cypress the correct title associated with the PR that triggered the flow'
+        description: "Used by the e2e_trigger to give builds in Cypress the correct title associated with the PR that triggered the flow"
         type: string
       external_pr_branch:
-        description: 'Used by the e2e_trigger to give builds in Cypress the correct branch name'
+        description: "Used by the e2e_trigger to give builds in Cypress the correct branch name"
         type: string
       external_pr_author:
-        description: 'Used by the e2e_trigger to give builds in Cypress the correct author name associated with the owner of the PR'
+        description: "Used by the e2e_trigger to give builds in Cypress the correct author name associated with the owner of the PR"
         type: string
       external_pr_sha:
-        description: 'Used by the e2e_trigger to give builds in Cypress the correct SHA associated with the PR that triggered the flow'
+        description: "Used by the e2e_trigger to give builds in Cypress the correct SHA associated with the PR that triggered the flow"
         type: string
       external_pr_repo_name:
-        description: 'Used by the e2e_trigger to tag builds in Cypress with the appropriate repo name (used to associate a repo with a test run)'
+        description: "Used by the e2e_trigger to tag builds in Cypress with the appropriate repo name (used to associate a repo with a test run)"
         type: string
       externally_triggered:
-        description: 'True if E2E tests are triggered from another repo'
+        description: "True if E2E tests are triggered from another repo"
         default: false
         type: boolean
       spec_to_run:
-        description: 'Used to determine which test to run'
+        description: "Used to determine which test to run"
         type: string
-        default: 'cypress/e2e/**/*.feature'
-      magic_url_route: 
-        description: 'The relative route the magic url should go to'
+        default: "cypress/e2e/**/*.feature"
+      magic_url_route:
+        description: "The relative route the magic url should go to"
         type: string
-        default: '/'
+        default: "/"
     secrets:
       NPM_TOKEN:
         description: "A J1 npm.com Publish token"
@@ -165,8 +164,8 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18.15.0
-          cache: 'npm'
-          registry-url: 'https://registry.npmjs.org'
+          cache: "npm"
+          registry-url: "https://registry.npmjs.org"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - run: npm ci
@@ -204,8 +203,8 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18.15.0
-          cache: 'npm'
-          registry-url: 'https://registry.npmjs.org'
+          cache: "npm"
+          registry-url: "https://registry.npmjs.org"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - run: npm ci
@@ -236,8 +235,8 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18.15.0
-          cache: 'npm'
-          registry-url: 'https://registry.npmjs.org'
+          cache: "npm"
+          registry-url: "https://registry.npmjs.org"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - id: packageJson
@@ -266,8 +265,8 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18.15.0
-          cache: 'npm'
-          registry-url: 'https://registry.npmjs.org'
+          cache: "npm"
+          registry-url: "https://registry.npmjs.org"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - run: npm ci
@@ -277,8 +276,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v1
         with:
           role-to-assume: ${{ secrets.AWS_ROLE }}
-          role-session-name:
-            ${{ github.event.repository.name }}-magic-url-role-session
+          role-session-name: ${{ github.event.repository.name }}-magic-url-role-session
           aws-region: ${{ secrets.AWS_REGION }}
       - name: Deploy
         # This bucket file location is static and editing it will break the Magic URL. This pushes the entire directory which includes the bundle and remote types if applicable
@@ -297,10 +295,10 @@ jobs:
     steps:
       - name: Return Magic URL
         uses: Sibz/github-status-action@v1
-        with: 
+        with:
           authToken: ${{ secrets.GITHUB_TOKEN }}
-          state: 'success'
-          context: 'Magic URL'
+          state: "success"
+          context: "Magic URL"
           description: "Use the 'Details' link to view this PR in dev"
           target_url: https://apps.dev.jupiterone.io${{ inputs.magic_url_route }}?magic2=%7B%22${{ github.event.repository.name }}%40${{ needs.migration_number.outputs.migration }}%22:%22PR-${{ github.event.pull_request.number }}%22%7D
           sha: ${{github.event.pull_request.head.sha || github.sha}}
@@ -333,8 +331,8 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18.15.0
-          cache: 'npm'
-          registry-url: 'https://registry.npmjs.org'
+          cache: "npm"
+          registry-url: "https://registry.npmjs.org"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - run: npm ci
@@ -342,13 +340,12 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v1
         with:
           role-to-assume: ${{ secrets.AWS_ROLE }}
-          role-session-name:
-            ${{ github.event.repository.name }}-magic-url-role-session
+          role-session-name: ${{ github.event.repository.name }}-magic-url-role-session
           aws-region: us-east-1
       - name: update artemis config
-        run: npx update-artemis-config --pathToArtemisConfig=${{ inputs.e2e_artemis_config_path }} --usersCount=${{ needs.create-shared-vars.outputs.usersCount }}
+        run: npx --yes -p @jupiterone/artemis@latest update-artemis-config --pathToArtemisConfig=${{ inputs.e2e_artemis_config_path }} --usersCount=${{ needs.create-shared-vars.outputs.usersCount }}
       - name: launch artemis
-        run: npx artemis-launch -c tmp/artemis-config-updated.yaml --action=launch --outputFilename=artemis-run
+        run: npx --yes -p @jupiterone/artemis@latest artemis-launch -c tmp/artemis-config-updated.yaml --action=launch --outputFilename=artemis-run
       - id: accountInfo
         # Use jq to extract the accountId and user sessions from the json file in a raw form
         run: |
@@ -374,13 +371,14 @@ jobs:
       always()
       && !cancelled()
       && inputs.use_e2e
-    needs: [create-shared-vars, magic_url, migration_number, prepare_for_e2e_test]
+    needs:
+      [create-shared-vars, magic_url, migration_number, prepare_for_e2e_test]
     continue-on-error: ${{ inputs.e2e_pass_on_error && !inputs.externally_triggered }}
     strategy:
       # when one test fails, DO NOT cancel the other
       # containers, because this will kill Cypress processes
       # leaving Cypress Cloud hanging ...
-      # https://github.com/cypress-io/github-action/issues/48 
+      # https://github.com/cypress-io/github-action/issues/48
       fail-fast: false
       matrix:
         # run copies of the current job in parallel
@@ -406,8 +404,8 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18.15.0
-          cache: 'npm'
-          registry-url: 'https://registry.npmjs.org'
+          cache: "npm"
+          registry-url: "https://registry.npmjs.org"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Cypress run
@@ -424,7 +422,7 @@ jobs:
           tag: ${{ inputs.external_pr_repo_name || github.event.repository.name }},${{ github.event_name }}
         env:
           # https://github.com/cypress-io/cypress/issues/25357#issuecomment-1426992422
-          ELECTRON_EXTRA_LAUNCH_ARGS: '--disable-gpu'
+          ELECTRON_EXTRA_LAUNCH_ARGS: "--disable-gpu"
           CYPRESS_BROWSER: chrome
           COMMIT_INFO_MESSAGE: ${{ inputs.external_pr_title || github.event.pull_request.title }}
           COMMIT_INFO_BRANCH: ${{ inputs.external_pr_branch }}
@@ -469,7 +467,7 @@ jobs:
         continue-on-error: ${{ inputs.e2e_pass_on_error }}
         with:
           authToken: ${{secrets.GITHUB_TOKEN}}
-          context: 'E2E Test Status'
+          context: "E2E Test Status"
           description: ${{ env.TEST_STATUS_DESCRIPTION }}
           state: ${{ env.TEST_STATUS_STATE }}
           sha: ${{github.event.pull_request.head.sha || github.sha}}
