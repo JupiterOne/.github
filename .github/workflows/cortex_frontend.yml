@@ -7,18 +7,20 @@ on:
         default: "['jupiterone-dev', 'arm64']"
         type: string
       github_runner:
-        default: "ubuntu-latest"
+        default: 'ubuntu-latest'
         type: string
       use_github_runner:
-        description: "If true will leverage ubuntu-latest, otherwise will fall back to the J1 in-house runner"
+        description:
+          'If true will leverage ubuntu-latest, otherwise will fall back to the
+          J1 in-house runner'
         default: false
         type: boolean
     secrets:
       NPM_TOKEN:
-        description: "A J1 npm.com Publish token"
+        description: 'A J1 npm.com Publish token'
         required: true
       CORTEX_API_KEY:
-        description: "An key that allows us to push data to Cortex"
+        description: 'An key that allows us to push data to Cortex'
         required: true
 
 env:
@@ -28,7 +30,9 @@ env:
 
 jobs:
   cortex:
-    runs-on: ${{ inputs.use_github_runner && inputs.github_runner || fromJson(inputs.default_runner) }}
+    runs-on:
+      ${{ inputs.use_github_runner && inputs.github_runner ||
+      fromJson(inputs.default_runner) }}
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v3
@@ -37,8 +41,10 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18.15.0
-          cache: "npm"
-          registry-url: "https://registry.npmjs.org"
+          cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
       - run: npm ci
       - name: Create or update entity in Cortex
-        run: npx --yes -p @jupiterone/web-tools-platform-analytics@latest platform-analytics all
+        run:
+          npx --yes -p @jupiterone/web-tools-platform-analytics@latest
+          platform-analytics all

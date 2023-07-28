@@ -15,4 +15,3 @@ and this project adheres to
 - publish_integration_docker_image workflow
 - README for workflows
 - initial semver
-

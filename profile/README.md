@@ -4,10 +4,10 @@
 
 ## JupiterOne ❤️ Open Source Software
 
-Security is a basic right. The more accessible and effective we make security 
-technology to security practitioners, developers, 
-researchers, and students, the stronger that technology will grow and 
-ultimately, the safer our community will become.
+Security is a basic right. The more accessible and effective we make security
+technology to security practitioners, developers, researchers, and students, the
+stronger that technology will grow and ultimately, the safer our community will
+become.
 
 ## Resources
 

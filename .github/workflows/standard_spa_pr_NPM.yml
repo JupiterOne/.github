@@ -4,12 +4,13 @@ on:
   workflow_call:
     inputs:
       working_directory:
-        description: "The working directory from which to run the workflow commands"
+        description:
+          'The working directory from which to run the workflow commands'
         required: false
         type: string
-        default: "."
+        default: '.'
       runs_on:
-        description: "Deprecated noop - To be removed"
+        description: 'Deprecated noop - To be removed'
         type: string
       default_runner:
         default: "['jupiterone-dev', 'arm64']"
@@ -18,105 +19,121 @@ on:
         default: "['jupiterone-dev', 'amd64']"
         type: string
       github_runner:
-        default: "ubuntu-latest"
+        default: 'ubuntu-latest'
         type: string
       use_github_runner:
-        description: "If true will levarege ubuntu-latest, otherwise will fall back to the J1 in-house runner"
+        description:
+          'If true will levarege ubuntu-latest, otherwise will fall back to the
+          J1 in-house runner'
         default: false
         type: boolean
       use_validate:
-        description: "Run test, in most case we want this"
+        description: 'Run test, in most case we want this'
         required: true
         type: boolean
       use_chromatic:
-        description: "Run VRT Storybook tests with chromatic"
+        description: 'Run VRT Storybook tests with chromatic'
         required: true
         type: boolean
       use_magic_url:
-        description: "Deploy to dev via a query param, required for normal SPAs"
+        description: 'Deploy to dev via a query param, required for normal SPAs'
         required: true
         type: boolean
       use_e2e:
-        description: "Run E2E test, in most case we want this"
+        description: 'Run E2E test, in most case we want this'
         type: boolean
       use_e2e_trigger:
-        description: "Trigger E2E tests in other repos"
+        description: 'Trigger E2E tests in other repos'
         type: boolean
       e2e_filter_tags:
-        description: "Tests will be filtered based on the tags defined here"
+        description: 'Tests will be filtered based on the tags defined here'
         type: string
       repos_to_test:
-        description: "Kick off a n+ spec files within n+ repos"
+        description: 'Kick off a n+ spec files within n+ repos'
         type: string
       e2e_containers:
-        description: "The number of tests that you want Cypress to run in parallel (ex. 1, 2, 3, ...)"
+        description:
+          'The number of tests that you want Cypress to run in parallel (ex. 1,
+          2, 3, ...)'
         type: string
         default: '["1"]'
       e2e_pass_on_error:
-        description: "Pass the workflow even if the E2E test fail"
+        description: 'Pass the workflow even if the E2E test fail'
         type: boolean
         default: true
       e2e_artemis_config_path:
-        description: "Used to determine the path to the artemis config file"
+        description: 'Used to determine the path to the artemis config file'
         type: string
-        default: "cypress/artemis-config.yaml"
+        default: 'cypress/artemis-config.yaml'
       external_pr_number:
-        description: "Used by the e2e_trigger to pass in the PR number associated with the PR that triggered the flow"
+        description:
+          'Used by the e2e_trigger to pass in the PR number associated with the
+          PR that triggered the flow'
         type: string
       external_pr_title:
-        description: "Used by the e2e_trigger to give builds in Cypress the correct title associated with the PR that triggered the flow"
+        description:
+          'Used by the e2e_trigger to give builds in Cypress the correct title
+          associated with the PR that triggered the flow'
         type: string
       external_pr_branch:
-        description: "Used by the e2e_trigger to give builds in Cypress the correct branch name"
+        description:
+          'Used by the e2e_trigger to give builds in Cypress the correct branch
+          name'
         type: string
       external_pr_author:
-        description: "Used by the e2e_trigger to give builds in Cypress the correct author name associated with the owner of the PR"
+        description:
+          'Used by the e2e_trigger to give builds in Cypress the correct author
+          name associated with the owner of the PR'
         type: string
       external_pr_sha:
-        description: "Used by the e2e_trigger to give builds in Cypress the correct SHA associated with the PR that triggered the flow"
+        description:
+          'Used by the e2e_trigger to give builds in Cypress the correct SHA
+          associated with the PR that triggered the flow'
         type: string
       external_pr_repo_name:
-        description: "Used by the e2e_trigger to tag builds in Cypress with the appropriate repo name (used to associate a repo with a test run)"
+        description:
+          'Used by the e2e_trigger to tag builds in Cypress with the appropriate
+          repo name (used to associate a repo with a test run)'
         type: string
       externally_triggered:
-        description: "True if E2E tests are triggered from another repo"
+        description: 'True if E2E tests are triggered from another repo'
         default: false
         type: boolean
       spec_to_run:
-        description: "Used to determine which test to run"
+        description: 'Used to determine which test to run'
         type: string
-        default: "cypress/e2e/**/*.feature"
+        default: 'cypress/e2e/**/*.feature'
       magic_url_route:
-        description: "The relative route the magic url should go to"
+        description: 'The relative route the magic url should go to'
         type: string
-        default: "/"
+        default: '/'
     secrets:
       NPM_TOKEN:
-        description: "A J1 npm.com Publish token"
+        description: 'A J1 npm.com Publish token'
         required: true
       CHROMATIC_PROJECT_TOKEN:
-        description: "The Chromatic API token"
+        description: 'The Chromatic API token'
         required: false
       AWS_ROLE:
-        description: "J1 AWS role with deploy permissions to dev"
+        description: 'J1 AWS role with deploy permissions to dev'
         required: false
       AWS_REGION:
-        description: "The current region of the dev env"
+        description: 'The current region of the dev env'
         required: false
       AWS_APPS_BUCKET:
-        description: "What bucket to deploy the magic url"
+        description: 'What bucket to deploy the magic url'
         required: false
       CYPRESS_RECORD_KEY:
-        description: "The record key associated with the project in Cypress"
+        description: 'The record key associated with the project in Cypress'
         required: false
       CYPRESS_PROJECT_ID:
-        description: "The project ID associated with the project in Cypress"
+        description: 'The project ID associated with the project in Cypress'
         required: false
       CYPRESS_PASSWORD:
-        description: "The password of the E2E username"
+        description: 'The password of the E2E username'
         required: false
       E2E_AUTO:
-        description: "A J1 token for kicking off cypress tests"
+        description: 'A J1 token for kicking off cypress tests'
         required: false
 
 jobs:
@@ -124,8 +141,12 @@ jobs:
     defaults:
       run:
         working-directory: ${{ inputs.working_directory }}
-    name: Creates shared variables used by the the jobs below based on whether the jobs were triggered by another repo or internally
-    runs-on: ${{ inputs.use_github_runner && inputs.github_runner || fromJson(inputs.default_runner) }}
+    name:
+      Creates shared variables used by the the jobs below based on whether the
+      jobs were triggered by another repo or internally
+    runs-on:
+      ${{ inputs.use_github_runner && inputs.github_runner ||
+      fromJson(inputs.default_runner) }}
     timeout-minutes: 15
     outputs:
       groupId: ${{ steps.externalTrigger.outputs.groupId }}
@@ -150,7 +171,9 @@ jobs:
       run:
         working-directory: ${{ inputs.working_directory }}
     name: Validate
-    runs-on: ${{ inputs.use_github_runner && inputs.github_runner || fromJson(inputs.default_runner) }}
+    runs-on:
+      ${{ inputs.use_github_runner && inputs.github_runner ||
+      fromJson(inputs.default_runner) }}
     timeout-minutes: 15
     concurrency:
       group: validate-${{ needs.create-shared-vars.outputs.groupId }}
@@ -164,8 +187,8 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18.15.0
-          cache: "npm"
-          registry-url: "https://registry.npmjs.org"
+          cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - run: npm ci
@@ -189,10 +212,13 @@ jobs:
     defaults:
       run:
         working-directory: ${{ inputs.working_directory }}
-    runs-on: ${{ inputs.use_github_runner && inputs.github_runner || fromJson(inputs.default_runner) }}
+    runs-on:
+      ${{ inputs.use_github_runner && inputs.github_runner ||
+      fromJson(inputs.default_runner) }}
     timeout-minutes: 15
     concurrency:
-      group: chromatic-deployment-${{ needs.create-shared-vars.outputs.groupId }}
+      group:
+        chromatic-deployment-${{ needs.create-shared-vars.outputs.groupId }}
       cancel-in-progress: true
     needs: [create-shared-vars]
     if: ${{ inputs.use_chromatic }}
@@ -203,8 +229,8 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18.15.0
-          cache: "npm"
-          registry-url: "https://registry.npmjs.org"
+          cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - run: npm ci
@@ -222,7 +248,9 @@ jobs:
       run:
         working-directory: ${{ inputs.working_directory }}
     name: Deploy To Dev
-    runs-on: ${{ inputs.use_github_runner && inputs.github_runner || fromJson(inputs.default_runner) }}
+    runs-on:
+      ${{ inputs.use_github_runner && inputs.github_runner ||
+      fromJson(inputs.default_runner) }}
     timeout-minutes: 15
     concurrency:
       group: deploy-magic-url-${{ needs.create-shared-vars.outputs.groupId }}
@@ -238,8 +266,8 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18.15.0
-          cache: "npm"
-          registry-url: "https://registry.npmjs.org"
+          cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - run: npm ci
@@ -250,7 +278,8 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v1
         with:
           role-to-assume: ${{ secrets.AWS_ROLE }}
-          role-session-name: ${{ github.event.repository.name }}-magic-url-role-session
+          role-session-name:
+            ${{ github.event.repository.name }}-magic-url-role-session
           aws-region: ${{ secrets.AWS_REGION }}
       - name: Deploy
         # This bucket file location is static and editing it will break the Magic URL
@@ -260,7 +289,9 @@ jobs:
 
   magic_url:
     name: Post Magic URL
-    runs-on: ${{ inputs.use_github_runner && inputs.github_runner || fromJson(inputs.default_runner) }}
+    runs-on:
+      ${{ inputs.use_github_runner && inputs.github_runner ||
+      fromJson(inputs.default_runner) }}
     timeout-minutes: 1
     concurrency:
       group: magic-url-${{ needs.create-shared-vars.outputs.groupId }}
@@ -272,10 +303,13 @@ jobs:
         uses: Sibz/github-status-action@v1
         with:
           authToken: ${{ secrets.GITHUB_TOKEN }}
-          state: "success"
-          context: "Magic URL"
+          state: 'success'
+          context: 'Magic URL'
           description: "Use the 'Details' link to view this PR in dev"
-          target_url: https://apps.dev.jupiterone.io${{ inputs.magic_url_route }}?magic=%7B%22${{ github.event.repository.name }}%22:%22PR-${{ github.event.pull_request.number }}%22%7D
+          target_url:
+            https://apps.dev.jupiterone.io${{ inputs.magic_url_route
+            }}?magic=%7B%22${{ github.event.repository.name }}%22:%22PR-${{
+            github.event.pull_request.number }}%22%7D
           sha: ${{github.event.pull_request.head.sha || github.sha}}
 
   prepare_for_e2e_test:
@@ -283,10 +317,13 @@ jobs:
       run:
         working-directory: ${{ inputs.working_directory }}
     name: Prepare Artemis
-    runs-on: ${{ inputs.use_github_runner && inputs.github_runner || fromJson(inputs.default_runner) }}
+    runs-on:
+      ${{ inputs.use_github_runner && inputs.github_runner ||
+      fromJson(inputs.default_runner) }}
     timeout-minutes: 15
     concurrency:
-      group: prepare-for-e2e-test-${{ needs.create-shared-vars.outputs.groupId }}
+      group:
+        prepare-for-e2e-test-${{ needs.create-shared-vars.outputs.groupId }}
       cancel-in-progress: true
     needs: [create-shared-vars]
     # We need this job to run even if the magic url is skipped which occurs via the e2e_trigger.yml
@@ -298,7 +335,8 @@ jobs:
     outputs:
       artemisAccountName: ${{ steps.accountInfo.outputs.artemisAccountName }}
       artemisAccountId: ${{ steps.accountInfo.outputs.artemisAccountId }}
-      artemisAccountSubdomain: ${{ steps.accountInfo.outputs.artemisAccountSubdomain }}
+      artemisAccountSubdomain:
+        ${{ steps.accountInfo.outputs.artemisAccountSubdomain }}
       # compact JSON of [{csrf:string,secret:string,subject:string},...]
       artemisUsers: ${{ steps.userInfo.outputs.artemisUsers }}
     steps:
@@ -306,8 +344,8 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18.15.0
-          cache: "npm"
-          registry-url: "https://registry.npmjs.org"
+          cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - run: npm ci
@@ -315,12 +353,18 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v1
         with:
           role-to-assume: ${{ secrets.AWS_ROLE }}
-          role-session-name: ${{ github.event.repository.name }}-magic-url-role-session
+          role-session-name:
+            ${{ github.event.repository.name }}-magic-url-role-session
           aws-region: us-east-1
       - name: update artemis config
-        run: npx update-artemis-config --pathToArtemisConfig=${{ inputs.e2e_artemis_config_path }} --usersCount=${{ needs.create-shared-vars.outputs.usersCount }}
+        run:
+          npx update-artemis-config --pathToArtemisConfig=${{
+          inputs.e2e_artemis_config_path }} --usersCount=${{
+          needs.create-shared-vars.outputs.usersCount }}
       - name: launch artemis
-        run: npx artemis-launch -c tmp/artemis-config-updated.yaml --action=launch --outputFilename=artemis-run
+        run:
+          npx artemis-launch -c tmp/artemis-config-updated.yaml --action=launch
+          --outputFilename=artemis-run
       - id: accountInfo
         # Use jq to extract the accountId and user sessions from the json file in a raw form
         run: |
@@ -336,8 +380,12 @@ jobs:
     defaults:
       run:
         working-directory: ${{ inputs.working_directory }}
-    name: Run E2E Tests for ${{ needs.create-shared-vars.outputs.e2eJobDescription }}
-    runs-on: ${{ inputs.use_github_runner && inputs.github_runner || fromJson(inputs.e2e_runner) }}
+    name:
+      Run E2E Tests for ${{ needs.create-shared-vars.outputs.e2eJobDescription
+      }}
+    runs-on:
+      ${{ inputs.use_github_runner && inputs.github_runner ||
+      fromJson(inputs.e2e_runner) }}
     container:
       image: cypress/browsers:node18.12.0-chrome106-ff106
       options: --platform linux/amd64 --privileged
@@ -359,13 +407,22 @@ jobs:
         containers: ${{ fromJson(inputs.e2e_containers) }}
         node: [18]
     concurrency:
-      group: run-e2e-tests-${{ needs.create-shared-vars.outputs.groupId }}-${{ matrix.containers }}
+      group:
+        run-e2e-tests-${{ needs.create-shared-vars.outputs.groupId }}-${{
+        matrix.containers }}
       # To avoid the following error, we leave this disabled: Canceling since a higher priority waiting request for 'run-e2e-tests-PR-web-settings-91-1' exists
       # This still serves a purpose as any previously pending job in the concurrency group will be canceled, just not those already in progress
       # cancel-in-progress: true
     steps:
       - name: Log E2E Info
-        run: echo "Running E2E test for PR with title of ${{ inputs.external_pr_title || github.event.pull_request.title }} and number being ${{ inputs.external_pr_number || github.event.pull_request.number }}. The following account will be used ${{ needs.prepare_for_e2e_test.outputs.artemisAccountName }} (${{ needs.prepare_for_e2e_test.outputs.artemisAccountId }}). The following matrix container is being used ${{ matrix.containers }}"
+        run:
+          echo "Running E2E test for PR with title of ${{
+          inputs.external_pr_title || github.event.pull_request.title }} and
+          number being ${{ inputs.external_pr_number ||
+          github.event.pull_request.number }}. The following account will be
+          used ${{ needs.prepare_for_e2e_test.outputs.artemisAccountName }} (${{
+          needs.prepare_for_e2e_test.outputs.artemisAccountId }}). The following
+          matrix container is being used ${{ matrix.containers }}"
       - name: Log groupId
         run: echo "groupId - ${{ needs.create-shared-vars.outputs.groupId }}"
       - name: Log status of prepare_for_e2e_test job
@@ -378,8 +435,8 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18.15.0
-          cache: "npm"
-          registry-url: "https://registry.npmjs.org"
+          cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Cypress run
@@ -391,14 +448,20 @@ jobs:
           record: true
           parallel: true
           group: PR
-          ci-build-id: "${{ inputs.external_pr_sha || github.sha }}-${{ github.workflow }}-${{ github.event_name }}-${{ inputs.external_pr_number || github.event.pull_request.number }}"
+          ci-build-id:
+            '${{ inputs.external_pr_sha || github.sha }}-${{ github.workflow
+            }}-${{ github.event_name }}-${{ inputs.external_pr_number ||
+            github.event.pull_request.number }}'
           browser: chrome
-          tag: ${{ inputs.external_pr_repo_name || github.event.repository.name }},${{ github.event_name }}
+          tag:
+            ${{ inputs.external_pr_repo_name || github.event.repository.name
+            }},${{ github.event_name }}
         env:
           # https://github.com/cypress-io/cypress/issues/25357#issuecomment-1426992422
-          ELECTRON_EXTRA_LAUNCH_ARGS: "--disable-gpu"
+          ELECTRON_EXTRA_LAUNCH_ARGS: '--disable-gpu'
           CYPRESS_BROWSER: chrome
-          COMMIT_INFO_MESSAGE: ${{ inputs.external_pr_title || github.event.pull_request.title }}
+          COMMIT_INFO_MESSAGE:
+            ${{ inputs.external_pr_title || github.event.pull_request.title }}
           COMMIT_INFO_BRANCH: ${{ inputs.external_pr_branch }}
           COMMIT_INFO_AUTHOR: ${{ inputs.external_pr_author }}
           COMMIT_INFO_SHA: ${{ inputs.external_pr_sha }}
@@ -410,11 +473,14 @@ jobs:
           CYPRESS_ENVIRONMENT_NAME: jupiterone-dev
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          PR_NUMBER: ${{ inputs.external_pr_number || github.event.pull_request.number }}
-          REPO_NAME: ${{ inputs.external_pr_repo_name || github.event.repository.name }}
+          PR_NUMBER:
+            ${{ inputs.external_pr_number || github.event.pull_request.number }}
+          REPO_NAME:
+            ${{ inputs.external_pr_repo_name || github.event.repository.name }}
           SPEC: ${{ inputs.spec_to_run }}
           ACCOUNT: ${{ needs.prepare_for_e2e_test.outputs.artemisAccountName }}
-          ACCOUNT_SUBDOMAIN: ${{ needs.prepare_for_e2e_test.outputs.artemisAccountSubdomain }}
+          ACCOUNT_SUBDOMAIN:
+            ${{ needs.prepare_for_e2e_test.outputs.artemisAccountSubdomain }}
           ACCOUNT_ID: ${{ needs.prepare_for_e2e_test.outputs.artemisAccountId }}
           USERS: ${{ needs.prepare_for_e2e_test.outputs.artemisUsers }}
           TAGS: ${{ inputs.e2e_filter_tags }}
@@ -437,7 +503,7 @@ jobs:
         continue-on-error: ${{ inputs.e2e_pass_on_error }}
         with:
           authToken: ${{secrets.GITHUB_TOKEN}}
-          context: "E2E Test Status"
+          context: 'E2E Test Status'
           description: ${{ env.TEST_STATUS_DESCRIPTION }}
           state: ${{ env.TEST_STATUS_STATE }}
           sha: ${{github.event.pull_request.head.sha || github.sha}}

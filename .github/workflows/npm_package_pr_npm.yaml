@@ -6,44 +6,49 @@ on:
   workflow_call:
     inputs:
       runs_on:
-        description: "Deprecated"
+        description: 'Deprecated'
         type: string
       fallback_runner:
-        description: "Use a github runner instead of a JupiterOne runner"
+        description: 'Use a github runner instead of a JupiterOne runner'
         type: boolean
       use_chromatic:
-        description: "Does this release include chromatic"
+        description: 'Does this release include chromatic'
         required: true
         type: boolean
       use_esbuild:
-        description: "If using esbuild, insure its required build scripts are run"
+        description:
+          'If using esbuild, insure its required build scripts are run'
         required: false
         type: boolean
     secrets:
       NPM_TOKEN:
-        description: "A J1 npm.com Publish token"
+        description: 'A J1 npm.com Publish token'
         required: true
       CHROMATIC_PROJECT_TOKEN:
-        description: "The Chromatic API token"
+        description: 'The Chromatic API token'
         required: false
 
 # Save Money :money_with_wings:
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.repository.name }}-${{ github.event.pull_request.number || github.ref }}
+  group:
+    ${{ github.workflow }}-${{ github.event.repository.name }}-${{
+    github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
   validate:
     name: Validate
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
+    runs-on:
+      ${{ (inputs.fallback_runner && 'ubuntu-latest') ||
+      fromJson('["jupiterone-dev", "arm64"]') }}
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-          cache: "npm"
-          registry-url: "https://registry.npmjs.org"
+          cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
       - run: npm ci --ignore-scripts
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -65,7 +70,9 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   chromatic-deployment:
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
+    runs-on:
+      ${{ (inputs.fallback_runner && 'ubuntu-latest') ||
+      fromJson('["jupiterone-dev", "arm64"]') }}
     if: ${{ inputs.use_chromatic }}
     timeout-minutes: 15
     steps:
@@ -75,8 +82,8 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-          cache: "npm"
-          registry-url: "https://registry.npmjs.org"
+          cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
       - run: npm ci --ignore-scripts
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
