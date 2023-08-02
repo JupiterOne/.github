@@ -6,7 +6,7 @@ let mockGithub: MockGithub;
 beforeEach(async () => {
   mockGithub = new MockGithub({
     repo: {
-      testAction: {
+      migration_number: {
         files: [
           {
             src: path.join(__dirname, 'action-test.yml'),
@@ -32,14 +32,14 @@ afterEach(async () => {
   await mockGithub.teardown();
 });
 
-test('test workflow', async () => {
-  const act = new Act(mockGithub.repo.getPath('testAction'));
+test('test migration_number composite action', async () => {
+  const act = new Act(mockGithub.repo.getPath('migration_number'));
   const result = await act.runEvent('push');
 
   expect(result.length).toBe(5);
   expect(result).toMatchObject([
     { name: 'Main actions/checkout@v3', status: 0, output: '' },
-    { name: 'Main ./testAction', status: 0, output: '' },
+    { name: 'Main ./migration_number', status: 0, output: '' },
     {
       name: 'Main Get Package Migration Number',
       status: 0,
@@ -51,7 +51,7 @@ test('test workflow', async () => {
       output: expect.stringMatching(/migration_number \d*/),
     },
     {
-      name: 'Post ./testAction',
+      name: 'Post ./migration_number',
       status: 0,
       output: '',
     },
