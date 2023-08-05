@@ -1,0 +1,117 @@
+name: Run Artemis to prepare for running the E2E tests
+
+inputs:
+  artemis_account_name:
+    type: string
+  artemis_account_id:
+    type: string
+  artemis_account_subdomain:
+    type: string
+  artemis_users:
+    type: string
+  commit_info_sha:
+    type: string
+  commit_info_pr_number:
+    type: string
+  commit_info_pr_title:
+    type: string
+  commit_info_branch:
+    type: string
+  commit_info_author:
+    type: string
+  commit_info_repo_name:
+    type: string
+  commit_info_message:
+    type: string
+  commit_info_workflow:
+    type: string
+  commit_info_event_name:
+    type: string
+  cypress_container:
+    type: string
+  cypress_tag:
+    type: string
+  cypress_mailinator_api_key:
+    type: string
+  cypress_record_key:
+    type: string
+  cypress_project_id:
+    type: string
+  cypress_password:
+    type: string
+  e2e_filter_tags:
+    type: string
+  e2e_pass_on_error:
+    type: boolean
+    default: false
+  github_token:
+    type: string
+  migration_number:
+    type: string
+  spec_to_run:
+    type: string
+
+outputs:
+  test_passed:
+    value: ${{ steps.test_results.outputs.test_passed }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: setup_env
+      uses: ./.github/actions/frontend/setup_env
+    - name: cypress_run
+      id: cypress_run
+      continue-on-error: ${{ inputs.e2e_pass_on_error == 'true' }}
+      uses: cypress-io/github-action@v5
+      with:
+        record: true
+        parallel: true
+        group: PR
+        ci-build-id: "${{ inputs.commit_info_sha }}-${{ inputs.commit_info_workflow }}-${{ inputs.commit_info_event_name }}-${{ inputs.commit_info_pr_title }}"
+        browser: chrome
+        tag: ${{ inputs.cypress_tag }}
+      env:
+        # https://github.com/cypress-io/cypress/issues/25357#issuecomment-1426992422
+        ELECTRON_EXTRA_LAUNCH_ARGS: '--disable-gpu'
+        CYPRESS_BROWSER: chrome
+        COMMIT_INFO_MESSAGE: ${{ inputs.commit_info_message }}
+        COMMIT_INFO_BRANCH: ${{ inputs.commit_info_branch }}
+        COMMIT_INFO_AUTHOR: ${{ inputs.commit_info_author }}
+        COMMIT_INFO_SHA: ${{ inputs.commit_info_sha }}
+        CYPRESS_CONTAINER: ${{ inputs.cypress_container }}
+        CYPRESS_MAILINATOR_API_KEY: ${{ inputs.cypress_mailinator_api_key }}
+        CYPRESS_RECORD_KEY: ${{ inputs.cypress_record_key }}
+        CYPRESS_PROJECT_ID: ${{ inputs.cypress_project_id }}
+        CYPRESS_PASSWORD: ${{ inputs.cypress_password }}
+        CYPRESS_ENVIRONMENT_NAME: jupiterone-dev
+        GITHUB_TOKEN: ${{ inputs.github_token }}
+        MIGRATION_NUMBER: ${{ inputs.migration_number }}
+        PR_NUMBER: ${{ inputs.commit_info_pr_number }}
+        REPO_NAME: ${{ inputs.commit_info_repo_name }}
+        SPEC: ${{ inputs.spec_to_run }}
+        ACCOUNT: ${{ inputs.artemis_account_name }}
+        ACCOUNT_SUBDOMAIN: ${{ inputs.artemis_account_subdomain }}
+        ACCOUNT_ID: ${{ inputs.artemis_account_id }}
+        USERS: ${{ inputs.artemis_users }}
+        TAGS: ${{ inputs.e2e_filter_tags }}
+    # We have to manually output an exit code of 0 to ensure the action passes if e2e_pass_on_error is true
+    - name: pass_with_failures
+      shell: bash
+      if: ${{ inputs.e2e_pass_on_error == 'true' }}
+      run: exit 0
+    - name: set_success_vars
+      shell: bash
+      # Need to check previous TEST_PASSED to ensure it hasn't already failed
+      # important if multiple containers are in use to ensure the correct status is reported
+      if: ${{ contains(steps.cypress_run.outcome, 'success') || contains(steps.mock_step.outcome, 'success') && !contains(env.TEST_PASSED, false) }}
+      run: echo "TEST_PASSED=true" >> $GITHUB_ENV
+    - name: set_failure_vars
+      shell: bash
+      if: ${{ !contains(steps.cypress_run.outcome, 'success') || contains(steps.mock_step.outcome, 'success') }}
+      run: echo "TEST_PASSED=false" >> $GITHUB_ENV
+    - name: test_results
+      id: test_results
+      shell: bash
+      run: |
+        echo "test_passed=${{ env.TEST_PASSED }}" >> $GITHUB_OUTPUT

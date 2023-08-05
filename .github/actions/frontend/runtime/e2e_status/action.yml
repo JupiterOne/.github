@@ -1,0 +1,38 @@
+name: Check the status of the E2E run and report it in the PR
+
+inputs:
+  github_token:
+    type: string
+    required: true
+  commit_info_sha:
+    type: string
+    required: true
+  e2e_passed:
+    type: boolean
+    required: true
+  e2e_pass_on_error:
+    type: boolean
+    required: false
+    default: false
+
+runs:
+  using: "composite"
+  steps:
+    - name: log_e2e_passed
+      shell: bash
+      run: |
+        echo "Test Status - ${{ inputs.e2e_passed }}"
+    - name: pr_status
+      uses: Sibz/github-status-action@v1
+      continue-on-error: ${{ inputs.e2e_pass_on_error == 'true' }}
+      with:
+        authToken: ${{ inputs.github_token }}
+        context: 'E2E Test Status'
+        description: ${{ (inputs.e2e_passed && 'E2E Test Passed') || 'E2E Test Failed' }}
+        state: ${{ (inputs.e2e_passed && 'success') || 'failures' }}
+        sha: ${{ inputs.commit_info_sha }}
+    # We have to manually output an exit code of 0 to ensure the action passes if e2e_pass_on_error is true
+    - name: pass_with_failures
+      shell: bash
+      if: ${{ inputs.e2e_pass_on_error == 'true' }}
+      run: exit 0

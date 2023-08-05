@@ -8,9 +8,13 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      '~': resolvePath('./src'),
+      '~': resolvePath('./.github'),
       tests: resolvePath('./tests'),
     },
   },
-  test: {},
+  test: {
+    globals: true,
+    // environment: 'happy-dom',
+    testTimeout: 120000
+  },
 });

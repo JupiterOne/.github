@@ -3,9 +3,8 @@ name: Tests
 on: [push]
 
 jobs:
-  test:
+  migration_number:
     runs-on: ubuntu-latest
-    name: A job to say hello
     steps:
       # https://github.com/nektos/act#module_not_found
       - uses: actions/checkout@v3
@@ -13,6 +12,6 @@ jobs:
           path: migration_number
       - id: migration_number
         uses: ./migration_number
-      - name: print migration_number
+      - name: print_migration_number
         run: echo migration_number ${{ steps.migration_number.outputs.migration }}
         shell: bash

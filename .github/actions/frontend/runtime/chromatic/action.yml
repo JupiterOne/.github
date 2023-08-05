@@ -1,0 +1,19 @@
+name: Publish to Chromatic
+
+inputs:
+  github_token:
+    type: string
+  chromatic_project_token:
+    type: string
+
+runs:
+  using: "composite"
+  steps:
+    - uses: ./.github/actions/frontend/setup_env
+    - name: Publish to Chromatic
+      uses: chromaui/action@v1
+      with:
+        token: ${{ inputs.github_token }}
+        projectToken: ${{ inputs.chromatic_project_token }}
+        onlyChanged: true
+        exitOnceUploaded: true

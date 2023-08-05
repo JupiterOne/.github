@@ -1,0 +1,20 @@
+name: Tests
+
+on: [push]
+
+jobs:
+  e2e_trigger_remote_tests:
+    runs-on: ubuntu-latest
+    steps:
+      # https://github.com/nektos/act#module_not_found
+      - uses: actions/checkout@v3
+        with:
+          path: e2e_trigger_remote_tests
+      - id: e2e_trigger_remote_tests_results
+        uses: ./e2e_trigger_remote_tests
+        with:
+          repo_name: test_repo
+          repo_spec: test_spec
+      - name: e2e_run_status
+        run: echo e2e_run status is ${{ steps.e2e_trigger_remote_tests_results.outputs.test_passed }}
+        shell: bash

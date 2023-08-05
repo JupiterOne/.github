@@ -1,0 +1,23 @@
+name: Runs validation on the repo
+
+runs:
+  using: "composite"
+  steps:
+    - name: setup_env
+      uses: ./.github/actions/frontend/setup_env
+    - name: validate
+      shell: bash
+      run: npm run validate:ci
+    # Check if we should skip validating runtime types
+    - name: remote_type_check_skip
+      shell: bash
+      run: |
+        if [[ $(git log -2 --pretty=format:'%s' | grep "\[skip remote-type-check\]")  ]]; then 
+          echo "HAS_SKIP=true" >> $GITHUB_ENV
+        fi
+    # Validate runtime types (if applicable)
+    - name: remote_type_test
+      run: |
+        npx -p @jupiterone/web-tools-remote-types@latest remote-types test
+        echo "No breaking changes found";
+      if: ${{ !env.HAS_SKIP }}
