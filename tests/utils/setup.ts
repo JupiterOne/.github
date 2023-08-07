@@ -22,8 +22,9 @@ export const getCompositeActionConfig = ({
             src: resolve(directory, '..', 'action.yml'),
             dest: '/action.yml',
           },
+          // Copy over package.json from root, needed for migration_number
           {
-            src: resolve(cwd(), 'package.json'),
+            src: resolve(cwd(), 'tests', 'package.json'),
             dest: 'package.json',
           },
           ...(additionalFiles ? additionalFiles : [])
@@ -32,7 +33,6 @@ export const getCompositeActionConfig = ({
     },
   };
 };
-
 
 export const getWorkflowConfig = ({
   repoName,
@@ -49,9 +49,15 @@ export const getWorkflowConfig = ({
             src: resolve(cwd(), '.github', 'workflows', `${repoName}.yml`),
             dest: `.github/workflows/${repoName}.yml`,
           },
+          // Copy over package.json from root, needed for migration_number
           {
-            src: resolve(cwd(), 'package.json'),
+            src: resolve(cwd(), 'tests', 'package.json'),
             dest: 'package.json',
+          },
+          // Copy over composite actions
+          {
+            src: resolve(cwd(), '.github/actions'),
+            dest: `.github/actions`,
           },
           ...(additionalFiles ? additionalFiles : [])
         ],

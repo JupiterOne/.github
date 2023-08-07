@@ -9,7 +9,7 @@ on:
         default: true
         type: boolean
       use_validate:
-        description: "Run test, in most case we want this"
+        description: "Run validation, in most case we want this"
         default: true
         type: boolean
       use_chromatic:
@@ -23,6 +23,7 @@ on:
       use_e2e:
         description: "Run E2E test, in most case we want this"
         type: boolean
+        default: false
       e2e_filter_tags:
         description: "Tests will be filtered based on the tags defined here"
         type: string  
@@ -55,15 +56,6 @@ on:
         required: true
       CHROMATIC_PROJECT_TOKEN:
         description: "The Chromatic API token"
-        required: false
-      AWS_ROLE:
-        description: "J1 AWS role with deploy permissions to dev"
-        required: false
-      AWS_REGION:
-        description: "The current region of the dev env"
-        required: false
-      AWS_APPS_BUCKET:
-        description: "What bucket to deploy the magic url"
         required: false
       CYPRESS_RECORD_KEY:
         description: "The record key associated with the project in Cypress"
@@ -99,6 +91,7 @@ jobs:
       - id: migration_number
         name: migration_number
         uses: ./.github/actions/frontend/runtime/migration_number
+        # run: echo "migration=1" >> $GITHUB_OUTPUT
 
   validate:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
@@ -124,16 +117,14 @@ jobs:
     needs: [migration_number]
     steps:
       - uses: actions/checkout@v2
-      - name: magic_url_calculated_props
+      # These are props that have been obtained from a previous job
+      - name: magic_url_derived_props
         shell: bash
         run: echo "migration=${{ needs.migration_number.outputs.migration }}"
       - name: magic_url
         uses: ./.github/actions/frontend/runtime/magic_url
         if: ${{ inputs.use_magic_url }} # enables us to skip magic_url and not block other downstream jobs
         with:
-          aws_role: ${{ secrets.AWS_ROLE }}
-          aws_region: ${{ secrets.AWS_REGION }}
-          aws_apps_bucket: ${{ secrets.AWS_APPS_BUCKET }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
           migration_number: ${{ needs.migration_number.outputs.migration }}
           magic_url_route: ${{ inputs.magic_url_route }}
@@ -149,14 +140,14 @@ jobs:
       artemis_users: ${{ steps.e2e_prepare.outputs.artemis_users }}
     steps:
       - uses: actions/checkout@v2
-      - name: e2e_prepare_calculated_props
+      # These are props that have been obtained from a previous job
+      - name: e2e_prepare_derived_props
         shell: bash
         run: echo "migration=${{ needs.migration_number.outputs.migration }}"
       - id: e2e_prepare
         name: e2e_prepare
         uses: ./.github/actions/frontend/runtime/e2e_prepare
         with:
-          aws_role: ${{ secrets.AWS_ROLE }}
           e2e_artemis_config_path: ${{ inputs.e2e_artemis_config_path }}
           userCount: $(echo '${{ inputs.e2e_containers }}' | jq '. | length')
 
@@ -182,11 +173,15 @@ jobs:
       test_passed: ${{ steps.e2e_run.outputs.test_passed }}
     steps:
       - uses: actions/checkout@v2
-      - name: e2e_run_calculated_props
+      # These are props that have been obtained from a previous job
+      - name: e2e_run_derived_props
         shell: bash
         run: |
           echo "migration=${{ needs.migration_number.outputs.migration }}"
           echo "artemis_account_name=${{ needs.e2e_prepare.outputs.artemis_account_name }}"
+          echo "artemis_account_id=${{ needs.e2e_prepare.outputs.artemis_account_id }}"
+          echo "artemis_account_subdomain=${{ needs.e2e_prepare.outputs.artemis_account_subdomain }}"
+          echo "artemis_users=${{ needs.e2e_prepare.outputs.artemis_users }}"
       - id: e2e_run
         name: e2e_run
         uses: ./.github/actions/frontend/runtime/e2e_run

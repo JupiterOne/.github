@@ -1,16 +1,17 @@
 name: Creates and deploys the magic url
 
 inputs:
-  aws_role:
-    type: string
-  aws_region:
-    type: string
-  aws_apps_bucket:
-    type: string
   github_token:
     type: string
+    required: true
   migration_number:
+    description: 'The migration number defined in the root package.json'
+    required: true
     type: string
+  magic_url_route: 
+    description: 'The relative route the magic url should go to'
+    type: string
+    default: '/'
   
 runs:
   using: "composite"
@@ -26,16 +27,17 @@ runs:
       name: configure_aws_credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
-        role-to-assume: ${{ inputs.aws_role }}
+        # J1 AWS role with deploy permissions to dev
+        role-to-assume: arn:aws:iam::564077667165:role/github-pull-request-role
         role-session-name:
           ${{ github.event.repository.name }}-magic-url-role-session
-        aws-region: ${{ inputs.aws_region }}
+        aws-region: us-east-2
     - id: deploy_magic_url
       name: deploy_magic_url
       shell: bash
       # This bucket file location is static and editing it will break the Magic URL. This pushes the entire directory which includes the bundle and remote types if applicable
       run: |
-        aws s3 sync deploy/dist s3://${{ inputs.aws_apps_bucket }}/static/manual-deploy/${{ github.event.repository.name }}@${{ inputs.migration_number }}/PR-${{ github.event.number }}/
+        aws s3 sync deploy/dist s3://apps.dev.jupiterone.io/static/manual-deploy/${{ github.event.repository.name }}@${{ inputs.migration_number }}/PR-${{ github.event.number }}/
     - id: show_magic_url
       name: show_magic_url
       uses: Sibz/github-status-action@v1

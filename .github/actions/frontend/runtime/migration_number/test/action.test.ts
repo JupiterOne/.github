@@ -1,6 +1,7 @@
 import { MockGithub } from '@kie/mock-github';
 import { Act } from '@kie/act-js';
 import { getCompositeActionConfig, runCompositeAction } from 'tests/utils/setup';
+import mockPackageJson from 'tests/package.json';
 
 const repoName = 'migration_number';
 
@@ -21,6 +22,6 @@ test('migration number from package.json is returned', async () => {
 
   expect(result).toMatchObject([
     { name: 'Main get_migration_number', status: 0, output: '' },
-    { name: 'Main print_migration_number', status: 0, output: 'migration_number 1' },
+    { name: 'Main print_migration_number', status: 0, output: `migration_number ${mockPackageJson.config.migration}` },
   ]);
 });

@@ -1,8 +1,6 @@
 name: Run Artemis to prepare for running the E2E tests
 
 inputs:
-  aws_role:
-    type: string
   e2e_artemis_config_path:
     type: string
   userCount:
@@ -27,7 +25,7 @@ runs:
     - name: configure_aws_credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
-        role-to-assume: ${{ inputs.aws_role }}
+        role-to-assume: arn:aws:iam::564077667165:role/github-pull-request-role
         role-session-name:
           ${{ github.event.repository.name }}-magic-url-role-session
         aws-region: us-east-1
