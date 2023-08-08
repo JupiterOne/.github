@@ -3,12 +3,8 @@ name: Since each job runs in its own environment, this action is responsible for
 runs:
   using: "composite"
   steps:
-    - id: checkout
-      name: checkout
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 2
     - id: setup_node
+      if: ${{ !env.TEST }}
       name: setup_node
       uses: actions/setup-node@v3
       with:
@@ -16,6 +12,7 @@ runs:
         cache: 'npm'
         registry-url: 'https://registry.npmjs.org'
     - id: npm_install
+      if: ${{ !env.TEST }}
       name: npm_install
       run: npm ci
       shell: bash

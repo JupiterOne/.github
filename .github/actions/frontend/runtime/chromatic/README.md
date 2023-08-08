@@ -1,0 +1,25 @@
+# Frontend Runtime - Chromatic
+
+This [composite action](./action.yml) is responsible for building nad publishing your Storybook to Chromatic and running visual regression tests.
+
+## Inputs
+
+This action requires uses the following inputs:
+
+| Name                        | Type    | Default                      | Required  | Description                                               |
+| --------------------------- | ------- | ---------------------------- | --------- | --------------------------------------------------------- |
+| `github_token`              | String  |                              | True      | Github access token
+| `chromatic_project_token`   | String  |                              | True      | The Chromatic API token
+                                                                           
+## Outputs
+
+No outputs provided.                                              
+
+## Example Usage
+
+```yaml
+steps:
+  - name: validate
+    uses: ./.github/actions/frontend/runtime/chromatic
+```
+

@@ -2,53 +2,76 @@ name: Run Artemis to prepare for running the E2E tests
 
 inputs:
   artemis_account_name:
+    description: 'The account name extracted from the artemis-run.json file'
     type: string
+    required: true
   artemis_account_id:
+    description: 'The id extracted from the artemis-run.json file'
     type: string
+    required: true
   artemis_account_subdomain:
+    description: 'The account subdomain extracted from the artemis-run.json file'
     type: string
+    required: true
   artemis_users:
+    description: 'The users extracted from the artemis-run.json file'
     type: string
-  commit_info_sha:
+    required: true
+  commit_info_sha:    
+    description: 'The commit sha associated with the repo that triggered the e2e_run'
     type: string
   commit_info_pr_number:
+    description: 'The PR number associated with the repo that triggered the e2e_run'
     type: string
   commit_info_pr_title:
+    description: 'The PR title sha associated with the repo that triggered the e2e_run'
     type: string
   commit_info_branch:
+    description: 'The branch associated with the repo that triggered the e2e_run'
     type: string
   commit_info_author:
+    description: 'The author associated with the repo that triggered the e2e_run'
     type: string
   commit_info_repo_name:
-    type: string
-  commit_info_message:
-    type: string
-  commit_info_workflow:
-    type: string
-  commit_info_event_name:
+    description: 'The repo name associated with the repo that triggered the e2e_run'
     type: string
   cypress_container:
+    description: 'The index of the Cypress container being used'
     type: string
-  cypress_tag:
-    type: string
+    default: 1
   cypress_mailinator_api_key:
+    description: 'The mailinator api key needed when going through the default login flow'
     type: string
+    required: true
   cypress_record_key:
+    description: 'The record key associated with the project in Cypress'
     type: string
+    required: true
   cypress_project_id:
+    description: 'The project ID associated with the project in Cypress'
     type: string
+    required: true
   cypress_password:
+    description: 'The password of the E2E username (if applicable)'
     type: string
   e2e_filter_tags:
+    description: 'Tests will be filtered based on the tags defined here'
     type: string
   e2e_pass_on_error:
+    description: 'Pass the workflow even if the E2E test fail'
     type: boolean
     default: false
   github_token:
+    description: 'Github access token'
     type: string
+    required: true
   migration_number:
+    description: 'The migration number defined in the root package.json'
     type: string
+    required: true
   spec_to_run:
+    description: 'Used to determine which test to run'
+    default: 'cypress/e2e/**/*.feature'
     type: string
 
 outputs:
@@ -58,9 +81,39 @@ outputs:
 runs:
   using: "composite"
   steps:
+    - uses: actions/checkout@v3
+    - name: e2e_run_inputs
+      shell: bash
+      run: |
+        echo "artemis_account_name=${{ inputs.artemis_account_name }}"
+        echo "artemis_account_id=${{ inputs.artemis_account_id }}"
+        echo "artemis_account_subdomain=${{ inputs.artemis_account_subdomain }}"
+        echo "artemis_users=${{ inputs.artemis_users }}"
+        echo "commit_info_sha=${{ inputs.commit_info_sha }}"
+        echo "commit_info_pr_number=${{ inputs.commit_info_pr_number }}"
+        echo "commit_info_pr_title=${{ inputs.commit_info_pr_title }}"
+        echo "commit_info_branch=${{ inputs.commit_info_branch }}"
+        echo "commit_info_author=${{ inputs.commit_info_author }}"
+        echo "commit_info_repo_name=${{ inputs.commit_info_repo_name }}"
+        echo "cypress_container=${{ inputs.cypress_container }}"
+        echo "cypress_mailinator_api_key=${{ inputs.cypress_mailinator_api_key }}"
+        echo "cypress_record_key=${{ inputs.cypress_record_key }}"
+        echo "cypress_project_id=${{ inputs.cypress_project_id }}"
+        echo "cypress_password=${{ inputs.cypress_password }}"
+        echo "e2e_filter_tags=${{ inputs.e2e_filter_tags }}"
+        echo "e2e_pass_on_error=${{ inputs.e2e_pass_on_error }}"
+        echo "github_token=${{ inputs.github_token }}"
+        echo "migration_number=${{ inputs.migration_number }}"
+        echo "spec_to_run=${{ inputs.spec_to_run }}"
     - name: setup_env
+      if: ${{ !env.TEST }}
       uses: ./.github/actions/frontend/setup_env
+    - id: get_author_name
+      name: get_author_name
+      run:
+        echo "commit_info_author=$(git show -s --pretty=%an)" >> $GITHUB_OUTPUT
     - name: cypress_run
+      if: ${{ !env.TEST }}
       id: cypress_run
       continue-on-error: ${{ inputs.e2e_pass_on_error == 'true' }}
       uses: cypress-io/github-action@v5
@@ -68,17 +121,17 @@ runs:
         record: true
         parallel: true
         group: PR
-        ci-build-id: "${{ inputs.commit_info_sha }}-${{ inputs.commit_info_workflow }}-${{ inputs.commit_info_event_name }}-${{ inputs.commit_info_pr_title }}"
+        ci-build-id: "${{ inputs.commit_info_sha || github.sha }}-${{ github.workflow }}-${{ github.event_name }}-${{ inputs.commit_info_pr_title || github.event.pull_request.title }}"
         browser: chrome
-        tag: ${{ inputs.cypress_tag }}
+        tag: ${{ inputs.commit_info_repo_name || github.event.repository.name }},${{ github.event_name }}
       env:
         # https://github.com/cypress-io/cypress/issues/25357#issuecomment-1426992422
         ELECTRON_EXTRA_LAUNCH_ARGS: '--disable-gpu'
         CYPRESS_BROWSER: chrome
-        COMMIT_INFO_MESSAGE: ${{ inputs.commit_info_message }}
-        COMMIT_INFO_BRANCH: ${{ inputs.commit_info_branch }}
-        COMMIT_INFO_AUTHOR: ${{ inputs.commit_info_author }}
-        COMMIT_INFO_SHA: ${{ inputs.commit_info_sha }}
+        COMMIT_INFO_MESSAGE: ${{ inputs.commit_info_pr_title || github.event.pull_request.title }}
+        COMMIT_INFO_BRANCH: ${{ inputs.commit_info_branch || github.event.pull_request.head.ref }}
+        COMMIT_INFO_AUTHOR: ${{ inputs.commit_info_author || steps.get_author_name.outputs.commit_info_author }}
+        COMMIT_INFO_SHA: ${{ inputs.commit_info_sha || github.sha }}
         CYPRESS_CONTAINER: ${{ inputs.cypress_container }}
         CYPRESS_MAILINATOR_API_KEY: ${{ inputs.cypress_mailinator_api_key }}
         CYPRESS_RECORD_KEY: ${{ inputs.cypress_record_key }}
@@ -87,8 +140,8 @@ runs:
         CYPRESS_ENVIRONMENT_NAME: jupiterone-dev
         GITHUB_TOKEN: ${{ inputs.github_token }}
         MIGRATION_NUMBER: ${{ inputs.migration_number }}
-        PR_NUMBER: ${{ inputs.commit_info_pr_number }}
-        REPO_NAME: ${{ inputs.commit_info_repo_name }}
+        PR_NUMBER: ${{ inputs.commit_info_pr_number || github.event.pull_request.number }}
+        REPO_NAME: ${{ inputs.commit_info_repo_name || github.event.repository.name }}
         SPEC: ${{ inputs.spec_to_run }}
         ACCOUNT: ${{ inputs.artemis_account_name }}
         ACCOUNT_SUBDOMAIN: ${{ inputs.artemis_account_subdomain }}

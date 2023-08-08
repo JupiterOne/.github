@@ -2,15 +2,30 @@ name: Publish to Chromatic
 
 inputs:
   github_token:
+    description: 'Github access token'
+    required: true
     type: string
   chromatic_project_token:
+    description: 'The Chromatic API token'
+    required: true
     type: string
 
 runs:
   using: "composite"
   steps:
-    - uses: ./.github/actions/frontend/setup_env
-    - name: Publish to Chromatic
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - name: chromatic_inputs
+      shell: bash
+      run: |
+        echo "github_token=${{ inputs.github_token }}"
+        echo "chromatic_project_token=${{ inputs.chromatic_project_token }}"
+    - name: setup_env
+      if: ${{ !env.TEST }}
+      uses: ./.github/actions/frontend/setup_env
+    - name: chromatic
+      if: ${{ !env.TEST }}
       uses: chromaui/action@v1
       with:
         token: ${{ inputs.github_token }}

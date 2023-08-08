@@ -1,3 +1,5 @@
+import { Act } from '@kie/act-js';
+
 /*
 Helpers methods for finding and extracting a test result
 from the act-js output.
@@ -28,4 +30,20 @@ export const getTestResults = ({
   );
 
   return resultsFound;
-}
+};
+
+export const setInputs = ({
+  act,
+  mockInputs,
+}: {
+  act: Act;
+  mockInputs: {};
+}) =>  Object.keys(mockInputs).forEach((key) => act.setInput(key, mockInputs[key]));
+
+export const setSecrets = ({
+  act,
+  mockSecrets,
+}: {
+  act: Act;
+  mockSecrets: string[];
+}) =>  mockSecrets.forEach((mockSecret) => act.setSecret(mockSecret, mockSecret));

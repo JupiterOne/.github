@@ -1,8 +1,4 @@
-# previously called: standard_spa_pr.yml
-name: E2E Trigger Response
-
-# Test workflow via the following command:
-# act -W .github/workflows/frontend_runtime_e2e_trigger_response
+name: Default workflow for running tests in a runtime application/utility repo when triggered by an external repo
 
 on:
   workflow_call:
@@ -31,22 +27,12 @@ on:
         description: 'Used by the e2e_trigger to give builds in Cypress the correct SHA associated with the PR that triggered the flow'
         type: string
       external_pr_repo_name:
-        description: 'Used by the e2e_trigger to tag builds in Cypress with the appropriate repo name (used to associate a repo with a test run)'
+        description: 'Used by the e2e_trigger to tag builds in Cypress with the appropriate repo name associated with the repo that triggered the flow'
         type: string
-      e2e_filter_tags:
-        description: "Tests will be filtered based on the tags defined here"
-        type: string
-      e2e_artemis_config_path:
-        description: 'Used to determine the path to the artemis config file'
-        type: string
-        default: 'cypress/artemis-config.yaml'
     secrets:
       NPM_TOKEN:
         description: "A J1 npm.com Publish token"
         required: true
-      AWS_ROLE:
-        description: "J1 AWS role with deploy permissions to dev"
-        required: false
       CYPRESS_RECORD_KEY:
         description: "The record key associated with the project in Cypress"
         required: false
@@ -70,7 +56,7 @@ permissions:
   contents: read
   pull-requests: write
   statuses: write
-  
+
 jobs:
   migration_number:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
@@ -79,4 +65,57 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - id: migration_number
+        name: migration_number
         uses: ./.github/actions/frontend/runtime/migration_number
+
+  e2e_prepare:
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
+    needs: [migration_number]
+    outputs:
+      artemis_account_name: ${{ steps.e2e_prepare.outputs.artemis_account_name }}
+      artemis_account_id: ${{ steps.e2e_prepare.outputs.artemis_account_id }}
+      artemis_account_subdomain: ${{ steps.e2e_prepare.outputs.artemis_account_subdomain }}
+      artemis_users: ${{ steps.e2e_prepare.outputs.artemis_users }}
+    steps:
+      - uses: actions/checkout@v2
+      - id: e2e_prepare
+        name: e2e_prepare
+        uses: ./.github/actions/frontend/runtime/e2e_prepare
+
+  e2e_run:
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
+    permissions: write-all
+    # Need to make container props configurable to enable testing
+    container:
+      image: cypress/browsers:node18.12.0-chrome106-ff106
+      options: ${{ inputs.e2e_container_options }} # confirm it's okay to pass in as an input
+    timeout-minutes: 25
+    needs: [migration_number, e2e_prepare]
+    strategy:
+      # when one test fails, DO NOT cancel the other containers, because this will kill Cypress processes
+      # leaving Cypress Cloud hanging: https://github.com/cypress-io/github-action/issues/48 
+      fail-fast: false
+    outputs:
+      test_passed: ${{ steps.e2e_run.outputs.test_passed }}
+    steps:
+      - uses: actions/checkout@v2
+      - id: e2e_run
+        name: e2e_run
+        uses: ./.github/actions/frontend/runtime/e2e_run
+        with:
+          artemis_account_name: ${{ needs.e2e_prepare.outputs.artemis_account_name }}
+          artemis_account_id: ${{ needs.e2e_prepare.outputs.artemis_account_id }}
+          artemis_account_subdomain: ${{ needs.e2e_prepare.outputs.artemis_account_subdomain }}
+          artemis_users: ${{ needs.e2e_prepare.outputs.artemis_users }}
+          cypress_record_key: ${{ secrets.CYPRESS_RECORD_KEY }}
+          cypress_project_id: ${{ secrets.CYPRESS_PROJECT_ID }}
+          cypress_password: ${{ secrets.CYPRESS_PASSWORD }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          migration_number: ${{ needs.migration_number.outputs.migration }}
+          spec_to_run: ${{ inputs.spec_to_run }}
+          commit_info_sha: ${{ inputs.external_pr_sha }}
+          commit_info_pr_number: ${{ inputs.external_pr_number }}
+          commit_info_pr_title: ${{ inputs.external_pr_title }}
+          commit_info_branch: ${{ inputs.external_pr_branch }}
+          commit_info_author: ${{ inputs.external_pr_author }}
+          commit_info_repo_name: ${{ inputs.external_pr_repo_name }}

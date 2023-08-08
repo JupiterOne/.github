@@ -69,7 +69,14 @@ export const getWorkflowConfig = ({
 export const runCompositeAction = async ({
   act,
   repoName,
+  mockSteps = true,
+}: {
+  act: any;
+  repoName: string;
+  mockSteps?: boolean;
 }) => {
+  if (mockSteps) act.setEnv('TEST', 'true');
+
   const result = await act.runEventAndJob('push', repoName, { logFile: `repo/${repoName}.log` });
   
   /*
@@ -86,11 +93,15 @@ export const runWorkflow = async ({
   act,
   repoName,
   config = {},
+  mockSteps = true,
 }: {
   act: any;
   repoName: string;
-  config?: {}
+  config?: {};
+  mockSteps?: boolean;
 }) => {
+  if (mockSteps) act.setEnv('TEST', 'true');
+  
   const result = await act.runEvent('workflow_call', { logFile: `repo/${repoName}.log`, ...config });
 
   return result;

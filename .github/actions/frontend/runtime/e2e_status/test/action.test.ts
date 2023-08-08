@@ -19,12 +19,6 @@ afterEach(async () => {
 });
 
 test('output of test_passed is true when cypress_run is successful', async () => {
-  mockCompositeStep({
-    originDirectory: __dirname,
-    repoPath: mockGithub.repo.getPath(repoName),
-    mockSteps: [ { name: 'pr_status' } ]
-  });
-
   const results = await runCompositeAction({ act: new Act(mockGithub.repo.getPath(repoName)), repoName });
 
   const result = getTestResult({ results, name: 'pass_with_failures' });

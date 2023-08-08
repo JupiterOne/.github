@@ -1,11 +1,10 @@
-# previously called: standard_spa_pr.yml
-name: Standard SPA PR (NPM)
+name: Default workflow for a runtime application when a PR is opened
 
 on:
   workflow_call:
     inputs:
       fallback_runner:
-        description: "If true will levarege ubuntu-latest, otherwise will fall back to the J1 in-house runner"
+        description: "If true will leverage ubuntu-latest, otherwise will fall back to the J1 in-house runner"
         default: true
         type: boolean
       use_validate:
@@ -91,7 +90,6 @@ jobs:
       - id: migration_number
         name: migration_number
         uses: ./.github/actions/frontend/runtime/migration_number
-        # run: echo "migration=1" >> $GITHUB_OUTPUT
 
   validate:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
@@ -117,10 +115,6 @@ jobs:
     needs: [migration_number]
     steps:
       - uses: actions/checkout@v2
-      # These are props that have been obtained from a previous job
-      - name: magic_url_derived_props
-        shell: bash
-        run: echo "migration=${{ needs.migration_number.outputs.migration }}"
       - name: magic_url
         uses: ./.github/actions/frontend/runtime/magic_url
         if: ${{ inputs.use_magic_url }} # enables us to skip magic_url and not block other downstream jobs
@@ -140,16 +134,12 @@ jobs:
       artemis_users: ${{ steps.e2e_prepare.outputs.artemis_users }}
     steps:
       - uses: actions/checkout@v2
-      # These are props that have been obtained from a previous job
-      - name: e2e_prepare_derived_props
-        shell: bash
-        run: echo "migration=${{ needs.migration_number.outputs.migration }}"
       - id: e2e_prepare
         name: e2e_prepare
         uses: ./.github/actions/frontend/runtime/e2e_prepare
         with:
           e2e_artemis_config_path: ${{ inputs.e2e_artemis_config_path }}
-          userCount: $(echo '${{ inputs.e2e_containers }}' | jq '. | length')
+          user_count: $(echo '${{ inputs.e2e_containers }}' | jq '. | length')
 
   e2e_run:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
@@ -173,40 +163,21 @@ jobs:
       test_passed: ${{ steps.e2e_run.outputs.test_passed }}
     steps:
       - uses: actions/checkout@v2
-      # These are props that have been obtained from a previous job
-      - name: e2e_run_derived_props
-        shell: bash
-        run: |
-          echo "migration=${{ needs.migration_number.outputs.migration }}"
-          echo "artemis_account_name=${{ needs.e2e_prepare.outputs.artemis_account_name }}"
-          echo "artemis_account_id=${{ needs.e2e_prepare.outputs.artemis_account_id }}"
-          echo "artemis_account_subdomain=${{ needs.e2e_prepare.outputs.artemis_account_subdomain }}"
-          echo "artemis_users=${{ needs.e2e_prepare.outputs.artemis_users }}"
       - id: e2e_run
         name: e2e_run
         uses: ./.github/actions/frontend/runtime/e2e_run
+        continue-on-error: ${{ inputs.e2e_pass_on_error }}
         with:
           artemis_account_name: ${{ needs.e2e_prepare.outputs.artemis_account_name }}
           artemis_account_id: ${{ needs.e2e_prepare.outputs.artemis_account_id }}
           artemis_account_subdomain: ${{ needs.e2e_prepare.outputs.artemis_account_subdomain }}
           artemis_users: ${{ needs.e2e_prepare.outputs.artemis_users }}
-          commit_info_sha: ${{ github.sha }}
-          commit_info_pr_number: ${{ github.event.pull_request.number }}
-          commit_info_pr_title: ${{ github.event.pull_request.title }}
-          commit_info_branch: ${{ github.event.pull_request.head.ref }}
-          commit_info_author: ${{ env.COMMIT_INFO_AUTHOR }}
-          commit_info_repo_name: ${{ github.event.repository.name }}
-          commit_info_message: ${{ github.event.pull_request.title }}
-          commit_info_workflow: ${{ github.workflow }}
-          commit_info_event_name: ${{ github.event_name }}
           cypress_container: ${{ matrix.containers }}
-          cypress_tag: ${{ github.event.repository.name }},${{ github.event_name }}
           cypress_mailinator_api_key: ${{ secrets.CYPRESS_MAILINATOR_API_KEY }}
           cypress_record_key: ${{ secrets.CYPRESS_RECORD_KEY }}
           cypress_project_id: ${{ secrets.CYPRESS_PROJECT_ID }}
           cypress_password: ${{ secrets.CYPRESS_PASSWORD }}
           e2e_filter_tags: ${{ inputs.e2e_filter_tags }}
-          e2e_prepare_status: ${{ needs.e2e_prepare.result }}
           e2e_pass_on_error: ${{ inputs.e2e_pass_on_error }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
           migration_number: ${{ needs.migration_number.outputs.migration }}

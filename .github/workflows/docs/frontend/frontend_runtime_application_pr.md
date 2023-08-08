@@ -1,4 +1,4 @@
-# PR flow for a standard J1 application
+# Default workflow for a runtime application when a PR is opened
 
 
 This is the [default workflow](../../frontend_runtime_application_pr.yml) that is run when a `PR is opened` for an `application runtime`. It is meant to test the quality and safety of the code being committed.
@@ -21,7 +21,6 @@ This action requires uses the following inputs:
 | `spec_to_run`               | String  | cypress/e2e/**/*.feature     | False      | Used to determine which test to run
 | `magic_url_route`           | String  | '/'                          | False      | The relative route the magic url should go to
                                                                            
-
 ## Secrets
 
 These secrets are required to...
@@ -30,9 +29,6 @@ These secrets are required to...
 | --------------------------- | --------- | ----------------------------------------- |
 | `NPM_TOKEN`                 | True      | A J1 npm.com Publish token
 | `CHROMATIC_PROJECT_TOKEN`   | False     | The Chromatic API token
-| `AWS_ROLE`                  | False     | J1 AWS role with deploy permissions to dev
-| `AWS_REGION`                | False     | The current region of the dev env
-| `AWS_APPS_BUCKET`           | False     | What bucket to deploy the magic url
 | `CYPRESS_RECORD_KEY`        | False     | The record key associated with the project in Cypress.
 | `CYPRESS_PROJECT_ID`        | False     | The project ID associated with the project in Cypress
 | `CYPRESS_PASSWORD`          | False     | The password of the E2E username

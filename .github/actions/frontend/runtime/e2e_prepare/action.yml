@@ -3,26 +3,35 @@ name: Run Artemis to prepare for running the E2E tests
 inputs:
   e2e_artemis_config_path:
     type: string
-  userCount:
+    default: 'cypress/artemis-config.yaml'
+  user_count:
     type: string
+    default: 1
 
 outputs:
   artemis_account_name:
     value: ${{ steps.artemis_info.outputs.artemis_account_name }}
-  artemis_account_id:
-    value: ${{ steps.artemis_info.outputs.artemis_account_id }}
   artemis_account_subdomain:
     value: ${{ steps.artemis_info.outputs.artemis_account_subdomain }}
+  artemis_account_id:
+    value: ${{ steps.artemis_info.outputs.artemis_account_id }}
   artemis_users:
     value: ${{ steps.artemis_info.outputs.artemis_users }}
 
 runs:
   using: "composite"
   steps:
-    - name: setup_env
-      uses: ./.github/actions/frontend/setup_env
     - uses: actions/checkout@v3
+    - name: e2e_prepare_inputs
+      shell: bash
+      run: |
+        echo "e2e_artemis_config_path=${{ inputs.e2e_artemis_config_path }}"
+        echo "user_count=${{ inputs.user_count }}"
+    - name: setup_env
+      if: ${{ !env.TEST }}
+      uses: ./.github/actions/frontend/setup_env
     - name: configure_aws_credentials
+      if: ${{ !env.TEST }}
       uses: aws-actions/configure-aws-credentials@v1
       with:
         role-to-assume: arn:aws:iam::564077667165:role/github-pull-request-role
@@ -30,9 +39,11 @@ runs:
           ${{ github.event.repository.name }}-magic-url-role-session
         aws-region: us-east-1
     - name: update_artemis_config
+      if: ${{ !env.TEST }}
       shell: bash
-      run: npx update-artemis-config --pathToArtemisConfig=${{ inputs.e2e_artemis_config_path }} --usersCount=${{ inputs.userCount }}
+      run: npx update-artemis-config --pathToArtemisConfig=${{ inputs.e2e_artemis_config_path }} --usersCount=${{ inputs.user_count }}
     - name: launch_artemis
+      if: ${{ !env.TEST }}
       shell: bash
       run: npx artemis-launch -c tmp/artemis-config-updated.yaml --action=launch --outputFilename=artemis-run
     - id: artemis_info

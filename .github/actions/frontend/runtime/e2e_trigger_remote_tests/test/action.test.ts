@@ -28,7 +28,7 @@ test('output of test_passed is true when cypress_run is successful', async () =>
     ]
   });
 
-  const results = await runCompositeAction({ act: new Act(mockGithub.repo.getPath(repoName)), repoName });
+  const results = await runCompositeAction({ act: new Act(mockGithub.repo.getPath(repoName)), repoName, mockSteps: false });
 
   const result = getTestResult({
     results,
@@ -48,7 +48,7 @@ test('stops at cypress_run step if tests fail', async () => {
     ]
   });
 
-  const results = await runCompositeAction({ act: new Act(mockGithub.repo.getPath(repoName)), repoName });
+  const results = await runCompositeAction({ act: new Act(mockGithub.repo.getPath(repoName)), repoName, mockSteps: false });
 
   const result = getTestResult({
     results,

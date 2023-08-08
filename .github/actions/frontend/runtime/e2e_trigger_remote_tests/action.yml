@@ -26,10 +26,12 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: setup_env
-      uses: ./.github/actions/frontend/setup_env
     - uses: actions/checkout@v3
+    - name: setup_env
+      if: ${{ !env.TEST }}
+      uses: ./.github/actions/frontend/setup_env
     - name: cypress_run
+      if: ${{ !env.TEST }}
       id: cypress_run
       continue-on-error: ${{ inputs.e2e_pass_on_error == 'true' }}
       uses: convictional/trigger-workflow-and-wait@v1.6.5

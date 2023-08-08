@@ -3,13 +3,19 @@ name: Runs validation on the repo
 runs:
   using: "composite"
   steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 2
     - name: setup_env
+      if: ${{ !env.TEST }}
       uses: ./.github/actions/frontend/setup_env
     - name: validate
+      if: ${{ !env.TEST }}
       shell: bash
       run: npm run validate:ci
     # Check if we should skip validating runtime types
     - name: remote_type_check_skip
+      if: ${{ !env.TEST }}
       shell: bash
       run: |
         if [[ $(git log -2 --pretty=format:'%s' | grep "\[skip remote-type-check\]")  ]]; then 
@@ -17,7 +23,8 @@ runs:
         fi
     # Validate runtime types (if applicable)
     - name: remote_type_test
+      if: ${{ !env.TEST && !env.HAS_SKIP }}
       run: |
         npx -p @jupiterone/web-tools-remote-types@latest remote-types test
         echo "No breaking changes found";
-      if: ${{ !env.HAS_SKIP }}
+
