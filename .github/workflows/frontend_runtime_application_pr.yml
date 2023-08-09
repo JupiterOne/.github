@@ -15,10 +15,6 @@ on:
         description: "Run VRT Storybook tests with chromatic"
         default: false
         type: boolean
-      use_magic_url:
-        description: "Deploy to dev via a query param, required for normal SPAs"
-        default: true
-        type: boolean
       use_e2e:
         description: "Run E2E test, in most case we want this"
         type: boolean
@@ -117,7 +113,6 @@ jobs:
       - uses: actions/checkout@v2
       - name: magic_url
         uses: ./.github/actions/frontend/runtime/magic_url
-        if: ${{ inputs.use_magic_url }} # enables us to skip magic_url and not block other downstream jobs
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           migration_number: ${{ needs.migration_number.outputs.migration }}

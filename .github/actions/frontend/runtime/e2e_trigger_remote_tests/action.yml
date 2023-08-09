@@ -15,9 +15,6 @@ inputs:
   repo_spec:
     description: "The name of the spec(s) to target"
     required: true
-  use_mock_step:
-    description: "Mocks the time intensive part of the action below, useful for testing"
-    default: false
 
 outputs:
   test_passed:
@@ -27,6 +24,13 @@ runs:
   using: "composite"
   steps:
     - uses: actions/checkout@v3
+    - name: e2e_trigger_remote_tests_inputs
+      shell: bash
+      run: |
+        echo "e2e_pass_on_error=${{ inputs.e2e_pass_on_error }}"
+        echo "e2e_auto=${{ inputs.e2e_auto }}"
+        echo "repo_name=${{ inputs.repo_name }}"
+        echo "repo_spec=${{ inputs.repo_spec }}"
     - name: setup_env
       if: ${{ !env.TEST }}
       uses: ./.github/actions/frontend/setup_env

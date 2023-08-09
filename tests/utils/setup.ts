@@ -75,6 +75,7 @@ export const runCompositeAction = async ({
   repoName: string;
   mockSteps?: boolean;
 }) => {
+  // If true, will skip all steps in the composite action that contain "if: ${{ !env.TEST }}"
   if (mockSteps) act.setEnv('TEST', 'true');
 
   const result = await act.runEventAndJob('push', repoName, { logFile: `repo/${repoName}.log` });
@@ -88,7 +89,6 @@ export const runCompositeAction = async ({
   return cleanedResult;
 };
 
-
 export const runWorkflow = async ({
   act,
   repoName,
@@ -100,6 +100,7 @@ export const runWorkflow = async ({
   config?: {};
   mockSteps?: boolean;
 }) => {
+  // If true, will skip all steps in the workflow that contain "if: ${{ !env.TEST }}"
   if (mockSteps) act.setEnv('TEST', 'true');
   
   const result = await act.runEvent('workflow_call', { logFile: `repo/${repoName}.log`, ...config });
