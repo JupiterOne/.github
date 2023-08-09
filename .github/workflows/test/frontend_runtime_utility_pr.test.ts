@@ -3,24 +3,12 @@ import { Act } from '@kie/act-js';
 import { getWorkflowConfig, runWorkflow } from 'tests/utils/setup';
 import { getTestResult, getTestResults, setInputs, setSecrets } from 'tests/utils/helpers';
 import mockPackageJson from 'tests/package.json';
-import mockArtemisRun from '~/actions/frontend/runtime/e2e_prepare/test/artemis-run.json';
 import { resolve } from 'node:path';
 import { cwd } from 'node:process';
 
 const repoName = 'frontend_runtime_utility_pr';
 
 let mockGithub: MockGithub;
-
-const mockArtemisData = {
-  id: mockArtemisRun[0].id,
-  accountName: mockArtemisRun[0].metadata.accountName,
-  accountSubdomain: mockArtemisRun[0].metadata.accountSubdomain,
-  users: {
-    tokenSecret: mockArtemisRun[1].metadata.token.tokenSecret,
-    tokenCsrf: mockArtemisRun[1].metadata.token.tokenCsrf,
-    groupName: mockArtemisRun[1].metadata.groupName
-  }
-};
 
 beforeEach(async () => {
   mockGithub = new MockGithub(getWorkflowConfig({ repoName, additionalFiles: [
@@ -37,7 +25,7 @@ afterEach(async () => {
   await mockGithub.teardown();
 });
 
-test.skip('validate inputs and secrets', async () => {
+test('validate inputs and secrets', async () => {
   const act = new Act(mockGithub.repo.getPath(repoName));
 
   const mockInputs = {
@@ -75,7 +63,7 @@ test.skip('validate inputs and secrets', async () => {
   expect(e2e_trigger_remote_tests_inputs.output).toContain(JSON.parse(mockInputs.repos_to_test)[0].repo.spec);
 });
 
-test.skip('default flow', async () => {
+test('default flow', async () => {
   const act = new Act(mockGithub.repo.getPath(repoName));
   const results = await runWorkflow({ act, repoName });
 
@@ -88,7 +76,7 @@ test.skip('default flow', async () => {
   expect(jobs_found.length).toEqual(3);
 });
 
-test.skip('flow with chromatic turned on', async () => {
+test('flow with chromatic turned on', async () => {
   const act = new Act(mockGithub.repo.getPath(repoName));
 
   act.setInput('use_chromatic', 'true');
@@ -105,7 +93,7 @@ test.skip('flow with chromatic turned on', async () => {
   expect(jobs_found.length).toEqual(4);
 });
 
-test.skip('flow with e2e trigger turned on', async () => {
+test('flow with e2e trigger turned on', async () => {
   const act = new Act(mockGithub.repo.getPath(repoName));
 
   setInputs({ act, mockInputs: {
