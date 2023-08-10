@@ -7,7 +7,7 @@ This [composite action](./action.yml) is responsible for executing [Artemis](htt
 | Name                        | Type    | Default                      | Required  | Description                                               |
 | --------------------------- | ------- | ---------------------------- | --------- | --------------------------------------------------------- |
 | `e2e_artemis_config_path`   | String  | cypress/artemis-config.yaml  | False     | Used to determine the path to the artemis config file
-| `userCount`                 | String  |                              | True      | The number of tests that you want Cypress to run in parallel (obtained via `$(echo '${{ inputs.e2e_containers }}' | jq '. | length')`)
+| `userCount`                 | String  |                              | False     | The number of tests that you want Cypress to run in parallel (obtained via `$(echo '${{ inputs.e2e_containers }}' | jq '. | length')`)
 
 ## Outputs
 
