@@ -111,6 +111,7 @@ runs:
       uses: ./.github/actions/frontend/setup_env
     - id: get_author_name
       name: get_author_name
+      shell: bash
       run:
         echo "commit_info_author=$(git show -s --pretty=%an)" >> $GITHUB_OUTPUT
     - name: cypress_run

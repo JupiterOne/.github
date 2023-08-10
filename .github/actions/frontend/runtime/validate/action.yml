@@ -24,6 +24,7 @@ runs:
     # Validate runtime types (if applicable)
     - name: remote_type_test
       if: ${{ !env.TEST && !env.HAS_SKIP }}
+      shell: bash
       run: |
         npx -p @jupiterone/web-tools-remote-types@latest remote-types test
         echo "No breaking changes found";
