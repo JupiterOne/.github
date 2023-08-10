@@ -45,22 +45,23 @@ This action requires uses the following inputs:
 steps:
   - name: validate
     uses: ./.github/actions/frontend/runtime/e2e_run
-    artemis_account_name: ${{ needs.e2e_prepare.outputs.artemis_account_name }}
-    artemis_account_id: ${{ needs.e2e_prepare.outputs.artemis_account_id }}
-    artemis_account_subdomain: ${{ needs.e2e_prepare.outputs.artemis_account_subdomain }}
-    artemis_users: ${{ needs.e2e_prepare.outputs.artemis_users }}
-    cypress_container: ${{ matrix.containers }}
-    cypress_tag: ${{ github.event.repository.name }},${{ github.event_name }}
-    cypress_mailinator_api_key: ${{ secrets.CYPRESS_MAILINATOR_API_KEY }}
-    cypress_record_key: ${{ secrets.CYPRESS_RECORD_KEY }}
-    cypress_project_id: ${{ secrets.CYPRESS_PROJECT_ID }}
-    cypress_password: ${{ secrets.CYPRESS_PASSWORD }}
-    e2e_filter_tags: ${{ inputs.e2e_filter_tags }}
-    e2e_prepare_status: ${{ needs.e2e_prepare.result }}
-    e2e_pass_on_error: ${{ inputs.e2e_pass_on_error }}
-    github_token: ${{ secrets.GITHUB_TOKEN }}
-    migration_number: ${{ needs.migration_number.outputs.migration }}
-    spec_to_run: ${{ inputs.spec_to_run }}
+    with:
+      artemis_account_name: ${{ needs.e2e_prepare.outputs.artemis_account_name }}
+      artemis_account_id: ${{ needs.e2e_prepare.outputs.artemis_account_id }}
+      artemis_account_subdomain: ${{ needs.e2e_prepare.outputs.artemis_account_subdomain }}
+      artemis_users: ${{ needs.e2e_prepare.outputs.artemis_users }}
+      cypress_container: ${{ matrix.containers }}
+      cypress_tag: ${{ github.event.repository.name }},${{ github.event_name }}
+      cypress_mailinator_api_key: ${{ secrets.CYPRESS_MAILINATOR_API_KEY }}
+      cypress_record_key: ${{ secrets.CYPRESS_RECORD_KEY }}
+      cypress_project_id: ${{ secrets.CYPRESS_PROJECT_ID }}
+      cypress_password: ${{ secrets.CYPRESS_PASSWORD }}
+      e2e_filter_tags: ${{ inputs.e2e_filter_tags }}
+      e2e_prepare_status: ${{ needs.e2e_prepare.result }}
+      e2e_pass_on_error: ${{ inputs.e2e_pass_on_error }}
+      github_token: ${{ secrets.GITHUB_TOKEN }}
+      migration_number: ${{ needs.migration_number.outputs.migration }}
+      spec_to_run: ${{ inputs.spec_to_run }}
 ```
 
 
@@ -72,12 +73,12 @@ The e2e_run can be triggered by another repo (see `frontend_runtime_e2e_trigger_
 steps:
   - name: validate
     uses: ./.github/actions/frontend/runtime/e2e_run
-    # ...see-props-above
-    commit_info_sha: inputs.external_pr_sha
-    commit_info_pr_number: inputs.external_pr_number
-    commit_info_pr_title: inputs.external_pr_title
-    commit_info_branch: inputs.external_pr_branch
-    commit_info_author: inputs.external_pr_author
-    commit_info_repo_name: inputs.external_pr_repo_name
-    commit_info_message: ${{ github.event.pull_request.title }} inputs.external_pr_title
+    with:
+      # ...see-props-above
+      commit_info_sha: ${{ inputs.external_pr_sha }}
+      commit_info_pr_number: ${{ inputs.external_pr_number }}
+      commit_info_pr_title: ${{ inputs.external_pr_title }}
+      commit_info_branch: ${{ inputs.external_pr_branch }}
+      commit_info_author: ${{ inputs.external_pr_author }}
+      commit_info_repo_name: ${{ inputs.external_pr_repo_name }}
 ```
