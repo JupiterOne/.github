@@ -102,6 +102,9 @@ export const runWorkflow = async ({
 }) => {
   // If true, will skip all steps in the workflow that contain "if: ${{ !env.TEST }}"
   if (mockSteps) act.setEnv('TEST', 'true');
+
+  // Need to leverage ubuntu-latest for tests to operate
+  act.setInput('fallback_runner', true);
   
   const result = await act.runEvent('workflow_call', { logFile: process.env.ACT_LOG ? `repo/${repoName}.log` : undefined, ...config });
 

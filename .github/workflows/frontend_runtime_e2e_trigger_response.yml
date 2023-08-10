@@ -6,7 +6,7 @@ on:
     inputs:
       fallback_runner:
         description: "If true will levarege ubuntu-latest, otherwise will fall back to the J1 in-house runner"
-        default: true
+        default: false
         type: boolean
       spec_to_run:
         description: 'Used to determine which test to run'

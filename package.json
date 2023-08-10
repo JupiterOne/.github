@@ -6,7 +6,8 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "test": "vitest",
+    "clean": "npx rimraf repo",
+    "test": "npm run clean && vitest",
     "typecheck": "tsc -b",
     "lint": "eslint . --ext .ts",
     "validate": "npm run lint && npm run typecheck"

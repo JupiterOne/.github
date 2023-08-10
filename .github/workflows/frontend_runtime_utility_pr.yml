@@ -5,7 +5,7 @@ on:
     inputs:
       fallback_runner:
         description: "If true will leverage ubuntu-latest, otherwise will fall back to the J1 in-house runner"
-        default: true
+        default: false
         type: boolean
       use_validate:
         description: "Run validation, in most case we want this"

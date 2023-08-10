@@ -9,8 +9,8 @@ This action requires uses the following inputs:
 
 | Name                        | Type    | Default                      | Required  | Description                                                                            |
 | --------------------------- | ------- | ---------------------------- | --------- | -------------------------------------------------------------------------------------- |
-| `fallback_runner`           | String  | false                        | False      | If true will leverage ubuntu-latest, otherwise will fall back to the J1 in-house runner
-| `use_validate   `           | Boolean | true                         | False      | Run validation, in most case we want this
+| `fallback_runner`           | String  | False                        | False      | If true will leverage ubuntu-latest, otherwise will fall back to the J1 in-house runner
+| `use_validate   `           | Boolean | True                         | False      | Run validation, in most case we want this
 | `use_chromatic`             | Boolean | false                        | False      | Run VRT Storybook tests with chromatic
 | `use_e2e_trigger`           | Boolean | false                        | False      | Trigger E2E tests in other repos
 | `e2e_pass_on_error`         | Boolean | false                        | False      | Pass the workflow even if the E2E test fail
@@ -115,7 +115,7 @@ graph LR;
     F[external_repo];
     G[e2e_status];
 
-    B --> D --> E -->|trigger E2E tests and wait| F -->|report back status| G;
+    B --> D --> E -->|trigger E2E tests and wait| F -->|report back status| E --> G;
 
     A --> B;
     A --> C;

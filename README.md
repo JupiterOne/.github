@@ -6,6 +6,7 @@ The following workflows are for the entire JupiterOne organization, intending to
 
 ### Frontend Workflows
 - [frontend_runtime_application_pr](.github/workflows/docs/frontend/frontend_runtime_application_pr.md)
+- [frontend_runtime_utility_pr](.github/workflows/docs/frontend/frontend_runtime_utility_pr.md)
 - [frontend_runtime_e2e_trigger_response](.github/workflows/docs/frontend/frontend_runtime_e2e_trigger_response.md)
 
 ### Backend Workflows
