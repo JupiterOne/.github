@@ -23,6 +23,7 @@ runs:
   steps:
     - uses: actions/checkout@v3
     - name: e2e_prepare_inputs
+      if: ${{ env.TEST }}
       shell: bash
       run: |
         echo "e2e_artemis_config_path=${{ inputs.e2e_artemis_config_path }}"

@@ -78,7 +78,7 @@ export const runCompositeAction = async ({
   // If true, will skip all steps in the composite action that contain "if: ${{ !env.TEST }}"
   if (mockSteps) act.setEnv('TEST', 'true');
 
-  const result = await act.runEventAndJob('push', repoName, { logFile: `repo/${repoName}.log` });
+  const result = await act.runEventAndJob('push', repoName, { logFile: process.env.ACT_LOG ? `repo/${repoName}.log` : undefined });
   
   /*
   The first two and last item in the returned results are the same for every composite action test.
@@ -103,7 +103,7 @@ export const runWorkflow = async ({
   // If true, will skip all steps in the workflow that contain "if: ${{ !env.TEST }}"
   if (mockSteps) act.setEnv('TEST', 'true');
   
-  const result = await act.runEvent('workflow_call', { logFile: `repo/${repoName}.log`, ...config });
+  const result = await act.runEvent('workflow_call', { logFile: process.env.ACT_LOG ? `repo/${repoName}.log` : undefined, ...config });
 
   return result;
 };

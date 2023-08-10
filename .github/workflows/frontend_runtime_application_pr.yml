@@ -42,9 +42,6 @@ on:
         description: 'The relative route the magic url should go to'
         type: string
         default: '/'
-      # Do not update e2e_container_options, only necessary for running tests
-      e2e_container_options:
-        default: '--platform linux/amd64 --privileged'
     secrets:
       NPM_TOKEN:
         description: "A J1 npm.com Publish token"
@@ -137,13 +134,12 @@ jobs:
           user_count: $(echo '${{ inputs.e2e_containers }}' | jq '. | length')
 
   e2e_run:
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
+    # Note this is the only job that leverages amd64
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "amd64"]') }}
+    container: cypress/browsers:node18.12.0-chrome106-ff106
+    if: ${{ inputs.use_e2e }}
     continue-on-error: ${{ inputs.e2e_pass_on_error }}
     permissions: write-all
-    # Need to make container props configurable to enable testing
-    container:
-      image: cypress/browsers:node18.12.0-chrome106-ff106
-      options: ${{ inputs.e2e_container_options }} # confirm it's okay to pass in as an input
     timeout-minutes: 25
     needs: [migration_number, magic_url, e2e_prepare]
     strategy:

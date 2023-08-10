@@ -25,6 +25,7 @@ runs:
   steps:
     - uses: actions/checkout@v3
     - name: e2e_trigger_remote_tests_inputs
+      if: ${{ env.TEST }}
       shell: bash
       run: |
         echo "e2e_pass_on_error=${{ inputs.e2e_pass_on_error }}"
@@ -43,6 +44,7 @@ runs:
         owner: JupiterOne
         repo: ${{ inputs.repo_name }}
         github_token: ${{ inputs.e2e_auto }}
+        # This is the name of the file in the external repo that we're kicking the tests off in
         workflow_file_name: e2e_trigger.yml
         propagate_failure: ${{ inputs.e2e_pass_on_error == 'false' }}
         client_payload: '{"spec_to_run":"${{ inputs.repo_spec }}","external_pr_number":"${{ github.event.pull_request.number }}","external_pr_title":"${{ github.event.pull_request.title }}","external_pr_repo_name":"${{ github.event.repository.name }}","external_pr_branch":"${{ github.event.pull_request.head.ref }}","external_pr_author":"${{ env.COMMIT_INFO_AUTHOR }}","external_pr_sha":"${{ github.event.pull_request.base.sha }}"}'

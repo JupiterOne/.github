@@ -83,6 +83,7 @@ runs:
   steps:
     - uses: actions/checkout@v3
     - name: e2e_run_inputs
+      if: ${{ env.TEST }}
       shell: bash
       run: |
         echo "artemis_account_name=${{ inputs.artemis_account_name }}"

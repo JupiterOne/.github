@@ -131,25 +131,6 @@ test('flow with chromatic turned on', async () => {
   expect(jobs_found.length).toEqual(4);
 });
 
-test('flow with e2e tests turned on', async () => {
-  const act = new Act(mockGithub.repo.getPath(repoName));
-
-  act.setInput('use_e2e', 'true');
-
-  const results = await runWorkflow({ act, repoName });
-
-  const jobs_found = getTestResults({ results, names: [
-    'migration_number',
-    'validate',
-    'magic_url',
-    'e2e_prepare',
-    'e2e_run',
-    'e2e_status'
-  ] });
-
-  expect(jobs_found.length).toEqual(6);
-});
-
 test('flow with e2e_pass_on_error set to true to make tests non blocking', async () => {
   const act = new Act(mockGithub.repo.getPath(repoName));
 

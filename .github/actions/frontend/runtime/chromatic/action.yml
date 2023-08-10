@@ -17,6 +17,7 @@ runs:
       with:
         fetch-depth: 0
     - name: chromatic_inputs
+      if: ${{ env.TEST }}
       shell: bash
       run: |
         echo "github_token=${{ inputs.github_token }}"

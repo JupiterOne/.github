@@ -16,6 +16,7 @@ runs:
   using: "composite"
   steps:
     - name: e2e_status_inputs
+      if: ${{ env.TEST }}
       shell: bash
       run: |
         echo "github_token=${{ inputs.github_token }}"

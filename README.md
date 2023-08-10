@@ -35,3 +35,83 @@ We are using [act-js](https://github.com/kiegroup/act-js) and [mock-github](http
 ```
 npm test
 ```
+
+### Enable Logging
+
+The following produces a log file called [name].log in the `repo` directory.
+
+```
+ACT_LOG=true npm test
+```
+
+### Strategy
+
+#### Skipping Steps
+
+Many of our steps cannot and should not be run during testing (installing npm packages, running cypress, etc.) and would break if we were to run them locally. You can add the following conditional to a step that will enable you to skip it when tests are running.
+
+```
+if: ${{ !env.TEST }}
+```
+
+The `env.TEST` variable is set to true in the [setup.ts file](tests/utils/setup.ts).
+
+#### Mock Individual Steps
+
+By default steps containing the conditional `if: ${{ !env.TEST }}` will automatically get skipped. However there are times when you may wish to turn off this default functionality so you can mock an individual step. To accomplish this you will want to set the following in your `runWorkflow` command:
+- `mockSteps: false` - Prevents `env.TEST` from being set, allowing those steps to run.
+- `mockSteps: { ... }` - You will then want to mock out the various steps in question to mimic the flow you are hoping to test. Please see the [following documentation](https://github.com/kiegroup/act-js#mocking-steps) from `act-js` for a better understanding of how this works.
+
+Here is an example where we wanted to mock the `e2e_run` step so we could call `exit 1` and simulate an actual failure in that step. For all the other steps you will notice we simply mock them with an empty echo, which allows these steps to run without failures.
+
+```
+const act = new Act(mockGithub.repo.getPath(repoName));
+
+act.setInput('use_e2e', 'true');
+act.setInput('e2e_pass_on_error', 'true');
+
+const results = await runWorkflow({ act, repoName, mockSteps: false, config: {
+  mockSteps: {
+    migration_number: [ { name: 'migration_number', mockWith: 'echo ""' } ],
+    validate: [ { name: 'validate', mockWith: 'echo ""' } ],
+    magic_url: [ { name: 'magic_url', mockWith: 'echo ""' } ],
+    e2e_prepare: [ { name: 'e2e_prepare', mockWith: 'echo ""' } ],
+    
+    // Purposefully fail to test e2e_pass_on_error
+    e2e_run: [{
+      name: 'e2e_run',
+      mockWith: 'exit 1',
+    }],
+  }
+}});
+
+const jobs_found = getTestResults({ results, name: 'e2e_status' });
+
+expect(jobs_found).not.toBeUndefined();
+```
+
+### Mapping Workflow Inputs To Composite Actions
+
+As workflows grow over time, they may end up with a considerable number of inputs. We want to make sure those inputs get mapped to the correct composite actions. This is accomplished using the following approach.
+
+If a composite action leverages inputs, you will see one its first steps has a name of `[name]_inputs` ([example](.github/actions/frontend/runtime/e2e_prepare/action.yml#L25)). This step is responsible for logging out the various inputs that are being passed to the action.
+
+Then in our tests we are able to target these inputs and verify that the appropriate inputs are being mapped to the correct composite actions.
+
+```
+const test_inputs = getTestResult({ results, name: 'test_inputs' });
+
+expect(test_inputs.output).toContain(`example_input=hello world`);
+```
+
+#### Composite Actions
+
+When it comes to testing a composite action, you will notice the action has a test directory containing at least two files:
+- `test/action_test.yml` - A composite action can not be triggered by itself like a workflow. This is a workflow file that utilizes the composition action ([example](.github/actions/frontend/runtime/e2e_prepare/test/action_test.yml)).
+- `test/action.test.ts` - This is the test itself that calls `action_test.yml`.
+
+Note: You must ensure that `name` of the job and the `path` within in the `action_test.yml` match the `repoName` defined in the `action.test.ts`, otherwise the test will fail.
+
+#### Additional Files
+
+...

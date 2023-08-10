@@ -19,6 +19,7 @@ runs:
   steps:
     - uses: actions/checkout@v3
     - name: magic_url_inputs
+      if: ${{ env.TEST }}
       shell: bash
       run: |
         echo "github_token=${{ inputs.github_token }}"
