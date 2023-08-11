@@ -24,7 +24,6 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - uses: actions/checkout@v3
     - name: e2e_prepare_inputs
       if: ${{ fromJSON(env.TEST) }}
       shell: bash

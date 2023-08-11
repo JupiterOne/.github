@@ -39,6 +39,7 @@ on:
 
 env:
   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+  TEST: false
 
 concurrency:
   group: ${{ github.head_ref || github.run_id }}
@@ -67,6 +68,8 @@ jobs:
     if: ${{ inputs.use_validate }}
     steps:
       - uses: actions/checkout@v2
+        with:
+        fetch-depth: 2
       - name: validate
         uses: ./.github/actions/frontend/runtime/validate
 
@@ -74,7 +77,9 @@ jobs:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
     if: ${{ inputs.use_chromatic }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - name: chromatic_upload
         uses: ./.github/actions/frontend/runtime/chromatic
         with:

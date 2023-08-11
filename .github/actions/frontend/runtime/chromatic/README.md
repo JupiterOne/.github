@@ -20,6 +20,10 @@ No outputs provided.
 
 ```yaml
 steps:
+  # Fetch depth 0 required
+  - uses: actions/checkout@v3
+    with:
+      fetch-depth: 0
   - name: validate
     uses: ./.github/actions/frontend/runtime/chromatic
 ```

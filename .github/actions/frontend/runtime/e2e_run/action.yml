@@ -84,7 +84,6 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - uses: actions/checkout@v3
     - name: e2e_run_inputs
       if: ${{ fromJSON(env.TEST) }}
       shell: bash
@@ -128,7 +127,7 @@ runs:
         group: PR
         ci-build-id: "${{ inputs.commit_info_sha || github.sha }}-${{ github.workflow }}-${{ github.event_name }}-${{ inputs.commit_info_pr_title || github.event.pull_request.title }}"
         browser: chrome
-        tag: ${{ inpudts.commit_info_repo_name || github.event.repository.name }},${{ github.event_name }}
+        tag: ${{ inputs.commit_info_repo_name || github.event.repository.name }},${{ github.event_name }}
       env:
         # https://github.com/cypress-io/cypress/issues/25357#issuecomment-1426992422
         ELECTRON_EXTRA_LAUNCH_ARGS: '--disable-gpu'

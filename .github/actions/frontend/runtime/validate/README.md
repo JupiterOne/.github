@@ -14,6 +14,10 @@ No outputs provided.
 
 ```yaml
 steps:
+  # Fetch depth 2 required
+  - uses: actions/checkout@v3
+    with:
+      fetch-depth: 2
   - name: validate
     uses: ./.github/actions/frontend/runtime/validate
 ```

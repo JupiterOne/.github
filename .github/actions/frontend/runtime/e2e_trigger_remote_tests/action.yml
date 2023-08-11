@@ -26,7 +26,6 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - uses: actions/checkout@v3
     - name: e2e_trigger_remote_tests_inputs
       if: ${{ fromJSON(env.TEST) }}
       shell: bash

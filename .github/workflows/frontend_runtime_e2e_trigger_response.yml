@@ -52,6 +52,7 @@ on:
 
 env:
   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+  TEST: false
 
 concurrency:
   group: ${{ github.head_ref || github.run_id }}
