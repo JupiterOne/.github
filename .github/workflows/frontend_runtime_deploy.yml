@@ -1,0 +1,47 @@
+name: Default workflow for a runtime when a PR is merged to main triggering the deploy flow
+
+on:
+  workflow_call:
+    inputs:
+      fallback_runner:
+        description: "If true will leverage ubuntu-latest, otherwise will fall back to the J1 in-house runner"
+        default: false
+        type: boolean
+      publish_chromatic:
+        description: "If true, will publish to Chromatic"
+        type: boolean
+    secrets:
+      NPM_TOKEN:
+        description: "A J1 npm.com Publish token"
+        required: true
+      CORTEX_API_KEY:
+        description: "A key that allows us to push data to Cortex"
+        required: true
+      CHROMATIC_PROJECT_TOKEN:
+        description: "A token that allows us to publish to Chromatic"
+        required: false
+
+env:
+  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+  
+jobs:
+  chromatic_publish:
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
+    if: ${{ inputs.publish_chromatic }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: chromatic_publish
+        uses: ./.github/actions/frontend/runtime/chromatic
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          chromatic_project_token: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          publish_chromatic: true
+
+  cortex:
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: cortex
+        uses: ./.github/actions/frontend/cortex
+        with:
+          cortex_api_key: ${{ secrets.CORTEX_API_KEY }}

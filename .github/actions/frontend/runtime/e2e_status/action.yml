@@ -12,11 +12,14 @@ inputs:
     required: false
     default: false
 
+# All booleans in a composite action must leverage fromJSON to ensure the value are treated
+# as booleans and not strings. See issue here: https://github.com/actions/runner/issues/1483
+
 runs:
   using: "composite"
   steps:
     - name: e2e_status_inputs
-      if: ${{ env.TEST }}
+      if: ${{ fromJSON(env.TEST) }}
       shell: bash
       run: |
         echo "github_token=${{ inputs.github_token }}"
@@ -27,7 +30,7 @@ runs:
       run: |
         echo "Test Status - ${{ inputs.e2e_passed }}"
     - name: pr_status
-      if: ${{ !env.TEST }}
+      if: ${{ !fromJSON(env.TEST) }}
       uses: Sibz/github-status-action@v1
       continue-on-error: ${{ inputs.e2e_pass_on_error == 'true' }}
       with:

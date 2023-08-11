@@ -1,6 +1,7 @@
-name: Tests
-
 on: [push]
+
+env:
+  TEST: true
 
 jobs:
   validate:

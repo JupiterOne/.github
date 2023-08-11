@@ -8,6 +8,7 @@ The following workflows are for the entire JupiterOne organization, intending to
 - [frontend_runtime_application_pr](.github/workflows/docs/frontend/frontend_runtime_application_pr.md)
 - [frontend_runtime_utility_pr](.github/workflows/docs/frontend/frontend_runtime_utility_pr.md)
 - [frontend_runtime_e2e_trigger_response](.github/workflows/docs/frontend/frontend_runtime_e2e_trigger_response.md)
+- [frontend_runtime_deploy](.github/workflows/docs/frontend/frontend_runtime_deploy.md)
 
 ### Backend Workflows
 - [publish_docker_ghcr](.github/workflows/docs/backend/publish_docker_ghcr.md)
@@ -17,7 +18,7 @@ The following workflows are for the entire JupiterOne organization, intending to
 
 The workflows above take advantage of the composite actions listed below, leveraging composition to execute those jobs that pertain to the workflow. The actions below enable us to consolidate repeatable jobs into a single location. This makes our workflows DRY, easier to reason about and more stable.
 
-### Frontend Workflows
+### Frontend Composite Actions
 
 - [setup_env](.github/actions/frontend/setup_env/README.md)
 - [chromatic](.github/actions/frontend/runtime/chromatic/README.md)

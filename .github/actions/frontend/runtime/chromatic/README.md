@@ -10,6 +10,7 @@ This action requires uses the following inputs:
 | --------------------------- | ------- | ---------------------------- | --------- | --------------------------------------------------------- |
 | `github_token`              | String  |                              | True      | Github access token
 | `chromatic_project_token`   | String  |                              | True      | The Chromatic API token
+| `publish_chromatic`   | String  |                              | True      | The Chromatic API token
                                                                            
 ## Outputs
 

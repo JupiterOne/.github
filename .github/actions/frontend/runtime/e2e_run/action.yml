@@ -78,12 +78,15 @@ outputs:
   test_passed:
     value: ${{ steps.test_results.outputs.test_passed }}
 
+# All booleans in a composite action must leverage fromJSON to ensure the value are treated
+# as booleans and not strings. See issue here: https://github.com/actions/runner/issues/1483
+
 runs:
   using: "composite"
   steps:
     - uses: actions/checkout@v3
     - name: e2e_run_inputs
-      if: ${{ env.TEST }}
+      if: ${{ fromJSON(env.TEST) }}
       shell: bash
       run: |
         echo "artemis_account_name=${{ inputs.artemis_account_name }}"
@@ -107,7 +110,7 @@ runs:
         echo "migration_number=${{ inputs.migration_number }}"
         echo "spec_to_run=${{ inputs.spec_to_run }}"
     - name: setup_env
-      if: ${{ !env.TEST }}
+      if: ${{ !fromJSON(env.TEST) }}
       uses: ./.github/actions/frontend/setup_env
     - id: get_author_name
       name: get_author_name
@@ -115,9 +118,9 @@ runs:
       run:
         echo "commit_info_author=$(git show -s --pretty=%an)" >> $GITHUB_OUTPUT
     - name: cypress_run
-      if: ${{ !env.TEST }}
+      if: ${{ !fromJSON(env.TEST) }}
       id: cypress_run
-      continue-on-error: ${{ inputs.e2e_pass_on_error == 'true' }}
+      continue-on-error: ${{ fromJSON(inputs.e2e_pass_on_error) }}
       uses: cypress-io/github-action@v5
       with:
         record: true
@@ -125,7 +128,7 @@ runs:
         group: PR
         ci-build-id: "${{ inputs.commit_info_sha || github.sha }}-${{ github.workflow }}-${{ github.event_name }}-${{ inputs.commit_info_pr_title || github.event.pull_request.title }}"
         browser: chrome
-        tag: ${{ inputs.commit_info_repo_name || github.event.repository.name }},${{ github.event_name }}
+        tag: ${{ inpudts.commit_info_repo_name || github.event.repository.name }},${{ github.event_name }}
       env:
         # https://github.com/cypress-io/cypress/issues/25357#issuecomment-1426992422
         ELECTRON_EXTRA_LAUNCH_ARGS: '--disable-gpu'
@@ -153,7 +156,7 @@ runs:
     # We have to manually output an exit code of 0 to ensure the action passes if e2e_pass_on_error is true
     - name: pass_with_failures
       shell: bash
-      if: ${{ inputs.e2e_pass_on_error == 'true' }}
+      if: ${{ fromJSON(inputs.e2e_pass_on_error) }}
       run: exit 0
     - name: set_success_vars
       shell: bash

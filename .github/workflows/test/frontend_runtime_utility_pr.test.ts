@@ -44,7 +44,7 @@ test('validate inputs and secrets', async () => {
 
   const results = await runWorkflow({ act, repoName });
 
-  // chromatic_deployment
+  // chromatic_upload
   const chromatic_inputs = getTestResult({ results, name: 'chromatic_inputs' });
   
   expect(chromatic_inputs.output).toContain(`chromatic_project_token=***`);
@@ -87,7 +87,7 @@ test('flow with chromatic turned on', async () => {
     'migration_number',
     'validate',
     'magic_url',
-    'chromatic_deployment'
+    'chromatic_upload'
   ] });
 
   expect(jobs_found.length).toEqual(4);

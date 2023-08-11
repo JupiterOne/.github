@@ -87,7 +87,7 @@ graph LR;
     B[migration_number];
     C[magic_url];
     D[validate];
-    E[chromatic_deployment];
+    E[chromatic_upload];
 
     A --> B;
     A --> D;

@@ -1,7 +1,8 @@
-name: Tests
-
 on: [push]
 
+env:
+  TEST: true
+  
 jobs:
   migration_number:
     runs-on: ubuntu-latest

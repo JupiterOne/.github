@@ -1,6 +1,6 @@
 # Frontend Runtime - Extract Migration Number
 
-This [composite action](./action.yml) is responsible for running the `validation` command in a frontend repo. Additionally it is responsible for running the `remote-types test` command if applicable to determine if any breaking changes were made.
+This [composite action](./action.yml) is responsible for extracting the `migration` number from the root `package.json` file.
 
 ## Inputs
 

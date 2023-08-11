@@ -1,0 +1,27 @@
+name: Runs Cortex related jobs for Frontend Projects
+
+inputs:
+  cortex_api_key:
+    description: 'The key that allows us to push data to Cortex'
+    type: string
+    required: true
+
+# All booleans in a composite action must leverage fromJSON to ensure the value are treated
+# as booleans and not strings. See issue here: https://github.com/actions/runner/issues/1483
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/checkout@v3
+    - name: cortex_inputs
+      if: ${{ fromJSON(env.TEST) }}
+      shell: bash
+      run: |
+        echo "cortex_api_key=${{ inputs.cortex_api_key }}"
+    - name: setup_env
+      if: ${{ !fromJSON(env.TEST) }}
+      uses: ./.github/actions/frontend/setup_env
+    - name: Create or update entity in Cortex
+      run: npx --yes -p @jupiterone/web-tools-platform-analytics@latest platform-analytics all
+      env:
+        CORTEX_API_KEY: ${{ inputs.cortex_api_key }}

@@ -4,10 +4,12 @@ import { cwd } from 'node:process';
 export const getCompositeActionConfig = ({
   directory,
   repoName,
+  actionTriggeringComposite = 'action_test.yml',
   additionalFiles,
 }: {
   directory: string;
   repoName: string;
+  actionTriggeringComposite?: string;
   additionalFiles?: { src: string; dest: string; }[];
 }) => {
   return {
@@ -15,8 +17,8 @@ export const getCompositeActionConfig = ({
       [repoName]: {
         files: [
           {
-            src: join(directory, 'action_test.yml'),
-            dest: '.github/workflows/test.yml',
+            src: join(directory, actionTriggeringComposite),
+            dest: `.github/workflows/${actionTriggeringComposite}`,
           },
           {
             src: resolve(directory, '..', 'action.yml'),
@@ -76,7 +78,7 @@ export const runCompositeAction = async ({
   mockSteps?: boolean;
 }) => {
   // If true, will skip all steps in the composite action that contain "if: ${{ !env.TEST }}"
-  if (mockSteps) act.setEnv('TEST', 'true');
+  act.setEnv('TEST', mockSteps);
 
   const result = await act.runEventAndJob('push', repoName, { logFile: process.env.ACT_LOG ? `repo/${repoName}.log` : undefined });
   

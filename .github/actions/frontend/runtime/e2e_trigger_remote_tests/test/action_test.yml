@@ -1,7 +1,8 @@
-name: Tests
-
 on: [push]
 
+env:
+  TEST: true
+  
 jobs:
   e2e_trigger_remote_tests:
     runs-on: ubuntu-latest

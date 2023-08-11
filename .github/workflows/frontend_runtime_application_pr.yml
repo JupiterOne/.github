@@ -92,12 +92,12 @@ jobs:
       - name: validate
         uses: ./.github/actions/frontend/runtime/validate
 
-  chromatic_deployment:
+  chromatic_upload:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
     if: ${{ inputs.use_chromatic }}
     steps:
       - uses: actions/checkout@v2
-      - name: chromatic_deployment
+      - name: chromatic_upload
         uses: ./.github/actions/frontend/runtime/chromatic
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}

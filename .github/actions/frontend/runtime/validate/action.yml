@@ -1,5 +1,8 @@
 name: Runs validation on the repo
 
+# All booleans in a composite action must leverage fromJSON to ensure the value are treated
+# as booleans and not strings. See issue here: https://github.com/actions/runner/issues/1483
+
 runs:
   using: "composite"
   steps:
@@ -7,15 +10,15 @@ runs:
       with:
         fetch-depth: 2
     - name: setup_env
-      if: ${{ !env.TEST }}
+      if: ${{ !fromJSON(env.TEST) }}
       uses: ./.github/actions/frontend/setup_env
     - name: validate
-      if: ${{ !env.TEST }}
+      if: ${{ !fromJSON(env.TEST) }}
       shell: bash
       run: npm run validate:ci
     # Check if we should skip validating runtime types
     - name: remote_type_check_skip
-      if: ${{ !env.TEST }}
+      if: ${{ !fromJSON(env.TEST) }}
       shell: bash
       run: |
         if [[ $(git log -2 --pretty=format:'%s' | grep "\[skip remote-type-check\]")  ]]; then 
@@ -23,7 +26,7 @@ runs:
         fi
     # Validate runtime types (if applicable)
     - name: remote_type_test
-      if: ${{ !env.TEST && !env.HAS_SKIP }}
+      if: ${{ !fromJSON(env.TEST) && !env.HAS_SKIP }}
       shell: bash
       run: |
         npx -p @jupiterone/web-tools-remote-types@latest remote-types test

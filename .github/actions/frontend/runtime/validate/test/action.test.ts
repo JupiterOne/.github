@@ -17,7 +17,6 @@ afterEach(async () => {
   await mockGithub.teardown();
 });
 
-
 test('remote types test is skipped if HAS_SKIP is present', async () => {
   mockCompositeStep({
     originDirectory: __dirname,

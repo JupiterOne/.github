@@ -1,7 +1,8 @@
-name: Tests
-
 on: [push]
 
+env:
+  TEST: true
+  
 jobs:
   e2e_prepare:
     runs-on: ubuntu-latest
