@@ -52,7 +52,7 @@ test('validate inputs and secrets', async () => {
   // magic_url
   const magic_url_inputs = getTestResult({ results, name: 'magic_url_inputs' });
 
-  expect(magic_url_inputs.output).toContain(`migration=${mockPackageJson.config.migration}`);;
+  expect(magic_url_inputs.output).toContain(`migration=${mockPackageJson.config.migration}`);
 
   // e2e_run
   const e2e_trigger_remote_tests_inputs = getTestResult({ results, name: 'e2e_trigger_remote_tests_inputs' });

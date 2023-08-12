@@ -1,6 +1,5 @@
 import { MockGithub } from '@kie/mock-github';
 import { Act } from '@kie/act-js';
-import { mockCompositeStep } from 'tests/utils/mock_composite_step';
 import { getCompositeActionConfig, runCompositeAction } from 'tests/utils/setup';
 import { getTestResult } from 'tests/utils/helpers';
 

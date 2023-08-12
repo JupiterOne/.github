@@ -1,5 +1,6 @@
 import { join, resolve } from 'node:path';
 import { cwd } from 'node:process';
+import { Act } from '@kie/act-js';
 
 export const getCompositeActionConfig = ({
   directory,
@@ -73,12 +74,12 @@ export const runCompositeAction = async ({
   repoName,
   mockSteps = true,
 }: {
-  act: any;
+  act: Act;
   repoName: string;
   mockSteps?: boolean;
 }) => {
   // If true, will skip all steps in the composite action that contain "if: ${{ !env.TEST }}"
-  act.setEnv('TEST', mockSteps);
+  act.setEnv('TEST', String(mockSteps));
 
   const result = await act.runEventAndJob('push', repoName, { logFile: process.env.ACT_LOG ? `repo/${repoName}.log` : undefined });
   
@@ -97,16 +98,16 @@ export const runWorkflow = async ({
   config = {},
   mockSteps = true,
 }: {
-  act: any;
+  act: Act;
   repoName: string;
-  config?: {};
+  config?: object;
   mockSteps?: boolean;
 }) => {
   // If true, will skip all steps in the workflow that contain "if: ${{ !env.TEST }}"
-  if (mockSteps) act.setEnv('TEST', 'true');
+  act.setEnv('TEST', String(mockSteps));
 
   // Need to leverage ubuntu-latest for tests to operate
-  act.setInput('fallback_runner', true);
+  act.setInput('fallback_runner', 'true');
   
   const result = await act.runEvent('workflow_call', { logFile: process.env.ACT_LOG ? `repo/${repoName}.log` : undefined, ...config });
 

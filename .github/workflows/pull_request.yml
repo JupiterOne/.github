@@ -1,0 +1,14 @@
+name: PR
+
+on:
+  pull_request:
+
+jobs:
+  pr:
+    runs-on: ${{ fromJson('["jupiterone-dev", "arm64"]') }}
+    steps:
+      - uses: actions/checkout@v2
+      - id: npm_install
+        run: npm ci
+      - id: npm_validate
+        run: npm run validate
