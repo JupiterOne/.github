@@ -36,5 +36,5 @@ test('remote types test is skipped if HAS_SKIP is present', async () => {
   const results = await runCompositeAction({ act, repoName, mockSteps: false });
 
   // The remote_type_test step is never hit
-  expect(results.length).toEqual(3);
+  expect(results.length).toEqual(4);
 });
