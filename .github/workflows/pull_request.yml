@@ -8,7 +8,12 @@ jobs:
     runs-on: ${{ fromJson('["jupiterone-dev", "arm64"]') }}
     steps:
       - uses: actions/checkout@v2
-      - id: npm_install
-        run: npm ci
-      - id: npm_validate
-        run: npm run validate
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18.15.0
+          cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - run: npm ci
+      - run: npm run validate
