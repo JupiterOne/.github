@@ -91,7 +91,8 @@ jobs:
         uses: ./.github/actions/frontend/runtime/e2e_prepare
 
   e2e_run:
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
+    # Note this is the only job that leverages amd64
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "amd64"]') }}
     container: cypress/browsers:node18.12.0-chrome106-ff106
     permissions: write-all
     timeout-minutes: 25
