@@ -1,0 +1,28 @@
+on: [push]
+
+env:
+  TEST: true
+  
+jobs:
+  e2e_prepare:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      # https://github.com/nektos/act#module_not_found
+      - uses: actions/checkout@v3
+        with:
+          path: e2e_prepare
+      - id: e2e_prepare
+        uses: ./e2e_prepare
+      - name: results_artemis_account_name
+        run: echo ${{ steps.e2e_prepare.outputs.artemis_account_name }}
+        shell: bash
+      - name: results_artemis_account_subdomain
+        run: echo ${{ steps.e2e_prepare.outputs.artemis_account_subdomain }}
+        shell: bash
+      - name: results_artemis_account_id
+        run: echo ${{ steps.e2e_prepare.outputs.artemis_account_id }}
+        shell: bash
+      - name: results_artemis_users
+        run: echo ${{ steps.e2e_prepare.outputs.artemis_users }}
+        shell: bash

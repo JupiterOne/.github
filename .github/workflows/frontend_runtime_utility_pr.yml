@@ -1,0 +1,136 @@
+name: Default workflow for a runtime utility when a PR is opened
+
+on:
+  workflow_call:
+    inputs:
+      fallback_runner:
+        description: "If true will leverage ubuntu-latest, otherwise will fall back to the J1 in-house runner"
+        default: false
+        type: boolean
+      use_validate:
+        description: "Run validation, in most case we want this"
+        default: true
+        type: boolean
+      use_chromatic:
+        description: "Run VRT Storybook tests with chromatic"
+        default: false
+        type: boolean
+      use_e2e_trigger:
+        description: "Trigger E2E tests in other repos"
+        type: boolean
+        default: false
+      e2e_pass_on_error:
+        description: "Pass the workflow even if the E2E test fail"
+        type: boolean
+        default: false
+      repos_to_test:
+        description: "Kick off a n+ spec files within n+ repos"
+        type: string
+    secrets:
+      NPM_TOKEN:
+        description: "A J1 npm.com Publish token"
+        required: true
+      CHROMATIC_PROJECT_TOKEN:
+        description: "The Chromatic API token"
+        required: false
+      E2E_AUTO:
+        description: "A J1 token for kicking off cypress tests"
+        required: false
+
+env:
+  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+  TEST: false
+
+concurrency:
+  group: ${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+# Permissions needed to push the artifact to the S3 bucket and show the status in the PR.
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+  statuses: write
+
+jobs:
+  migration_number:
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
+    outputs:
+      migration: ${{ steps.migration_number.outputs.migration }}
+    steps:
+      - uses: actions/checkout@v2
+      - id: migration_number
+        name: migration_number
+        uses: ./.github/actions/frontend/runtime/migration_number
+
+  validate:
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
+    if: ${{ inputs.use_validate }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
+      - name: validate
+        uses: ./.github/actions/frontend/runtime/validate
+
+  chromatic_upload:
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
+    if: ${{ inputs.use_chromatic }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: chromatic_upload
+        uses: ./.github/actions/frontend/runtime/chromatic
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          chromatic_project_token: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+
+  magic_url:
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
+    needs: [migration_number]
+    steps:
+      - uses: actions/checkout@v2
+      - name: magic_url
+        uses: ./.github/actions/frontend/runtime/magic_url
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          migration_number: ${{ needs.migration_number.outputs.migration }}
+          # runtime utilities do not have a route of there own, so we default to home
+          magic_url_route: '/home'
+
+  e2e_trigger_remote_tests:
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
+    needs: [magic_url]
+    if: ${{ inputs.use_e2e_trigger }}
+    strategy:
+      matrix:
+        repos: ${{ fromJson(inputs.repos_to_test) }}
+    continue-on-error: ${{ inputs.e2e_pass_on_error }}
+    outputs:
+      test_passed: ${{ steps.e2e_trigger_remote_tests.outputs.test_passed }}
+    steps:
+      - uses: actions/checkout@v2
+      - id: e2e_trigger_remote_tests
+        name: e2e_trigger_remote_tests
+        uses: ./.github/actions/frontend/runtime/e2e_trigger_remote_tests
+        continue-on-error: ${{ inputs.e2e_pass_on_error }}
+        with:
+          e2e_pass_on_error: ${{ inputs.e2e_pass_on_error }}
+          e2e_auto: ${{ secrets.E2E_AUTO }}
+          repo_name: ${{ matrix.repos.repo.name }}
+          repo_spec: ${{ matrix.repos.repo.spec }}
+
+  # Unless e2e_pass_on_error is true, this will never get hit if an E2E test fails
+  e2e_status:
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
+    needs: [e2e_trigger_remote_tests]
+    steps:
+      - uses: actions/checkout@v2
+      - name: e2e_status
+        uses: ./.github/actions/frontend/runtime/e2e_status
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          commit_info_sha: ${{ github.sha }}
+          e2e_passed: ${{ needs.e2e_trigger_remote_tests.outputs.test_passed }}
+          e2e_pass_on_error: ${{ inputs.e2e_pass_on_error }}

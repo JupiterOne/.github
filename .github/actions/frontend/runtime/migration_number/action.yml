@@ -1,0 +1,15 @@
+name: Extracts migration number from package.json
+
+outputs:
+  migration:
+    value: ${{ steps.get_migration_number.outputs.migration }}
+
+runs:
+  using: "composite"
+  steps:
+    - id: get_migration_number
+      name: get_migration_number
+      shell: bash
+      run: |
+        echo "migration=$(jq -r .config.migration < package.json)" >> $GITHUB_OUTPUT
+

@@ -1,0 +1,72 @@
+name: Triggers tests in other repos and waits for the results
+
+inputs:
+  e2e_pass_on_error:
+    description: "Pass the workflow even if the E2E test fail"
+    required: false
+    default: false
+    type: boolean
+  e2e_auto:
+    description: "A J1 token for kicking off cypress tests"
+    required: true
+  repo_name:
+    description: "The name of the repo to target"
+    required: true
+  repo_spec:
+    description: "The name of the spec(s) to target"
+    required: true
+
+outputs:
+  test_passed:
+    value: ${{ steps.test_results.outputs.test_passed }}
+
+# All booleans in a composite action must leverage fromJSON to ensure the value are treated
+# as booleans and not strings. See issue here: https://github.com/actions/runner/issues/1483
+
+runs:
+  using: "composite"
+  steps:
+    - name: e2e_trigger_remote_tests_inputs
+      if: ${{ fromJSON(env.TEST) }}
+      shell: bash
+      run: |
+        echo "e2e_pass_on_error=${{ inputs.e2e_pass_on_error }}"
+        echo "e2e_auto=${{ inputs.e2e_auto }}"
+        echo "repo_name=${{ inputs.repo_name }}"
+        echo "repo_spec=${{ inputs.repo_spec }}"
+    - name: setup_env
+      if: ${{ !fromJSON(env.TEST) }}
+      uses: ./.github/actions/frontend/setup_env
+    - name: cypress_run
+      if: ${{ !fromJSON(env.TEST) }}
+      id: cypress_run
+      continue-on-error: ${{ fromJSON(inputs.e2e_pass_on_error) }}
+      uses: convictional/trigger-workflow-and-wait@v1.6.5
+      with:
+        owner: JupiterOne
+        repo: ${{ inputs.repo_name }}
+        github_token: ${{ inputs.e2e_auto }}
+        # This is the name of the file in the external repo that we're kicking the tests off in
+        workflow_file_name: e2e_trigger.yml
+        propagate_failure: ${{ !fromJSON(inputs.e2e_pass_on_error) }}
+        client_payload: '{"spec_to_run":"${{ inputs.repo_spec }}","external_pr_number":"${{ github.event.pull_request.number }}","external_pr_title":"${{ github.event.pull_request.title }}","external_pr_repo_name":"${{ github.event.repository.name }}","external_pr_branch":"${{ github.event.pull_request.head.ref }}","external_pr_author":"${{ env.COMMIT_INFO_AUTHOR }}","external_pr_sha":"${{ github.event.pull_request.base.sha }}"}'
+    # We have to manually output an exit code of 0 to ensure the action passes if e2e_pass_on_error is true
+    - name: pass_with_failures
+      shell: bash
+      if: ${{ fromJSON(inputs.e2e_pass_on_error) }}
+      run: exit 0
+    - name: set_success_vars
+      shell: bash
+      # Need to check previous TEST_PASSED to ensure it hasn't already failed
+      # important if multiple containers are in use to ensure the correct status is reported
+      if: ${{ contains(steps.cypress_run.outcome, 'success') || contains(steps.mock_step.outcome, 'success') && !contains(env.TEST_PASSED, false) }}
+      run: echo "TEST_PASSED=true" >> $GITHUB_ENV
+    - name: set_failure_vars
+      shell: bash
+      if: ${{ !contains(steps.cypress_run.outcome, 'success') || contains(steps.mock_step.outcome, 'success') }}
+      run: echo "TEST_PASSED=false" >> $GITHUB_ENV
+    - name: test_results
+      id: test_results
+      shell: bash
+      run: |
+        echo "test_passed=${{ env.TEST_PASSED }}" >> $GITHUB_OUTPUT

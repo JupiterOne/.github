@@ -1,0 +1,51 @@
+name: Publish to Chromatic
+
+inputs:
+  github_token:
+    description: 'Github access token'
+    required: true
+    type: string
+  chromatic_project_token:
+    description: 'The Chromatic API token'
+    required: true
+    type: string
+  publish_chromatic:
+    description: "If true, will publish to Chromatic. Otherwise will"
+    type: boolean
+    default: false
+
+# All booleans in a composite action must leverage fromJSON to ensure the value are treated
+# as booleans and not strings. See issue here: https://github.com/actions/runner/issues/1483
+
+runs:
+  using: "composite"
+  steps:
+    - name: chromatic_inputs
+      if: ${{ fromJSON(env.TEST) }}
+      shell: bash
+      run: |
+        echo "github_token=${{ inputs.github_token }}"
+        echo "chromatic_project_token=${{ inputs.chromatic_project_token }}"
+        echo "publish_chromatic=${{ fromJSON(inputs.publish_chromatic) }}"
+    - name: setup_env
+      if: ${{ !fromJSON(env.TEST) }}
+      uses: ./.github/actions/frontend/setup_env
+    # Upload to chromatic
+    - name: chromatic_upload
+      if: ${{ !fromJSON(env.TEST) && !fromJSON(inputs.publish_chromatic) }}
+      uses: chromaui/action@v1
+      with:
+        token: ${{ inputs.github_token }}
+        projectToken: ${{ inputs.chromatic_project_token }}
+        onlyChanged: true
+        exitOnceUploaded: true
+    # Upload to chromatic
+    - name: chromatic_publish
+      if: ${{ !fromJSON(env.TEST) && fromJSON(inputs.publish_chromatic) }}
+      uses: chromaui/action@v1
+      with:
+        token: ${{ inputs.github_token }}
+        projectToken: ${{ inputs.chromatic_project_token }}
+        onlyChanged: true
+        # Automatically accepts all changes in Chromatic as this was already done in the PR stage.
+        autoAcceptChanges: true

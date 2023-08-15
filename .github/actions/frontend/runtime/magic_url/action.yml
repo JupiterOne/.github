@@ -1,0 +1,61 @@
+name: Creates and deploys the magic url
+
+inputs:
+  github_token:
+    description: 'Github access token'
+    type: string
+    required: true
+  migration_number:
+    description: 'The migration number defined in the root package.json'
+    required: true
+    type: string
+  magic_url_route: 
+    description: 'The relative route the magic url should go to'
+    type: string
+    default: '/'
+
+# All booleans in a composite action must leverage fromJSON to ensure the value are treated
+# as booleans and not strings. See issue here: https://github.com/actions/runner/issues/1483
+
+runs:
+  using: "composite"
+  steps:
+    - name: magic_url_inputs
+      if: ${{ fromJSON(env.TEST) }}
+      shell: bash
+      run: |
+        echo "github_token=${{ inputs.github_token }}"
+        echo "migration=${{ inputs.migration_number }}"
+        echo "magic_url_route=${{ inputs.magic_url_route }}"
+    - name: setup_env
+      if: ${{ !fromJSON(env.TEST) }}
+      uses: ./.github/actions/frontend/setup_env
+    - name: npm_build
+      if: ${{ !fromJSON(env.TEST) }}
+      shell: bash
+      run: npm run build
+    - name: configure_aws_credentials
+      if: ${{ !fromJSON(env.TEST) }}
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        # J1 AWS role with deploy permissions to dev
+        role-to-assume: arn:aws:iam::564077667165:role/github-pull-request-role
+        role-session-name:
+          ${{ github.event.repository.name }}-magic-url-role-session
+        aws-region: us-east-2
+    - name: deploy_artifacts_to_s3
+      if: ${{ !fromJSON(env.TEST) }}
+      shell: bash
+      # This bucket file location is static and editing it will break the Magic URL. This pushes the entire directory which includes the bundle and remote types if applicable
+      run: |
+        aws s3 sync deploy/dist s3://apps.dev.jupiterone.io/static/manual-deploy/${{ github.event.repository.name }}@${{ inputs.migration_number }}/PR-${{ github.event.number }}/
+    - name: show_magic_url_in_pr
+      if: ${{ !fromJSON(env.TEST) }}
+      uses: Sibz/github-status-action@v1
+      with: 
+        authToken: ${{ inputs.github_token }}
+        state: 'success'
+        context: 'Magic URL'
+        description: "Use the 'Details' link to view this PR in dev"
+        target_url: https://apps.dev.jupiterone.io${{ inputs.magic_url_route }}?magic2=%7B%22${{ github.event.repository.name }}%40${{ inputs.migration_number }}%22:%22PR-${{ github.event.pull_request.number }}%22%7D
+        sha: ${{github.event.pull_request.head.sha || github.sha}}

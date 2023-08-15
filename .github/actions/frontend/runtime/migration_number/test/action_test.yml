@@ -1,0 +1,19 @@
+on: [push]
+
+env:
+  TEST: true
+  
+jobs:
+  migration_number:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      # https://github.com/nektos/act#module_not_found
+      - uses: actions/checkout@v3
+        with:
+          path: migration_number
+      - id: migration_number
+        uses: ./migration_number
+      - name: print_migration_number
+        run: echo migration_number ${{ steps.migration_number.outputs.migration }}
+        shell: bash

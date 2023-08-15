@@ -1,0 +1,127 @@
+# This file is extended by the e2e_trigger.yml in each application repo
+name: Default workflow for running tests in an application repo when triggered by an external repo
+
+on:
+  workflow_call:
+    inputs:
+      fallback_runner:
+        description: "If true will levarege ubuntu-latest, otherwise will fall back to the J1 in-house runner"
+        default: false
+        type: boolean
+      spec_to_run:
+        description: 'Used to determine which test to run'
+        type: string
+        default: 'cypress/e2e/**/*.feature'
+      external_pr_number:
+        description: 'Used by the e2e_trigger to pass in the PR number associated with the PR that triggered the flow'
+        type: string
+        required: true
+      external_pr_title:
+        description: 'Used by the e2e_trigger to give builds in Cypress the correct title associated with the PR that triggered the flow'
+        type: string
+        required: true
+      external_pr_branch:
+        description: 'Used by the e2e_trigger to give builds in Cypress the correct branch name'
+        type: string
+        required: true
+      external_pr_author:
+        description: 'Used by the e2e_trigger to give builds in Cypress the correct author name associated with the owner of the PR'
+        type: string
+        required: true
+      external_pr_sha:
+        description: 'Used by the e2e_trigger to give builds in Cypress the correct SHA associated with the PR that triggered the flow'
+        type: string
+        required: true
+      external_pr_repo_name:
+        description: 'Used by the e2e_trigger to tag builds in Cypress with the appropriate repo name associated with the repo that triggered the flow'
+        type: string
+        required: true
+    secrets:
+      NPM_TOKEN:
+        description: "A J1 npm.com Publish token"
+        required: true
+      CYPRESS_RECORD_KEY:
+        description: "The record key associated with the project in Cypress"
+        required: false
+      CYPRESS_PROJECT_ID:
+        description: "The project ID associated with the project in Cypress"
+        required: false
+      CYPRESS_PASSWORD:
+        description: "The password of the E2E username"
+        required: false
+
+env:
+  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+  TEST: false
+
+concurrency:
+  group: ${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+# Permissions needed to push the artifact to the S3 bucket and show the status in the PR.
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+  statuses: write
+
+jobs:
+  migration_number:
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
+    outputs:
+      migration: ${{ steps.migration_number.outputs.migration }}
+    steps:
+      - uses: actions/checkout@v2
+      - id: migration_number
+        name: migration_number
+        uses: ./.github/actions/frontend/runtime/migration_number
+
+  e2e_prepare:
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
+    needs: [migration_number]
+    outputs:
+      artemis_account_name: ${{ steps.e2e_prepare.outputs.artemis_account_name }}
+      artemis_account_id: ${{ steps.e2e_prepare.outputs.artemis_account_id }}
+      artemis_account_subdomain: ${{ steps.e2e_prepare.outputs.artemis_account_subdomain }}
+      artemis_users: ${{ steps.e2e_prepare.outputs.artemis_users }}
+    steps:
+      - uses: actions/checkout@v2
+      - id: e2e_prepare
+        name: e2e_prepare
+        uses: ./.github/actions/frontend/runtime/e2e_prepare
+
+  e2e_run:
+    # Note this is the only job that leverages amd64
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "amd64"]') }}
+    container: cypress/browsers:node18.12.0-chrome106-ff106
+    permissions: write-all
+    timeout-minutes: 25
+    needs: [migration_number, e2e_prepare]
+    strategy:
+      # when one test fails, DO NOT cancel the other containers, because this will kill Cypress processes
+      # leaving Cypress Cloud hanging: https://github.com/cypress-io/github-action/issues/48 
+      fail-fast: false
+    outputs:
+      test_passed: ${{ steps.e2e_run.outputs.test_passed }}
+    steps:
+      - uses: actions/checkout@v2
+      - id: e2e_run
+        name: e2e_run
+        uses: ./.github/actions/frontend/runtime/e2e_run
+        with:
+          artemis_account_name: ${{ needs.e2e_prepare.outputs.artemis_account_name }}
+          artemis_account_id: ${{ needs.e2e_prepare.outputs.artemis_account_id }}
+          artemis_account_subdomain: ${{ needs.e2e_prepare.outputs.artemis_account_subdomain }}
+          artemis_users: ${{ needs.e2e_prepare.outputs.artemis_users }}
+          cypress_record_key: ${{ secrets.CYPRESS_RECORD_KEY }}
+          cypress_project_id: ${{ secrets.CYPRESS_PROJECT_ID }}
+          cypress_password: ${{ secrets.CYPRESS_PASSWORD }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          migration_number: ${{ needs.migration_number.outputs.migration }}
+          spec_to_run: ${{ inputs.spec_to_run }}
+          commit_info_sha: ${{ inputs.external_pr_sha }}
+          commit_info_pr_number: ${{ inputs.external_pr_number }}
+          commit_info_pr_title: ${{ inputs.external_pr_title }}
+          commit_info_branch: ${{ inputs.external_pr_branch }}
+          commit_info_author: ${{ inputs.external_pr_author }}
+          commit_info_repo_name: ${{ inputs.external_pr_repo_name }}

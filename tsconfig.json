@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "noEmit": true,
+    "types": ["vitest/globals"],
+    "paths": {
+      "~*": ["./.github*"],
+      "tests*": ["./tests*"],
+    },
+  },
+  "include": [".github/**/*.ts", "tests/**/*.ts"]
+}

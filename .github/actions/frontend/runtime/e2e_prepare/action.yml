@@ -1,0 +1,66 @@
+name: Run Artemis to prepare for running the E2E tests
+
+inputs:
+  e2e_artemis_config_path:
+    type: string
+    default: 'cypress/artemis-config.yaml'
+  user_count:
+    type: string
+    default: 1
+
+outputs:
+  artemis_account_name:
+    value: ${{ steps.artemis_info.outputs.artemis_account_name }}
+  artemis_account_subdomain:
+    value: ${{ steps.artemis_info.outputs.artemis_account_subdomain }}
+  artemis_account_id:
+    value: ${{ steps.artemis_info.outputs.artemis_account_id }}
+  artemis_users:
+    value: ${{ steps.artemis_info.outputs.artemis_users }}
+
+# All booleans in a composite action must leverage fromJSON to ensure the value are treated
+# as booleans and not strings. See issue here: https://github.com/actions/runner/issues/1483
+
+runs:
+  using: "composite"
+  steps:
+    - name: e2e_prepare_inputs
+      if: ${{ fromJSON(env.TEST) }}
+      shell: bash
+      run: |
+        echo "e2e_artemis_config_path=${{ inputs.e2e_artemis_config_path }}"
+        echo "user_count=${{ inputs.user_count }}"
+    - name: setup_env
+      if: ${{ !fromJSON(env.TEST) }}
+      uses: ./.github/actions/frontend/setup_env
+    - name: configure_aws_credentials
+      if: ${{ !fromJSON(env.TEST) }}
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        role-to-assume: arn:aws:iam::564077667165:role/github-pull-request-role
+        role-session-name:
+          ${{ github.event.repository.name }}-magic-url-role-session
+        aws-region: us-east-1
+    - name: update_artemis_config
+      if: ${{ !fromJSON(env.TEST) }}
+      shell: bash
+      run:
+        npx --yes -p @jupiterone/artemis@latest update-artemis-config
+        --pathToArtemisConfig=${{ inputs.e2e_artemis_config_path }}
+        --usersCount=${{ inputs.user_count }}
+    - name: launch_artemis
+      if: ${{ !fromJSON(env.TEST) }}
+      shell: bash
+      run:
+        npx --yes -p @jupiterone/artemis@latest artemis-launch -c
+        tmp/artemis-config-updated.yaml --action=launch
+        --outputFilename=artemis-run
+
+    - id: artemis_info
+      shell: bash
+      # Use jq to extract the accountId and user sessions from the json file in a raw form
+      run: |
+        echo "artemis_account_name=$(jq -r .[0].metadata.accountName < artemis-run.json)" >> $GITHUB_OUTPUT
+        echo "artemis_account_subdomain=$(jq -r .[0].metadata.accountSubdomain < artemis-run.json)" >> $GITHUB_OUTPUT
+        echo "artemis_account_id=$(jq -r .[0].id < artemis-run.json)" >> $GITHUB_OUTPUT
+        echo "artemis_users=$(jq -c 'map((select(. | .type == "User")) | { tokenSecret: .metadata.token.tokenSecret, tokenCsrf: .metadata.token.tokenCsrf, groupName: .metadata.groupName })' < artemis-run.json)" >> $GITHUB_OUTPUT

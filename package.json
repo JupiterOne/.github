@@ -1,0 +1,32 @@
+{
+  "name": "github workflows",
+  "description": "JupiterOne Organization-Wide GitHub Workflows.",
+  "repository": "https://github.com/JupiterOne/.github",
+  "version": "1.0.0",
+  "private": true,
+  "license": "UNLICENSED",
+  "scripts": {
+    "clean": "npx rimraf repo",
+    "test": "npm run clean && vitest --no-threads",
+    "typecheck": "tsc -b",
+    "lint": "eslint . --ext .ts",
+    "validate": "npm run lint && npm run typecheck && npm run test"
+  },
+  "config": {
+    "migration": 1
+  },
+  "devDependencies": {
+    "@kie/act-js": "^2.2.1",
+    "@kie/mock-github": "^1.1.0",
+    "@testing-library/jest-dom": "^5.16.5",
+    "@vitejs/plugin-react": "^2.0.0",
+    "@vitest/coverage-c8": "^0.31.0",
+    "@vitest/ui": "^0.31.0",
+    "happy-dom": "^6.0.4",
+    "vitest": "^0.31.0",
+    "@typescript-eslint/parser": "^6.2.1",
+    "@typescript-eslint/eslint-plugin": "^6.2.1",
+    "eslint": "^8.46.0",
+    "js-yaml": "^4.1.0"
+  }
+}

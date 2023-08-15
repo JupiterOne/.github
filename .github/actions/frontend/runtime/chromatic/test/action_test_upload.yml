@@ -1,0 +1,16 @@
+on: [push]
+
+env:
+  TEST: true
+
+jobs:
+  chromatic:
+    runs-on: ubuntu-latest
+    steps:
+      # https://github.com/nektos/act#module_not_found
+      - uses: actions/checkout@v3
+        with:
+          path: chromatic
+      - id: chromatic
+        uses: ./chromatic
+        

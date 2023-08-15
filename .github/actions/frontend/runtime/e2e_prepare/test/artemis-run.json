@@ -1,0 +1,19 @@
+[
+  {
+    "id": "id_test",
+    "metadata": {
+      "accountSubdomain": "accountSubdomain_test",
+      "accountName": "accountName_test"
+    }
+  },
+  {
+    "type": "User",
+    "metadata": {
+      "groupName": "groupName_test",
+      "token": {
+        "tokenSecret": "tokenSecret_test",
+        "tokenCsrf": "tokenCsrf_test"
+      }
+    }
+  }
+]
