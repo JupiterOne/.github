@@ -44,7 +44,6 @@ export const mockCompositeStep = ({
     });
   });
   
-  // console.log(newRepoAction?.runs?.steps);
 
   writeFileSync(newRepoActionPath, yaml.dump(newRepoAction));
 };

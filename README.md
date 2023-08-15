@@ -2,7 +2,7 @@
 
 ## Workflows
 
-The following workflows are for the entire JupiterOne organization, intending to consolidate t `JupiterOne Organization-Wide GitHub`
+The following workflows are for the entire JupiterOne organization.
 
 ### Frontend Workflows
 - [frontend_runtime_application_pr](.github/workflows/docs/frontend/frontend_runtime_application_pr.md)
