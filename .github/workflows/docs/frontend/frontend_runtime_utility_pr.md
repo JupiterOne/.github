@@ -15,6 +15,7 @@ This action requires uses the following inputs:
 | `use_e2e_trigger`           | Boolean | false                        | False      | Trigger E2E tests in other repos
 | `e2e_pass_on_error`         | Boolean | false                        | False      | Pass the workflow even if the E2E test fail
 | `repos_to_test`             | String  |                              | False      | The relative route the magic url should go to
+| `use_global_actions`        | String  | True                         | False      | Will leverage composite actions from the jupiterone/.github repo. If false, will look for the actions to exist locally which is useful for testing these actions locally.
                                                                            
 ## Secrets
 

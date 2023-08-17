@@ -10,6 +10,10 @@ on:
       publish_chromatic:
         description: "If true, will publish to Chromatic"
         type: boolean
+      use_global_actions:
+        description: "Will leverage composite actions from the jupiterone/.github repo. If false, will look for the actions to exist locally which is useful for testing these actions locally."
+        default: true
+        type: boolean
     secrets:
       NPM_TOKEN:
         description: "A J1 npm.com Publish token"
@@ -33,6 +37,11 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
+      - uses: actions/checkout@v3
+        if: ${{ inputs.use_global_actions }}
+        with:
+          repository: jupiterone/.github
+          sparse-checkout: .github/actions
       - name: chromatic_publish
         uses: ./.github/actions/frontend/runtime/chromatic
         with:
@@ -43,7 +52,12 @@ jobs:
   cortex:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
+        if: ${{ inputs.use_global_actions }}
+        with:
+          repository: jupiterone/.github
+          sparse-checkout: .github/actions
       - name: cortex
         uses: ./.github/actions/frontend/cortex
         with:

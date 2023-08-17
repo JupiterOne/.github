@@ -20,6 +20,7 @@ This action requires uses the following inputs:
 | `e2e_artemis_config_path`   | String  | cypress/artemis-config.yaml  | False      | Used to determine the path to the artemis config file
 | `spec_to_run`               | String  | cypress/e2e/**/*.feature     | False      | Used to determine which test to run
 | `magic_url_route`           | String  | '/'                          | False      | The relative route the magic url should go to
+| `use_global_actions`        | String  | True                         | False      | Will leverage composite actions from the jupiterone/.github repo. If false, will look for the actions to exist locally which is useful for testing these actions locally.
                                                                            
 ## Secrets
 
