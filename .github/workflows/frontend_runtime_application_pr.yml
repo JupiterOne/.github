@@ -99,13 +99,13 @@ jobs:
     if: ${{ inputs.use_validate }}
     steps:
       - uses: actions/checkout@v3
-        with:
-          fetch-depth: 2
-      - uses: actions/checkout@v3
         if: ${{ inputs.use_global_actions }}
         with:
           repository: jupiterone/.github
           sparse-checkout: .github/actions
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
       - name: validate
         uses: ./.github/actions/frontend/runtime/validate
 
@@ -114,13 +114,13 @@ jobs:
     if: ${{ inputs.use_chromatic }}
     steps:
       - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - uses: actions/checkout@v3
         if: ${{ !env.TEST }}
         with:
           repository: ${{ (inputs.use_global_actions && github.repository) || 'jupiterone/.github' }}
           sparse-checkout: .github/actions
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - name: chromatic_upload
         uses: ./.github/actions/frontend/runtime/chromatic
         with:
@@ -132,11 +132,11 @@ jobs:
     needs: [migration_number]
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/checkout@v3
         if: ${{ inputs.use_global_actions }}
         with:
           repository: jupiterone/.github
           sparse-checkout: .github/actions
+      - uses: actions/checkout@v3
       - name: magic_url
         uses: ./.github/actions/frontend/runtime/magic_url
         with:
@@ -155,11 +155,11 @@ jobs:
       artemis_users: ${{ steps.e2e_prepare.outputs.artemis_users }}
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/checkout@v3
         if: ${{ inputs.use_global_actions }}
         with:
           repository: jupiterone/.github
           sparse-checkout: .github/actions
+      - uses: actions/checkout@v3
       - id: e2e_prepare
         name: e2e_prepare
         uses: ./.github/actions/frontend/runtime/e2e_prepare
@@ -188,11 +188,11 @@ jobs:
       test_passed: ${{ steps.e2e_run.outputs.test_passed }}
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/checkout@v3
         if: ${{ inputs.use_global_actions }}
         with:
           repository: jupiterone/.github
           sparse-checkout: .github/actions
+      - uses: actions/checkout@v3
       - id: e2e_run
         name: e2e_run
         uses: ./.github/actions/frontend/runtime/e2e_run
@@ -219,11 +219,11 @@ jobs:
     needs: [e2e_run]
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/checkout@v3
         if: ${{ inputs.use_global_actions }}
         with:
           repository: jupiterone/.github
           sparse-checkout: .github/actions
+      - uses: actions/checkout@v3
       - name: e2e_status
         uses: ./.github/actions/frontend/runtime/e2e_status
         with:

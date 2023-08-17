@@ -35,9 +35,6 @@ The workflows above take advantage of the composite actions listed below, levera
 When using composite actions, you will need to perform the following checkouts:
 
 ```
-# Checks out the repository where the workflow is being run
-- uses: actions/checkout@v3
-
 # Checks out the global repository where the composite actions live (jupiterone/.github),
 # without this, the composite action will not be found as each job is run in virtual container:
 - uses: actions/checkout@v3
@@ -45,6 +42,9 @@ When using composite actions, you will need to perform the following checkouts:
   with:
     repository: jupiterone/.github
     sparse-checkout: .github/actions
+
+# Checks out the repository where the workflow is being run
+- uses: actions/checkout@v3
 
 # You can now use the composite action
 - name: some_composite_action

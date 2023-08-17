@@ -76,11 +76,11 @@ jobs:
       migration: ${{ steps.migration_number.outputs.migration }}
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/checkout@v3
         if: ${{ inputs.use_global_actions }}
         with:
           repository: jupiterone/.github
           sparse-checkout: .github/actions
+      - uses: actions/checkout@v3
       - id: migration_number
         name: migration_number
         uses: ./.github/actions/frontend/runtime/migration_number
@@ -95,11 +95,11 @@ jobs:
       artemis_users: ${{ steps.e2e_prepare.outputs.artemis_users }}
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/checkout@v3
         if: ${{ inputs.use_global_actions }}
         with:
           repository: jupiterone/.github
           sparse-checkout: .github/actions
+      - uses: actions/checkout@v3
       - id: e2e_prepare
         name: e2e_prepare
         uses: ./.github/actions/frontend/runtime/e2e_prepare
@@ -119,11 +119,11 @@ jobs:
       test_passed: ${{ steps.e2e_run.outputs.test_passed }}
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/checkout@v3
         if: ${{ inputs.use_global_actions }}
         with:
           repository: jupiterone/.github
           sparse-checkout: .github/actions
+      - uses: actions/checkout@v3
       - id: e2e_run
         name: e2e_run
         uses: ./.github/actions/frontend/runtime/e2e_run
