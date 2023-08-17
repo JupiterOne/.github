@@ -36,6 +36,10 @@ on:
         description: 'Used by the e2e_trigger to tag builds in Cypress with the appropriate repo name associated with the repo that triggered the flow'
         type: string
         required: true
+      use_global_actions:
+        description: "Will leverage composite actions from the jupiterone/.github repo. If false, will look for the actions to exist locally which is useful for testing these actions locally."
+        default: true
+        type: boolean
     secrets:
       NPM_TOKEN:
         description: "A J1 npm.com Publish token"
@@ -71,7 +75,12 @@ jobs:
     outputs:
       migration: ${{ steps.migration_number.outputs.migration }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+        if: ${{ inputs.use_global_actions }}
+        with:
+          repository: jupiterone/.github
+          sparse-checkout: .github/actions
+      - uses: actions/checkout@v3
       - id: migration_number
         name: migration_number
         uses: ./.github/actions/frontend/runtime/migration_number
@@ -85,7 +94,12 @@ jobs:
       artemis_account_subdomain: ${{ steps.e2e_prepare.outputs.artemis_account_subdomain }}
       artemis_users: ${{ steps.e2e_prepare.outputs.artemis_users }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+        if: ${{ inputs.use_global_actions }}
+        with:
+          repository: jupiterone/.github
+          sparse-checkout: .github/actions
+      - uses: actions/checkout@v3
       - id: e2e_prepare
         name: e2e_prepare
         uses: ./.github/actions/frontend/runtime/e2e_prepare
@@ -104,7 +118,12 @@ jobs:
     outputs:
       test_passed: ${{ steps.e2e_run.outputs.test_passed }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+        if: ${{ inputs.use_global_actions }}
+        with:
+          repository: jupiterone/.github
+          sparse-checkout: .github/actions
+      - uses: actions/checkout@v3
       - id: e2e_run
         name: e2e_run
         uses: ./.github/actions/frontend/runtime/e2e_run

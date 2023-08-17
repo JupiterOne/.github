@@ -26,6 +26,10 @@ on:
       repos_to_test:
         description: "Kick off a n+ spec files within n+ repos"
         type: string
+      use_global_actions:
+        description: "Will leverage composite actions from the jupiterone/.github repo. If false, will look for the actions to exist locally which is useful for testing these actions locally."
+        default: true
+        type: boolean
     secrets:
       NPM_TOKEN:
         description: "A J1 npm.com Publish token"
@@ -58,7 +62,12 @@ jobs:
     outputs:
       migration: ${{ steps.migration_number.outputs.migration }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+        if: ${{ inputs.use_global_actions }}
+        with:
+          repository: jupiterone/.github
+          sparse-checkout: .github/actions
+      - uses: actions/checkout@v3
       - id: migration_number
         name: migration_number
         uses: ./.github/actions/frontend/runtime/migration_number
@@ -67,7 +76,12 @@ jobs:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
     if: ${{ inputs.use_validate }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+        if: ${{ inputs.use_global_actions }}
+        with:
+          repository: jupiterone/.github
+          sparse-checkout: .github/actions
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 2
       - name: validate
@@ -77,6 +91,11 @@ jobs:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
     if: ${{ inputs.use_chromatic }}
     steps:
+      - uses: actions/checkout@v3
+        if: ${{ inputs.use_global_actions }}
+        with:
+          repository: jupiterone/.github
+          sparse-checkout: .github/actions
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
@@ -90,7 +109,12 @@ jobs:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
     needs: [migration_number]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+        if: ${{ inputs.use_global_actions }}
+        with:
+          repository: jupiterone/.github
+          sparse-checkout: .github/actions
+      - uses: actions/checkout@v3
       - name: magic_url
         uses: ./.github/actions/frontend/runtime/magic_url
         with:
@@ -110,7 +134,12 @@ jobs:
     outputs:
       test_passed: ${{ steps.e2e_trigger_remote_tests.outputs.test_passed }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+        if: ${{ inputs.use_global_actions }}
+        with:
+          repository: jupiterone/.github
+          sparse-checkout: .github/actions
+      - uses: actions/checkout@v3
       - id: e2e_trigger_remote_tests
         name: e2e_trigger_remote_tests
         uses: ./.github/actions/frontend/runtime/e2e_trigger_remote_tests
@@ -126,7 +155,12 @@ jobs:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
     needs: [e2e_trigger_remote_tests]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+        if: ${{ inputs.use_global_actions }}
+        with:
+          repository: jupiterone/.github
+          sparse-checkout: .github/actions
+      - uses: actions/checkout@v3
       - name: e2e_status
         uses: ./.github/actions/frontend/runtime/e2e_status
         with:

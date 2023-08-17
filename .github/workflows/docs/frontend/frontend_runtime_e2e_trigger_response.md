@@ -16,6 +16,7 @@ This action requires uses the following inputs:
 | `external_pr_author`        | String  |                              | True      | Used by the e2e_trigger to give builds in Cypress the correct author name associated with the owner of the PR
 | `external_pr_sha`           | String  |                              | True      | Used by the e2e_trigger to pass in the PR number associated with the PR that triggered the flow
 | `external_pr_repo_name`     | String  |                              | True      | Used by the e2e_trigger to tag builds in Cypress with the appropriate repo name associated with the repo that triggered the flow
+| `use_global_actions`        | String  | True                         | False      | Will leverage composite actions from the jupiterone/.github repo. If false, will look for the actions to exist locally which is useful for testing these actions locally.
                                                                            
 ## Secrets
 
