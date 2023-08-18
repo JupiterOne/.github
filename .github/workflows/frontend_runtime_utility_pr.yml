@@ -100,7 +100,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: chromatic_upload
-        uses: ./.github/actions/frontend/runtime/chromatic
+        uses: ./.github/actions/frontend/chromatic
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           chromatic_project_token: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}

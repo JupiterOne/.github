@@ -22,5 +22,6 @@ runs:
       uses: ./.github/actions/frontend/setup_env
     - name: Create or update entity in Cortex
       run: npx --yes -p @jupiterone/web-tools-platform-analytics@latest platform-analytics all
+      shell: bash
       env:
         CORTEX_API_KEY: ${{ inputs.cortex_api_key }}
