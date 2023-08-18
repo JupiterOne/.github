@@ -4,7 +4,7 @@ This is the [default workflow](../../frontend_npm_pr.yml) that is run when a `PR
 
 ## Inputs
 
-This action accept the following inputs:
+This action accepts the following inputs:
 
 | Name                        | Type    | Default                      | Required  | Description                                                                            |
 | --------------------------- | ------- | ---------------------------- | --------- | -------------------------------------------------------------------------------------- |

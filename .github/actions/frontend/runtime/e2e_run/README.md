@@ -4,7 +4,7 @@ This [composite action](./action.yml) is responsible for running the `E2E tests`
 
 ## Inputs
 
-This action accept the following inputs:
+This action accepts the following inputs:
 
 | Name                        | Type    | Default                            | Required  | Description                                               |
 | --------------------------- | ------- | ---------------------------------- | --------- | --------------------------------------------------------- |
@@ -31,7 +31,7 @@ This action accept the following inputs:
                                                                            
 ## Outputs
 
-This action accept the following inputs:
+This action accepts the following inputs:
 
 | Name                        | Type    | Description                                               |
 | --------------------------- | ------- | --------------------------------------------------------- |

@@ -4,7 +4,7 @@ This [composite action](./action.yml) is responsible for running Cortex related 
 
 ## Inputs
 
-This action accept the following inputs:
+This action accepts the following inputs:
 
 | Name                        | Type    | Default                            | Required  | Description                                               |
 | --------------------------- | ------- | ---------------------------------- | --------- | --------------------------------------------------------- |
