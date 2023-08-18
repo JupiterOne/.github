@@ -4,7 +4,7 @@ import { mockCompositeStep } from 'tests/utils/mock_composite_step';
 import { getCompositeActionConfig, runCompositeAction } from 'tests/utils/setup';
 import { getTestResults } from 'tests/utils/helpers';
 
-const repoName = 'npm_validate';
+const repoName = 'npm_release';
 
 let mockGithub: MockGithub;
 
@@ -24,20 +24,18 @@ test('esbuild steps are called if use_esbuild is true', async () => {
     repoPath: mockGithub.repo.getPath(repoName),
     mockSteps: [
       { name: 'setup_env' },
-      { name: 'esbuild_initial' },
-      { name: 'validate' },
-      { name: 'install' },
-      { name: 'esbuild_secondary' },
-      { name: 'npm_build' },
+      { name: 'esbuild' },
+      { name: 'build' },
+      { name: 'add_auto_to_globals' },
+      { name: 'deploy_to_npm' },
     ]
   });
   
   const results = await runCompositeAction({ act: new Act(mockGithub.repo.getPath(repoName)), repoName, mockSteps: false });
 
   const jobs_found = getTestResults({ results, names: [
-    'esbuild_initial',
-    'esbuild_secondary',
+    'esbuild',
   ] });
 
-  expect(jobs_found.length).toEqual(2);
+  expect(jobs_found.length).toEqual(1);
 });

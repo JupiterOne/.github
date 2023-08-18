@@ -1,13 +1,12 @@
 # Frontend Runtime Deploy
 
-
 This is the [default workflow](../../frontend_runtime_application_pr.yml) that is run when a `PR is merged to main` for a `runtime`.
 
 **NOTE:** Our current workflow mostly goes through Jenkins at the moment. However the long term goal is to transition our entire deploy flow to Github actions, where the following flow becomes single source of truth.
 
 ## Inputs
 
-This action requires uses the following inputs:
+This action accept the following inputs:
 
 | Name                        | Type    | Default                      | Required  | Description                                                                            |
 | --------------------------- | ------- | ---------------------------- | --------- | -------------------------------------------------------------------------------------- |
@@ -17,7 +16,7 @@ This action requires uses the following inputs:
                                                                            
 ## Secrets
 
-These secrets are required to...
+This action accepts the following secrets:
 
 | Name                        | Required  | Description                               |
 | --------------------------- | --------- | ----------------------------------------- |

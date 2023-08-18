@@ -1,10 +1,12 @@
-# Frontend Runtime - Validate
+# Frontend NPM - Validate
 
-This [composite action](./action.yml) is responsible for running the `validation` command in a frontend repo. Additionally it is responsible for running the `remote-types test` command if applicable to determine if any breaking changes were made.
+This [composite action](./action.yml) is responsible for running validation on a frontend npm package.
 
 ## Inputs
 
-No inputs necessary.                                                       
+| Name                        | Type    | Default                      | Required  | Description                                               |
+| --------------------------- | ------- | ---------------------------- | --------- | --------------------------------------------------------- |
+| `use_esbuild`               | Boolean | False                        | False     | If using esbuild, ensure its required build scripts are run                                                   
 
 ## Outputs
 
@@ -12,12 +14,20 @@ No outputs provided.
 
 ## Example Usage
 
+### Default
+
 ```yaml
 steps:
-  # Fetch depth 2 required
-  - uses: actions/checkout@v3
-    with:
-      fetch-depth: 2
   - name: validate
-    uses: ./.github/actions/frontend/runtime/validate
+    uses: ./.github/actions/frontend/npm/validate
+```
+
+### Esbuild
+
+```yaml
+steps:
+  - name: validate
+    uses: ./.github/actions/frontend/npm/validate
+    with:
+      use_esbuild: ${{ inputs.use_esbuild }}
 ```

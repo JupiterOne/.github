@@ -30,6 +30,8 @@ runs:
     - name: setup_env
       if: ${{ !fromJSON(env.TEST) }}
       uses: ./.github/actions/frontend/setup_env
+      with:
+        use_dev: true
     # Upload to chromatic
     - name: chromatic_upload
       if: ${{ !fromJSON(env.TEST) && !fromJSON(inputs.publish_chromatic) }}

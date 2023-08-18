@@ -2,10 +2,10 @@ name: Runs validation on a frontend npm package
 
 inputs:
   use_esbuild:
-    description:
-      'If using esbuild, insure its required build scripts are run'
+    description: 'If using esbuild, insure its required build scripts are run'
     required: false
-    type: boolean
+    type: string
+    default: false
 
 # All booleans in a composite action must leverage fromJSON to ensure the value are treated
 # as booleans and not strings. See issue here: https://github.com/actions/runner/issues/1483
@@ -21,17 +21,21 @@ runs:
     - name: esbuild_initial
       run: npm rebuild esbuild
       shell: bash
-      if: ${{ inputs.use_esbuild }}
+      if: ${{ fromJSON(inputs.use_esbuild) && !fromJSON(env.TEST) }}
     - name: validate
+      if: ${{ !fromJSON(env.TEST) }}
       run: npm run validate:ci
       shell: bash
     # Sanity check so we don't end up with bad builds in main
     - name: install
+      if: ${{ !fromJSON(env.TEST) }}
       run: npm ci --ignore-scripts --omit=dev
       shell: bash
     - name: esbuild_secondary
       run: npm rebuild esbuild
       shell: bash
-      if: ${{ inputs.use_esbuild }}
-    - run: npm run build
+      if: ${{ fromJSON(inputs.use_esbuild) && !fromJSON(env.TEST) }}
+    - name: npm_build
+      if: ${{ !fromJSON(env.TEST) }}
+      run: npm run build
       shell: bash

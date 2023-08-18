@@ -4,7 +4,7 @@ This is the [default workflow](../../frontend_runtime_application_pr.yml) that i
 
 ## Inputs
 
-This action requires uses the following inputs:
+This action accept the following inputs:
 
 | Name                        | Type    | Default                      | Required  | Description                                                                            |
 | --------------------------- | ------- | ---------------------------- | --------- | -------------------------------------------------------------------------------------- |
@@ -20,7 +20,7 @@ This action requires uses the following inputs:
                                                                            
 ## Secrets
 
-These secrets are required to...
+This action accepts the following secrets:
 
 | Name                        | Required  | Description                               |
 | --------------------------- | --------- | ----------------------------------------- |

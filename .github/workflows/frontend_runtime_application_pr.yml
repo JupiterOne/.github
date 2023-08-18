@@ -114,9 +114,9 @@ jobs:
     if: ${{ inputs.use_chromatic }}
     steps:
       - uses: actions/checkout@v3
-        if: ${{ !env.TEST }}
+        if: ${{ inputs.use_global_actions }}
         with:
-          repository: ${{ (inputs.use_global_actions && github.repository) || 'jupiterone/.github' }}
+          repository: jupiterone/.github
           sparse-checkout: .github/actions
       - uses: actions/checkout@v3
         with:

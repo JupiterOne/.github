@@ -5,7 +5,7 @@ This [composite action](./action.yml) is responsible for...
 
 ## Inputs
 
-This action requires uses the following inputs:
+This action accept the following inputs:
 
 | Name                        | Type    | Default                      | Required  | Description                                               |
 | --------------------------- | ------- | ---------------------------- | --------- | --------------------------------------------------------- |
