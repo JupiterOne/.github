@@ -8,9 +8,11 @@
   "scripts": {
     "clean": "npx rimraf repo",
     "test": "npm run clean && vitest --no-threads",
+    "test:ci": "npm run clean && vitest",
     "typecheck": "tsc -b",
     "lint": "eslint . --ext .ts",
-    "validate": "npm run lint && npm run typecheck && npm run test"
+    "validate": "npm run lint && npm run typecheck && npm run test",
+    "validate:ci": "npm run lint && npm run typecheck && npm run test:ci"
   },
   "config": {
     "migration": 1

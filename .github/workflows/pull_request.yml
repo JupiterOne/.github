@@ -16,4 +16,4 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - run: npm ci
-      - run: npm run validate
+      - run: npm run validate:ci

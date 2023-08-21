@@ -19,7 +19,7 @@ export const getCompositeActionConfig = ({
         files: [
           {
             src: join(directory, actionTriggeringComposite),
-            dest: `.github/workflows/${actionTriggeringComposite}`,
+            dest: `.github/workflows/${repoName}/${actionTriggeringComposite}`,
           },
           {
             src: resolve(directory, '..', 'action.yml'),
@@ -79,10 +79,13 @@ export const runCompositeAction = async ({
   repoName: string;
   mockSteps?: boolean;
 }) => {
+  // Addresses the following warning: You are using Apple M1 chip and you have not specified container architecture, you might encounter issues while running act
+  act.setContainerArchitecture('linux/arm64');
+
   // If true, will skip all steps in the composite action that contain "if: ${{ !env.TEST }}"
   act.setEnv('TEST', String(mockSteps));
 
-  const result = await act.runEventAndJob('push', repoName, { logFile: process.env.ACT_LOG ? `${repoName}.log` : undefined });
+  const result = await act.runEventAndJob('push', repoName, { logFile: process.env.ACT_LOG ? `log-${repoName}.log` : undefined });
   
   /*
   The first two and last item in the returned results are the same for every composite action test.
@@ -104,6 +107,9 @@ export const runWorkflow = async ({
   config?: object;
   mockSteps?: boolean;
 }) => {
+  // Addresses the following warning: You are using Apple M1 chip and you have not specified container architecture, you might encounter issues while running act
+  act.setContainerArchitecture('linux/arm64');
+
   // If true, will skip all steps in the workflow that contain "if: ${{ !env.TEST }}"
   act.setEnv('TEST', String(mockSteps));
 
@@ -113,7 +119,7 @@ export const runWorkflow = async ({
   // Ensures we're not attempting to checkout the global repository in our tests as we're already in it
   act.setInput('use_global_actions', 'false');
   
-  const result = await act.runEvent('workflow_call', { logFile: process.env.ACT_LOG ? `${repoName}.log` : undefined, ...config });
+  const result = await act.runEvent('workflow_call', { logFile: process.env.ACT_LOG ? `log-${repoName}.log` : undefined, ...config });
 
   return result;
 };
