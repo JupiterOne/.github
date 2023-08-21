@@ -7,7 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "clean": "npx rimraf repo",
-    "test": "npm run clean && vitest",
+    "test": "npm run clean && vitest --no-threads",
     "typecheck": "tsc -b",
     "lint": "eslint . --ext .ts",
     "validate": "npm run lint && npm run typecheck && npm run test"
