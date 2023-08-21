@@ -16,7 +16,7 @@ This action requires uses the following inputs:
                                                                            
 ## Secrets
 
-This action accepts the following secrets:
+These secrets are required to...
 
 | Name                        | Required  | Description                               |
 | --------------------------- | --------- | ----------------------------------------- |
