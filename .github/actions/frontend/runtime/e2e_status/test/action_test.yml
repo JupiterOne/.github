@@ -1,7 +1,4 @@
 on: [push]
-
-env:
-  TEST: true
   
 jobs:
   e2e_status:
@@ -16,3 +13,5 @@ jobs:
         with:
           e2e_passed: false
           e2e_pass_on_error: true
+        env:
+          TEST: true

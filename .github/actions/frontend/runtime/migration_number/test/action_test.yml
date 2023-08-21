@@ -1,7 +1,4 @@
 on: [push]
-
-env:
-  TEST: true
   
 jobs:
   migration_number:
@@ -14,6 +11,8 @@ jobs:
           path: migration_number
       - id: migration_number
         uses: ./migration_number
+        env:
+          TEST: true
       - name: print_migration_number
         run: echo migration_number ${{ steps.migration_number.outputs.migration }}
         shell: bash

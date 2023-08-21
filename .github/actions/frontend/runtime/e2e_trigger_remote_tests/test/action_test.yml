@@ -1,7 +1,4 @@
 on: [push]
-
-env:
-  TEST: true
   
 jobs:
   e2e_trigger_remote_tests:
@@ -16,6 +13,8 @@ jobs:
         with:
           repo_name: test_repo
           repo_spec: test_spec
+        env:
+          TEST: false
       - name: e2e_run_status
         run: echo e2e_run status is ${{ steps.e2e_trigger_remote_tests_results.outputs.test_passed }}
         shell: bash

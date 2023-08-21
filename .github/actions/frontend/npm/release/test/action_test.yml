@@ -1,8 +1,5 @@
 on: [push]
 
-env:
-  TEST: true
-
 jobs:
   npm_release:
     runs-on: ubuntu-latest
@@ -15,3 +12,5 @@ jobs:
         uses: ./npm_release
         with:
           use_esbuild: true
+        env:
+          TEST: false
