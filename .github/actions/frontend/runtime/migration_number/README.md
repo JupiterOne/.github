@@ -8,7 +8,7 @@ No inputs necessary.
 
 ## Outputs
 
-This action requires uses the following inputs:
+This action returns the following outputs:
 
 | Name                        | Type    | Description                                                   |
 | --------------------------- | ------- | ------------------------------------------------------------- |

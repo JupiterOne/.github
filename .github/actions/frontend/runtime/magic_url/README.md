@@ -4,6 +4,8 @@ This [composite action](./action.yml) is responsible for deploying the built art
 
 ## Inputs
 
+This action takes the following inputs:
+
 | Name                        | Type    | Default                      | Required  | Description                                               |
 | --------------------------- | ------- | ---------------------------- | --------- | --------------------------------------------------------- |
 | `migration_number`          | String  |                              | True      | The migration number defined in the root package.json      

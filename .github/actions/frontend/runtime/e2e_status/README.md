@@ -4,6 +4,8 @@ This [composite action](./action.yml) is responsible for reporting the status of
 
 ## Inputs
 
+This action takes the following inputs:
+
 | Name                        | Type    | Default                      | Required  | Description                                               |
 | --------------------------- | ------- | ---------------------------- | --------- | --------------------------------------------------------- |
 | `github_token`              | String  |                              | True      | Github access token

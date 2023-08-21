@@ -4,7 +4,7 @@ This [composite action](./action.yml) is responsible for triggering tests in an 
 
 ## Inputs
 
-This action requires uses the following inputs:
+This action takes the following inputs:
 
 | Name                        | Type    | Default                            | Required  | Description                                               |
 | --------------------------- | ------- | ---------------------------------- | --------- | --------------------------------------------------------- |
@@ -15,7 +15,7 @@ This action requires uses the following inputs:
 
 ## Outputs
 
-This action requires uses the following inputs:
+This action takes the following inputs:
 
 | Name                        | Type    | Description                                               |
 | --------------------------- | ------- | --------------------------------------------------------- |

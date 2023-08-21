@@ -4,6 +4,8 @@ This [composite action](./action.yml) is responsible for executing [Artemis](htt
 
 ## Inputs
 
+This action takes the following inputs:
+
 | Name                        | Type    | Default                      | Required  | Description                                               |
 | --------------------------- | ------- | ---------------------------- | --------- | --------------------------------------------------------- |
 | `e2e_artemis_config_path`   | String  | cypress/artemis-config.yaml  | False     | Used to determine the path to the artemis config file
@@ -11,7 +13,7 @@ This [composite action](./action.yml) is responsible for executing [Artemis](htt
 
 ## Outputs
 
-This action requires uses the following outputs:
+This action returns the following outputs:
 
 | Name                        | Type    | Description                                               |
 | --------------------------- | ------- | --------------------------------------------------------- |
