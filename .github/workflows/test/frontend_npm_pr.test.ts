@@ -17,7 +17,7 @@ afterEach(async () => {
   await mockGithub.teardown();
 });
 
-test.skip('validate inputs and secrets', async () => {
+test('validate inputs and secrets', async () => {
   const act = new Act(mockGithub.repo.getPath(repoName));
   const mockSecrets = [
     'NPM_TOKEN',
@@ -36,7 +36,7 @@ test.skip('validate inputs and secrets', async () => {
   expect(chromatic_inputs.output).toContain(`chromatic_project_token=***`);
 });
 
-test.skip('default flow', async () => {
+test('default flow', async () => {
   const act = new Act(mockGithub.repo.getPath(repoName));
 
   const results = await runWorkflow({ act, repoName });
@@ -48,7 +48,7 @@ test.skip('default flow', async () => {
   expect(jobs_found.length).toEqual(1);
 });
 
-test.skip('when use_chromatic is true', async () => {
+test('when use_chromatic is true', async () => {
   const act = new Act(mockGithub.repo.getPath(repoName));
 
   act.setInput('use_chromatic', 'true');
