@@ -4,7 +4,7 @@ This is the [default workflow](../../frontend_npm_release.yml) that is run when 
 
 ## Inputs
 
-This action accepts the following inputs:
+This action requires uses the following inputs:
 
 | Name                        | Type    | Default                      | Required  | Description                                                                            |
 | --------------------------- | ------- | ---------------------------- | --------- | -------------------------------------------------------------------------------------- |
