@@ -33,12 +33,10 @@ runs:
       if: ${{ !fromJSON(env.TEST) }}
       run: npm run build
       shell: bash
-
     # TODO: This is where security should add a security code scan
     # This is only what will be shipped to production and not any
     # testing deps. Hopefully this will gives us an accurate listing
     # of our shipped risks
-
     # This should live in the runner by default
     - name: add_auto_to_globals
       run: npm install -g auto@10.37.4

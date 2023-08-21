@@ -111,6 +111,8 @@ runs:
     - name: setup_env
       if: ${{ !fromJSON(env.TEST) }}
       uses: ./.github/actions/frontend/setup_env
+      with:
+        use_dev: true
     - id: get_author_name
       name: get_author_name
       shell: bash

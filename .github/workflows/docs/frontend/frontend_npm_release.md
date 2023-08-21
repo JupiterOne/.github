@@ -50,8 +50,8 @@ graph LR;
     D[cortex];
 
     A --> B;
-    A --> C;
-    A --> D;
+    B --> C;
+    B --> D;
 ```
 
 ### With Chromatic
@@ -74,13 +74,13 @@ jobs:
 ```mermaid
 graph LR;
     A[start flow];
-    B[chromatic_publish]
-    C[validate];
+    B[validate];
+    C[chromatic_publish]
     D[release];
     E[cortex];
 
     A --> B;
-    A --> C;
-    A --> D;
-    A --> E;
+    B --> C;
+    B --> D;
+    B --> E;
 ```

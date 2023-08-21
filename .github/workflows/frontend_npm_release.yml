@@ -68,6 +68,7 @@ jobs:
 
   chromatic_publish:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
+    needs: validate
     if: ${{ inputs.use_chromatic }}
     steps:
       - name: noah_use_chromatic
@@ -105,6 +106,7 @@ jobs:
 
   cortex:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
+    needs: validate
     if: ${{ inputs.use_cortex }}
     steps:
       - uses: actions/checkout@v3
