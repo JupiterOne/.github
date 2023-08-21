@@ -80,7 +80,7 @@ export const runCompositeAction = async ({
   mockSteps?: boolean;
 }) => {
   // Addresses the following warning: You are using Apple M1 chip and you have not specified container architecture, you might encounter issues while running act
-  act.setContainerArchitecture('linux/arm64');
+  // act.setContainerArchitecture('linux/arm64');
 
   // If true, will skip all steps in the composite action that contain "if: ${{ !env.TEST }}"
   act.setEnv('TEST', String(mockSteps));
@@ -108,7 +108,7 @@ export const runWorkflow = async ({
   mockSteps?: boolean;
 }) => {
   // Addresses the following warning: You are using Apple M1 chip and you have not specified container architecture, you might encounter issues while running act
-  act.setContainerArchitecture('linux/arm64');
+  // act.setContainerArchitecture('linux/arm64');
 
   // If true, will skip all steps in the workflow that contain "if: ${{ !env.TEST }}"
   act.setEnv('TEST', String(mockSteps));
