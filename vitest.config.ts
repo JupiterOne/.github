@@ -15,13 +15,6 @@ export default defineConfig({
   test: {
     globals: true,
     // environment: 'happy-dom',
-    testTimeout: 600000,
-    include: [
-      '.github/workflows/test/*',
-      '.github/actions/**/test/*'
-    ],
-    exclude: [
-      'repos'
-    ]
+    testTimeout: 600000
   },
 });
