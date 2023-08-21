@@ -9,7 +9,6 @@ This action accepts the following inputs:
 | Name                        | Type    | Default                      | Required  | Description                                                                            |
 | --------------------------- | ------- | ---------------------------- | --------- | -------------------------------------------------------------------------------------- |
 | `fallback_runner`           | String  | False                        | False      | If true will leverage ubuntu-latest, otherwise will fall back to the J1 in-house runner
-| `use_validate   `           | Boolean | True                         | False      | Run validation, in most case we want this
 | `use_chromatic`             | Boolean | False                        | False      | Run VRT Storybook tests with chromatic
 | `use_esbuild`               | Boolean | True                         | False      | If using esbuild, ensures its required build scripts are run
 | `use_cortex`                | Boolean | True                         | False      | Runs the Cortex job. We eventually want to make this required but we need to make sure we don't break the pipeline.

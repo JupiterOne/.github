@@ -61,6 +61,7 @@ export const getWorkflowConfig = ({
           {
             src: resolve(cwd(), '.github/actions'),
             dest: `.github/actions`,
+            filter: ['**/test'] // Don't copy over the tests in composite actions
           },
           ...(additionalFiles ? additionalFiles : [])
         ],

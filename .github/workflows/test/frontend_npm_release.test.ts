@@ -77,19 +77,3 @@ test('when use_chromatic is true', async () => {
 
   expect(jobs_found.length).toEqual(4);
 });
-
-test('when use_validate is false', async () => {
-  const act = new Act(mockGithub.repo.getPath(repoName));
-
-  act.setInput('use_validate', 'false');
-
-  const results = await runWorkflow({ act, repoName });
-
-  const jobs_found = getTestResults({ results, names: [
-    'chromatic_publish',
-    'release',
-    'cortex'
-  ] });
-
-  expect(jobs_found.length).toEqual(2);
-});
