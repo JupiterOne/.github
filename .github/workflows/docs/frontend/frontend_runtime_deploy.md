@@ -56,7 +56,7 @@ graph LR;
 
 ```yaml
 jobs:
-  pr:
+  deploy:
     uses: jupiterone/.github/.github/workflows/frontend_runtime_deploy.yml
     with:
       publish_chromatic: true 
