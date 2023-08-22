@@ -33,7 +33,7 @@ This action takes the following secrets:
 
 ```yaml
 jobs:
-  pr:
+  deploy:
     uses: jupiterone/.github/.github/workflows/frontend_runtime_deploy.yml
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}

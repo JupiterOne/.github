@@ -51,3 +51,4 @@ runs:
         onlyChanged: true
         # Automatically accepts all changes in Chromatic as this was already done in the PR stage.
         autoAcceptChanges: true
+        exitOnceUploaded: true
