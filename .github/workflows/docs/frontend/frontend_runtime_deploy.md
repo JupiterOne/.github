@@ -34,7 +34,7 @@ This action takes the following secrets:
 ```yaml
 jobs:
   pr:
-    uses: ./.github/workflows/frontend_runtime_deploy.yml
+    uses: jupiterone/.github/.github/workflows/frontend_runtime_deploy.yml
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
       CORTEX_API_KEY: ${{ secrets.CORTEX_API_KEY }}
@@ -57,7 +57,7 @@ graph LR;
 ```yaml
 jobs:
   pr:
-    uses: ./.github/workflows/frontend_runtime_deploy.yml
+    uses: jupiterone/.github/.github/workflows/frontend_runtime_deploy.yml
     with:
       publish_chromatic: true 
     secrets:

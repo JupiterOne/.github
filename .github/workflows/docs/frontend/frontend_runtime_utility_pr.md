@@ -36,7 +36,7 @@ This action takes the following secrets:
 ```yaml
 jobs:
   pr:
-    uses: ./.github/workflows/frontend_runtime_utility_pr.yml
+    uses: jupiterone/.github/.github/workflows/frontend_runtime_utility_pr.yml
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
       E2E_AUTO: ${{ secrets.E2E_AUTO }}
@@ -63,7 +63,7 @@ graph LR;
 ```yaml
 jobs:
   pr:
-    uses: ./.github/workflows/frontend_runtime_application_pr.yml
+    uses: jupiterone/.github/.github/workflows/frontend_runtime_application_pr.yml
     with:
       use_chromatic: true
     secrets:
@@ -95,7 +95,7 @@ graph LR;
 ```yaml
 jobs:
   pr:
-    uses: ./.github/workflows/frontend_runtime_application_pr.yml
+    uses: jupiterone/.github/.github/workflows/frontend_runtime_application_pr.yml
     with:
       use_e2e_trigger: true
     secrets:

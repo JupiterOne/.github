@@ -43,7 +43,7 @@ This action takes the following secrets:
 ```yaml
 jobs:
   pr:
-    uses: ./.github/workflows/frontend_runtime_application_pr.yml
+    uses: jupiterone/.github/.github/workflows/frontend_runtime_application_pr.yml
     with:
       magic_url_route: '/home'
     secrets:
@@ -71,7 +71,7 @@ graph LR;
 ```yaml
 jobs:
   pr:
-    uses: ./.github/workflows/frontend_runtime_application_pr.yml
+    uses: jupiterone/.github/.github/workflows/frontend_runtime_application_pr.yml
     with:
       magic_url_route: '/home'
       use_chromatic: true
@@ -103,7 +103,7 @@ graph LR;
 ```yaml
 jobs:
   pr:
-    uses: ./.github/workflows/frontend_runtime_application_pr.yml
+    uses: jupiterone/.github/.github/workflows/frontend_runtime_application_pr.yml
     with:
       magic_url_route: '/home'
       use_e2e: true

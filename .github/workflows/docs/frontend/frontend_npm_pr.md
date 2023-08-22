@@ -32,7 +32,7 @@ This action takes the following secrets:
 ```yaml
 jobs:
   pr:
-    uses: ./.github/workflows/frontend_npm_pr.yml
+    uses: jupiterone/.github/.github/workflows/frontend_npm_pr.yml
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
 ```
@@ -54,7 +54,7 @@ graph LR;
 ```yaml
 jobs:
   pr:
-    uses: ./.github/workflows/frontend_npm_pr.yml
+    uses: jupiterone/.github/.github/workflows/frontend_npm_pr.yml
     with:
       use_chromatic: true
     secrets:

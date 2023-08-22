@@ -68,7 +68,7 @@ on:
         
 jobs:
   trigger_response:
-    uses: ./.github/workflows/frontend_runtime_e2e_trigger_response.yml
+    uses: jupiterone/.github/.github/workflows/frontend_runtime_e2e_trigger_response.yml
     with:
       external_pr_number: ${{ inputs.external_pr_number }}
       external_pr_title: ${{ inputs.external_pr_title }}
