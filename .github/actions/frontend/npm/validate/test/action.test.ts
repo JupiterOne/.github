@@ -2,9 +2,9 @@ import { MockGithub } from '@kie/mock-github';
 import { Act } from '@kie/act-js';
 import { mockCompositeStep } from 'tests/utils/mock_composite_step';
 import { getCompositeActionConfig, runCompositeAction } from 'tests/utils/setup';
-import { getTestResult } from 'tests/utils/helpers';
+import { getTestResults } from 'tests/utils/helpers';
 
-const repoName = 'validate';
+const repoName = 'npm_validate';
 
 let mockGithub: MockGithub;
 
@@ -18,26 +18,26 @@ afterEach(async () => {
   await mockGithub.teardown();
 });
 
-test('remote types test is skipped if HAS_SKIP is present', async () => {
+test('esbuild steps are called if use_esbuild is true', async () => {
   mockCompositeStep({
     originDirectory: __dirname,
     repoPath: mockGithub.repo.getPath(repoName),
     mockSteps: [
       { name: 'setup_env' },
+      { name: 'esbuild_initial' },
       { name: 'validate' },
-      { name: 'remote_type_check_skip' },
-      { name: 'remote_type_test' },
+      { name: 'install' },
+      { name: 'esbuild_secondary' },
+      { name: 'npm_build' },
     ]
   });
-
-  const act = new Act(mockGithub.repo.getPath(repoName));
   
-  act.setEnv('HAS_SKIP', 'true');
-  
-  const results = await runCompositeAction({ act, repoName, mockSteps: false });
+  const results = await runCompositeAction({ act: new Act(mockGithub.repo.getPath(repoName)), repoName, mockSteps: false });
 
-  // The remote_type_test step is never hit
-  const result = getTestResult({ results, name: 'remote_type_test' });
+  const jobs_found = getTestResults({ results, names: [
+    'esbuild_initial',
+    'esbuild_secondary',
+  ] });
 
-  expect(result).toBeUndefined();
+  expect(jobs_found.length).toEqual(2);
 });

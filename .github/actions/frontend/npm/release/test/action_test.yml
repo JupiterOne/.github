@@ -1,15 +1,16 @@
 on: [push]
 
 jobs:
-  validate:
+  npm_release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
       # https://github.com/nektos/act#module_not_found
       - uses: actions/checkout@v3
         with:
-          path: validate
-      - id: validate
-        uses: ./validate
+          path: npm_release
+      - id: npm_release
+        uses: ./npm_release
+        with:
+          use_esbuild: true
         env:
-          TEST: true
+          TEST: false

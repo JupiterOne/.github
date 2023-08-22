@@ -1,9 +1,6 @@
-# Frontend Runtime Deploy
+# Default flow for an NPM package when a PR is opened
 
-
-This is the [default workflow](../../frontend_runtime_application_pr.yml) that is run when a `PR is merged to main` for a `runtime`.
-
-**NOTE:** Our current workflow mostly goes through Jenkins at the moment. However the long term goal is to transition our entire deploy flow to Github actions, where the following flow becomes single source of truth.
+This is the [default workflow](../../frontend_npm_pr.yml) that is run when a `PR is opened` for an `npm package`. It is meant to test the quality and safety of the code being committed.
 
 ## Inputs
 
@@ -12,7 +9,9 @@ This action takes the following inputs:
 | Name                        | Type    | Default                      | Required  | Description                                                                            |
 | --------------------------- | ------- | ---------------------------- | --------- | -------------------------------------------------------------------------------------- |
 | `fallback_runner`           | String  | False                        | False      | If true will leverage ubuntu-latest, otherwise will fall back to the J1 in-house runner
-| `publish_chromatic`         | Boolean | True                         | False      | If true, will publish to Chromatic
+| `use_validate   `           | Boolean | True                         | False      | Run validation, in most case we want this
+| `use_chromatic`             | Boolean | False                        | False      | Run VRT Storybook tests with chromatic
+| `use_esbuild`               | Boolean | True                         | False      | If using esbuild, ensures its required build scripts are run
 | `use_global_actions`        | String  | True                         | False      | Will leverage composite actions from the jupiterone/.github repo. If false, will look for the actions to exist locally which is useful for testing these actions locally.
                                                                            
 ## Secrets
@@ -23,7 +22,6 @@ This action takes the following secrets:
 | --------------------------- | --------- | ----------------------------------------- |
 | `NPM_TOKEN`                 | True      | A J1 npm.com Publish token
 | `CHROMATIC_PROJECT_TOKEN`   | False     | The Chromatic API token
-| `CORTEX_API_KEY`            | True      | A key that allows us to push data to Cortex
 
 ## Example Usage
 
@@ -33,11 +31,10 @@ This action takes the following secrets:
 
 ```yaml
 jobs:
-  deploy:
-    uses: jupiterone/.github/.github/workflows/frontend_runtime_deploy.yml
+  pr:
+    uses: jupiterone/.github/.github/workflows/frontend_npm_pr.yml
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
-      CORTEX_API_KEY: ${{ secrets.CORTEX_API_KEY }}
 ```
 
 #### Diagram
@@ -45,7 +42,7 @@ jobs:
 ```mermaid
 graph LR;
     A[start flow];
-    B[cortex];
+    B[validate];
 
     A --> B;
 ```
@@ -56,13 +53,12 @@ graph LR;
 
 ```yaml
 jobs:
-  deploy:
-    uses: jupiterone/.github/.github/workflows/frontend_runtime_deploy.yml
+  pr:
+    uses: jupiterone/.github/.github/workflows/frontend_npm_pr.yml
     with:
-      publish_chromatic: true 
+      use_chromatic: true
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
-      CORTEX_API_KEY: ${{ secrets.CORTEX_API_KEY }}
       CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
 ```
 
@@ -71,9 +67,10 @@ jobs:
 ```mermaid
 graph LR;
     A[start flow];
-    B[cortex];
-    C[chromatic_publish];
+    B[validate];
+    C[chromatic_upload];
 
     A --> B;
     A --> C;
 ```
+

@@ -5,10 +5,18 @@
 The following workflows are for the entire JupiterOne organization.
 
 ### Frontend Workflows
+
+#### Runtime
+
 - [frontend_runtime_application_pr](.github/workflows/docs/frontend/frontend_runtime_application_pr.md)
 - [frontend_runtime_utility_pr](.github/workflows/docs/frontend/frontend_runtime_utility_pr.md)
 - [frontend_runtime_e2e_trigger_response](.github/workflows/docs/frontend/frontend_runtime_e2e_trigger_response.md)
 - [frontend_runtime_deploy](.github/workflows/docs/frontend/frontend_runtime_deploy.md)
+
+#### NPM Packages
+
+- [frontend_npm_pr](.github/workflows/docs/frontend/frontend_npm_pr.md)
+- [frontend_npm_release](.github/workflows/docs/frontend/frontend_npm_release.md)
 
 ### Backend Workflows
 - [publish_docker_ghcr](.github/workflows/docs/backend/publish_docker_ghcr.md)
@@ -18,10 +26,15 @@ The following workflows are for the entire JupiterOne organization.
 
 The workflows above take advantage of the composite actions listed below, leveraging composition to execute those jobs that pertain to the workflow. The actions below enable us to consolidate repeatable jobs into a single location. This makes our workflows DRY, easier to reason about and more stable.
 
-### Frontend Composite Actions
+### Frontend
+
+#### Common
 
 - [setup_env](.github/actions/frontend/setup_env/README.md)
-- [chromatic](.github/actions/frontend/runtime/chromatic/README.md)
+- [chromatic](.github/actions/frontend/chromatic/README.md)
+
+#### Runtime
+
 - [e2e_prepare](.github/actions/frontend/runtime/e2e_prepare/README.md)
 - [e2e_run](.github/actions/frontend/runtime/e2e_run/README.md)
 - [e2e_status](.github/actions/frontend/runtime/e2e_status/README.md)
@@ -29,6 +42,10 @@ The workflows above take advantage of the composite actions listed below, levera
 - [magic_url](.github/actions/frontend/runtime/magic_url/README.md)
 - [migration_number](.github/actions/frontend/runtime/migration_number/README.md)
 - [validate](.github/actions/frontend/runtime/validate/README.md)
+
+#### NPM Packages
+- [validate](.github/actions/frontend/npm/validate/README.md)
+- [release](.github/actions/frontend/npm/release/README.md)
 
 ### 
 

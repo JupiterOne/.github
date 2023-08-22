@@ -5,7 +5,7 @@ This is the [default workflow](../../frontend_runtime_application_pr.yml) that i
 
 ## Inputs
 
-This action requires uses the following inputs:
+This action takes the following inputs:
 
 | Name                        | Type    | Default                      | Required  | Description                                                                            |
 | --------------------------- | ------- | ---------------------------- | --------- | -------------------------------------------------------------------------------------- |
@@ -19,7 +19,7 @@ This action requires uses the following inputs:
                                                                            
 ## Secrets
 
-These secrets are required to...
+This action takes the following secrets:
 
 | Name                        | Required  | Description                               |
 | --------------------------- | --------- | ----------------------------------------- |
@@ -36,7 +36,7 @@ These secrets are required to...
 ```yaml
 jobs:
   pr:
-    uses: ./.github/workflows/frontend_runtime_utility_pr.yml
+    uses: jupiterone/.github/.github/workflows/frontend_runtime_utility_pr.yml
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
       E2E_AUTO: ${{ secrets.E2E_AUTO }}
@@ -63,7 +63,7 @@ graph LR;
 ```yaml
 jobs:
   pr:
-    uses: ./.github/workflows/frontend_runtime_application_pr.yml
+    uses: jupiterone/.github/.github/workflows/frontend_runtime_application_pr.yml
     with:
       use_chromatic: true
     secrets:
@@ -95,7 +95,7 @@ graph LR;
 ```yaml
 jobs:
   pr:
-    uses: ./.github/workflows/frontend_runtime_application_pr.yml
+    uses: jupiterone/.github/.github/workflows/frontend_runtime_application_pr.yml
     with:
       use_e2e_trigger: true
     secrets:

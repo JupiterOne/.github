@@ -4,7 +4,7 @@ This [composite action](./action.yml) is responsible for building nad publishing
 
 ## Inputs
 
-This action requires uses the following inputs:
+This action takes the following inputs:
 
 | Name                        | Type    | Default                      | Required  | Description                                               |
 | --------------------------- | ------- | ---------------------------- | --------- | --------------------------------------------------------- |

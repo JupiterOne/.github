@@ -30,6 +30,8 @@ runs:
     - name: setup_env
       if: ${{ !fromJSON(env.TEST) }}
       uses: ./.github/actions/frontend/setup_env
+      with:
+        use_dev: true
     - name: npm_build
       if: ${{ !fromJSON(env.TEST) }}
       shell: bash

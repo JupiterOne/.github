@@ -9,6 +9,18 @@ runs:
     - name: setup_env
       if: ${{ !fromJSON(env.TEST) }}
       uses: ./.github/actions/frontend/setup_env
+      with:
+        use_dev: true
+    - name: check_for_auth_token
+      if: ${{ !fromJSON(env.TEST) && env.NODE_AUTH_TOKEN == '' }}
+      shell: bash
+      run: |
+        echo "the secret \"NODE_AUTH_TOKEN\" has not been set"
+        exit 1
+    - name: install_remote_types
+      if: ${{ !fromJSON(env.TEST) }}
+      run: npm run postinstall --if-present && npm run dependencies --if-present
+      shell: bash
     - name: validate
       if: ${{ !fromJSON(env.TEST) }}
       shell: bash

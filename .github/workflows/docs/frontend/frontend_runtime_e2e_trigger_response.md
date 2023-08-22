@@ -4,7 +4,7 @@ This is the [default workflow](../../frontend_runtime_application_pr.yml) that i
 
 ## Inputs
 
-This action requires uses the following inputs:
+This action takes the following inputs:
 
 | Name                        | Type    | Default                      | Required  | Description                                                                            |
 | --------------------------- | ------- | ---------------------------- | --------- | -------------------------------------------------------------------------------------- |
@@ -20,7 +20,7 @@ This action requires uses the following inputs:
                                                                            
 ## Secrets
 
-These secrets are required to...
+This action takes the following secrets:
 
 | Name                        | Required  | Description                               |
 | --------------------------- | --------- | ----------------------------------------- |
@@ -68,7 +68,7 @@ on:
         
 jobs:
   trigger_response:
-    uses: ./.github/workflows/frontend_runtime_e2e_trigger_response.yml
+    uses: jupiterone/.github/.github/workflows/frontend_runtime_e2e_trigger_response.yml
     with:
       external_pr_number: ${{ inputs.external_pr_number }}
       external_pr_title: ${{ inputs.external_pr_title }}

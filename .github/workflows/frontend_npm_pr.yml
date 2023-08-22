@@ -1,4 +1,4 @@
-name: Default workflow for a runtime when a PR is merged to main triggering the deploy flow
+name: Default flow for an NPM package when a PR is opened
 
 on:
   workflow_call:
@@ -7,8 +7,18 @@ on:
         description: "If true will leverage ubuntu-latest, otherwise will fall back to the J1 in-house runner"
         default: false
         type: boolean
-      publish_chromatic:
-        description: "If true, will publish to Chromatic"
+      use_validate:
+        description: "Run validation, in most case we want this"
+        default: true
+        type: boolean
+      use_chromatic:
+        description: "Run VRT Storybook tests with chromatic"
+        default: false
+        type: boolean
+      use_esbuild:
+        description: 'If using esbuild, ensures its required build scripts are run'
+        required: false
+        default: false
         type: boolean
       use_global_actions:
         description: "Will leverage composite actions from the jupiterone/.github repo. If false, will look for the actions to exist locally which is useful for testing these actions locally."
@@ -16,23 +26,39 @@ on:
         type: boolean
     secrets:
       NPM_TOKEN:
-        description: "A J1 npm.com Publish token"
-        required: true
-      CORTEX_API_KEY:
-        description: "A key that allows us to push data to Cortex"
+        description: 'A J1 npm.com Publish token'
         required: true
       CHROMATIC_PROJECT_TOKEN:
-        description: "A token that allows us to publish to Chromatic"
+        description: 'The Chromatic API token'
         required: false
 
 env:
   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
   TEST: false
-  
+
+concurrency:
+  group: ${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
 jobs:
-  chromatic_publish:
+  validate:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
-    if: ${{ inputs.publish_chromatic }}
+    if: ${{ inputs.use_validate }}
+    steps:
+      - uses: actions/checkout@v3
+        if: ${{ inputs.use_global_actions }}
+        with:
+          repository: jupiterone/.github
+          sparse-checkout: .github/actions
+      - uses: actions/checkout@v3
+      - name: validate
+        uses: ./.github/actions/frontend/npm/validate
+        with:
+          use_esbuild: ${{ inputs.use_esbuild }}
+
+  chromatic_upload:
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
+    if: ${{ inputs.use_chromatic }}
     steps:
       - uses: actions/checkout@v3
         if: ${{ inputs.use_global_actions }}
@@ -42,23 +68,8 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: chromatic_publish
+      - name: chromatic_upload
         uses: ./.github/actions/frontend/chromatic
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           chromatic_project_token: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
-          publish_chromatic: true
-
-  cortex:
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
-    steps:
-      - uses: actions/checkout@v3
-        if: ${{ inputs.use_global_actions }}
-        with:
-          repository: jupiterone/.github
-          sparse-checkout: .github/actions
-      - uses: actions/checkout@v3
-      - name: cortex
-        uses: ./.github/actions/frontend/cortex
-        with:
-          cortex_api_key: ${{ secrets.CORTEX_API_KEY }}

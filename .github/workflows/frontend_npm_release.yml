@@ -1,0 +1,116 @@
+name: Default flow for an NPM package when its merged to mai
+
+on:
+  workflow_call:
+    inputs:
+      fallback_runner:
+        description: "If true will leverage ubuntu-latest, otherwise will fall back to the J1 in-house runner"
+        default: false
+        type: boolean
+      use_chromatic:
+        description: "Run VRT Storybook tests with chromatic"
+        default: false
+        type: boolean
+      use_esbuild:
+        description: 'If using esbuild, insure its required build scripts are run'
+        required: false
+        type: boolean
+      use_cortex:
+        description: "Runs the Cortex job. We eventually want to make this required but we need to make sure we don't break the pipeline."
+        default: true
+        type: boolean
+      use_global_actions:
+        description: "Will leverage composite actions from the jupiterone/.github repo. If false, will look for the actions to exist locally which is useful for testing these actions locally."
+        default: true
+        type: boolean
+    secrets:
+      NPM_TOKEN:
+        description: 'A J1 npm.com Publish token'
+        required: true
+      CHROMATIC_PROJECT_TOKEN:
+        description: 'The Chromatic API token'
+        required: false
+      AUTO_GITHUB_PAT_TOKEN:
+        description: "This is a GitHuh PAT that let's auto write back to main after npm versioning"
+        required: true
+      CORTEX_API_KEY:
+        description: 'A key that allows us to push data to Cortex'
+        # We eventually want to make this required but we need to make sure we don't break the pipeline
+        # required: true
+
+env:
+  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+  TEST: false
+
+concurrency:
+  group: ${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
+    steps:
+      - uses: actions/checkout@v3
+        if: ${{ inputs.use_global_actions }}
+        with:
+          repository: jupiterone/.github
+          sparse-checkout: .github/actions
+      - uses: actions/checkout@v3
+      - name: validate
+        uses: ./.github/actions/frontend/npm/validate
+        with:
+          use_esbuild: ${{ inputs.use_esbuild }}
+
+  chromatic_publish:
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
+    needs: validate
+    if: ${{ inputs.use_chromatic }}
+    steps:
+      - name: noah_use_chromatic
+        run: echo "use_chromatic ${{ inputs.use_chromatic }}"
+      - uses: actions/checkout@v3
+        if: ${{ inputs.use_global_actions }}
+        with:
+          repository: jupiterone/.github
+          sparse-checkout: .github/actions
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: chromatic_publish
+        uses: ./.github/actions/frontend/chromatic
+        with:
+          publish_chromatic: true
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          chromatic_project_token: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+
+  release:
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
+    needs: validate
+    steps:
+      - uses: actions/checkout@v3
+        if: ${{ inputs.use_global_actions }}
+        with:
+          repository: jupiterone/.github
+          sparse-checkout: .github/actions
+      - uses: actions/checkout@v3
+      - name: release
+        uses: ./.github/actions/frontend/npm/release
+        with:
+          use_esbuild: ${{ inputs.use_esbuild }}
+          auto_token: ${{ secrets.AUTO_GITHUB_PAT_TOKEN }}
+
+  cortex:
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
+    needs: validate
+    if: ${{ inputs.use_cortex }}
+    steps:
+      - uses: actions/checkout@v3
+        if: ${{ inputs.use_global_actions }}
+        with:
+          repository: jupiterone/.github
+          sparse-checkout: .github/actions
+      - uses: actions/checkout@v3
+      - name: cortex
+        uses: ./.github/actions/frontend/cortex
+        with:
+          cortex_api_key: ${{ secrets.CORTEX_API_KEY }}
