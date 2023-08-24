@@ -3,9 +3,7 @@ import { Act } from '@kie/act-js';
 import { getCompositeActionConfig, runCompositeAction } from 'tests/utils/setup';
 import { getTestResult } from 'tests/utils/helpers';
 import { join } from 'node:path';
-import { mockCompositeStep } from 'tests/utils/mock_composite_step';
 import artemisRun from './artemis-run.json';
-import { E2E_PREPARE_MOCK_STEPS } from '../mocks';
 
 const repoName = 'e2e_prepare';
 
@@ -29,13 +27,11 @@ afterEach(async () => {
 });
 
 test('output of artemis_info returns correct results based off artemis-run.json', async () => {
-  mockCompositeStep({
-    originDirectory: __dirname,
-    repoPath: mockGithub.repo.getPath(repoName),
-    mockSteps: E2E_PREPARE_MOCK_STEPS
+  const results = await runCompositeAction({
+    act: new Act(mockGithub.repo.getPath(repoName)),
+    repoName,
+    originDirectory: __dirname
   });
-
-  const results = await runCompositeAction({ act: new Act(mockGithub.repo.getPath(repoName)), repoName });
 
   const results_artemis_account_name = getTestResult({ results, name: 'results_artemis_account_name' });
   const results_artemis_account_subdomain = getTestResult({ results, name: 'results_artemis_account_subdomain' });

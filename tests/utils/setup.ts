@@ -2,7 +2,7 @@ import { join, resolve } from 'node:path';
 import { cwd } from 'node:process';
 import { Act } from '@kie/act-js';
 import { MockGithub } from '@kie/mock-github';
-import { updateWorkflowWithMocks, MockSteps } from './mocking';
+import { updateCompositeWithMocks, updateWorkflowWithMocks, MockSteps, MockCompositeSteps } from './mocking';
 
 export const getCompositeActionConfig = ({
   directory,
@@ -75,10 +75,20 @@ export const getWorkflowConfig = ({
 export const runCompositeAction = async ({
   act,
   repoName,
+  originDirectory,
+  mockSteps,
 }: {
   act: Act;
   repoName: string;
+  originDirectory: string;
+  mockSteps?: MockCompositeSteps,
 }) => {
+  await updateCompositeWithMocks({
+    repoName,
+    originDirectory,
+    mockSteps
+  });
+
   const result = await act.runEventAndJob('push', repoName, { logFile: process.env.ACT_LOG ? `log-${repoName}.log` : undefined });
   
   /*

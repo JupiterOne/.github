@@ -16,7 +16,11 @@ test('pass_with_failures is not called when e2e_passed is false', async () => {
   
   await mockGithub.setup();
 
-  const results = await runCompositeAction({ act: new Act(mockGithub.repo.getPath(repoName)), repoName });
+  const results = await runCompositeAction({
+    act: new Act(mockGithub.repo.getPath(repoName)),
+    repoName,
+    originDirectory: __dirname
+  });
 
   const result = getTestResult({ results, name: 'pass_with_failures' });
 
@@ -28,7 +32,11 @@ test('e2e_pass_on_error allows pass_with_failures to be called when e2e_passed i
   
   await mockGithub.setup();
 
-  const results = await runCompositeAction({ act: new Act(mockGithub.repo.getPath(repoName)), repoName });
+  const results = await runCompositeAction({
+    act: new Act(mockGithub.repo.getPath(repoName)),
+    repoName,
+    originDirectory: __dirname
+  });
 
   const result = getTestResult({ results, name: 'pass_with_failures' });
 

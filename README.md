@@ -88,46 +88,56 @@ ACT_LOG=true npm test
 
 #### Skipping Steps
 
-Many of our steps cannot and should not be run during testing (installing npm packages, running cypress, etc.) and would break if we were to run them locally. You can add the following conditional to a step that will enable you to skip it when tests are running.
+Many of our steps cannot and should not be run during testing (installing npm packages, running cypress, etc.) and would break if we were to run them locally. To address this issue, you can define a `mocks.ts` file in your composite actions. This file should define the list of steps in your action that `should be skipped` during testing:
 
 ```
-if: ${{ !env.TEST }}
+// .github/actions/frontend/chromatic/mocks.ts
+export const CHROMATIC_MOCK_STEPS = [
+  { name: 'chromatic_upload' },
+  { name: 'chromatic_publish' },
+];
 ```
 
-The `env.TEST` variable is set to true in the [setup.ts file](tests/utils/setup.ts).
+When necessary you can also pass in `mockSteps` via the `runWorkflow` or `runCompositeAction` commands.
 
-#### Mock Individual Steps
-
-By default steps containing the conditional `if: ${{ !env.TEST }}` will automatically get skipped. However there are times when you may wish to turn off this default functionality so you can mock an individual step. To accomplish this you will want to set the following in your `runWorkflow` command:
-- `mockSteps: false` - Prevents `env.TEST` from being set, allowing those steps to run.
-- `mockSteps: { ... }` - You will then want to mock out the various steps in question to mimic the flow you are hoping to test. Please see the [following documentation](https://github.com/kiegroup/act-js#mocking-steps) from `act-js` for a better understanding of how this works.
-
-Here is an example where we wanted to mock the `e2e_run` step so we could call `exit 1` and simulate an actual failure in that step. For all the other steps you will notice we simply mock them with an empty echo, which allows these steps to run without failures.
+**Mock composite action via runCompositeAction**
 
 ```
-const act = new Act(mockGithub.repo.getPath(repoName));
-
-act.setInput('use_e2e', 'true');
-act.setInput('e2e_pass_on_error', 'true');
-
-const results = await runWorkflow({ act, repoName, config: {
-  mockSteps: {
-    migration_number: [ { name: 'migration_number', mockWith: 'echo ""' } ],
-    validate: [ { name: 'validate', mockWith: 'echo ""' } ],
-    magic_url: [ { name: 'magic_url', mockWith: 'echo ""' } ],
-    e2e_prepare: [ { name: 'e2e_prepare', mockWith: 'echo ""' } ],
-    
-    // Purposefully fail to test e2e_pass_on_error
-    e2e_run: [{
-      name: 'e2e_run',
-      mockWith: 'exit 1',
-    }],
-  }
+const results = await runCompositeAction({ act, repoName, mockGithub, mockSteps: {
+  { name: 'chromatic_upload' },
+  { name: 'chromatic_publish' },
 }});
+```
 
-const jobs_found = getTestResults({ results, name: 'e2e_status' });
+**Mock entire composite action via runWorkflow**
 
-expect(jobs_found).not.toBeUndefined();
+```
+const results = await runWorkflow({ act, repoName, mockGithub, mockSteps: {
+  chromatic_upload_job: [
+    {
+      // Mocks the entire composite action
+      name: 'chromatic_upload',
+      mockWith: `echo "hello world"`,
+    }
+  ],
+}});
+```
+
+**Mock individual steps of composite action via runWorkflow**
+
+```
+const results = await runWorkflow({ act, repoName, mockGithub, mockSteps: {
+  chromatic_upload_job: [
+    {
+      // Mocking the individual steps in a composite action
+      name: 'chromatic_upload',
+      mockCompositeSteps:  [
+        { name: 'chromatic_upload' },
+        { name: 'chromatic_publish' },
+      ]
+    }
+  ],
+}});
 ```
 
 ### Mapping Workflow Inputs To Composite Actions
@@ -153,19 +163,3 @@ When it comes to testing a composite action, you will notice the action has a te
 Note: You must ensure that `name` of the job and the `path` within in the `action_test.yml` match the `repoName` defined in the `action.test.ts`, otherwise the test will fail.
 
 Note: All booleans in a composite action must leverage fromJSON to ensure the value are treated as booleans and not strings. See issue here: https://github.com/actions/runner/issues/1483
-
-
-
-```
-const mockSteps = {
-  chromatic_upload: [
-    { 
-      name: 'chromatic_upload',
-      mockCompositeSteps:  [
-        { name: 'chromatic_upload' },
-        { name: 'chromatic_publish' },
-      ];
-    }
-  ],
-}
-```

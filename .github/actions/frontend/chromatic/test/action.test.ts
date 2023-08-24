@@ -16,7 +16,11 @@ test('chromatic_upload called if publish_chromatic is false', async () => {
   
   await mockGithub.setup();
 
-  const results = await runCompositeAction({ act: new Act(mockGithub.repo.getPath(repoName)), repoName });
+  const results = await runCompositeAction({
+    act: new Act(mockGithub.repo.getPath(repoName)),
+    repoName,
+    originDirectory: __dirname
+  });
 
   const result = getTestResult({ results, name: 'chromatic_upload' });
 
@@ -32,7 +36,11 @@ test('chromatic_publish called if publish_chromatic is true', async () => {
 
   act.setInput('publish_chromatic', 'true');
 
-  const results = await runCompositeAction({ act, repoName });
+  const results = await runCompositeAction({
+    act: new Act(mockGithub.repo.getPath(repoName)),
+    repoName,
+    originDirectory: __dirname
+  });
 
   const result = getTestResult({ results, name: 'chromatic_publish' });
 

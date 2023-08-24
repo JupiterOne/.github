@@ -2,44 +2,10 @@ import { MockGithub } from '@kie/mock-github';
 import { Act } from '@kie/act-js';
 import { getWorkflowConfig, runWorkflow } from 'tests/utils/setup';
 import { getTestResult, getTestResults, setSecrets } from 'tests/utils/helpers';
-import { CHROMATIC_MOCK_STEPS } from '~/actions/frontend/chromatic/mocks';
-import { NPM_PUBLISH_MOCK_STEPS } from '~/actions/frontend/npm/publish/mocks';
-import { CORTEX_MOCK_STEPS } from '~/actions/frontend/cortex/mocks';
 
 let mockGithub: MockGithub;
 
 const repoName = 'frontend_npm_release';
-
-// Mock the steps/composite steps that will break tests
-const mockSteps = {
-  validate: [
-    { name: 'setup_env', mockWith: `echo ''` },
-    { name: 'validate', mockWith: `echo ''` },
-    { name: 'build', mockWith: `echo ''` }
-  ],
-  chromatic_publish: [
-    { name: 'setup_env', mockWith: `echo ''` },
-    { 
-      name: 'chromatic_publish',
-      mockCompositeSteps: CHROMATIC_MOCK_STEPS
-    }
-  ],
-  publish: [
-    { name: 'setup_env', mockWith: `echo ''` },
-    { name: 'build', mockWith: `echo ''` },
-    {
-      name: 'publish',
-      mockCompositeSteps: NPM_PUBLISH_MOCK_STEPS
-    }
-  ],
-  cortex: [
-    { name: 'setup_env', mockWith: `echo ''` },
-    {
-      name: 'cortex',
-      mockCompositeSteps: CORTEX_MOCK_STEPS
-    },
-  ],
-};
 
 beforeEach(async () => {
   mockGithub = new MockGithub(getWorkflowConfig({ repoName }));
@@ -63,7 +29,7 @@ test('validate inputs and secrets', async () => {
 
   act.setInput('use_chromatic', 'true');
 
-  const results = await runWorkflow({ act, repoName, mockGithub, mockSteps });
+  const results = await runWorkflow({ act, repoName, mockGithub });
 
   // chromatic_upload
   const chromatic_inputs = getTestResult({ results, name: 'chromatic_inputs' });
@@ -84,7 +50,7 @@ test('validate inputs and secrets', async () => {
 test('default flow', async () => {
   const act = new Act(mockGithub.repo.getPath(repoName));
 
-  const results = await runWorkflow({ act, repoName, mockGithub, mockSteps });
+  const results = await runWorkflow({ act, repoName, mockGithub });
 
   const jobs_found = getTestResults({ results, names: [
     'validate',
@@ -100,7 +66,7 @@ test('when use_chromatic is true', async () => {
 
   act.setInput('use_chromatic', 'true');
 
-  const results = await runWorkflow({ act, repoName, mockGithub, mockSteps });
+  const results = await runWorkflow({ act, repoName, mockGithub });
 
   const jobs_found = getTestResults({ results, names: [
     'validate',

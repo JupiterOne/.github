@@ -1,4 +1,4 @@
-const fs = require('fs');
+import fs from 'fs';
 import { resolve } from 'node:path';
 import { writeFileSync, readFileSync } from "node:fs";
 import yaml from 'js-yaml';
@@ -33,21 +33,17 @@ const localizePath = (path: string) => path
   .replace(/@main/g, '');
 
 const getCompositeMockSteps = async ({
-  mockJobStep,
-  step,
+  mockSteps,
+  pathToCompositeFolder
 }: {
-  mockJobStep?: MockStep;
-  step: {
-    name: string;
-    uses: string;
-  };
+  mockSteps?:MockCompositeSteps;
+  pathToCompositeFolder: string;
 }) => {
   // Look for mocks being passed in
-  let mockCompositeSteps:MockCompositeSteps = mockJobStep?.mockCompositeSteps;
+  let mockCompositeSteps:MockCompositeSteps = mockSteps;
 
   // Otherwise dynamically load in mocks from composite action
   if (!mockCompositeSteps) {
-    const pathToCompositeFolder = localizePath(step.uses);
     const pathToCompositeMocks = resolve(cwd(), `${pathToCompositeFolder}/mocks.ts`);
 
     if (fs.existsSync(pathToCompositeMocks)) {
@@ -57,6 +53,47 @@ const getCompositeMockSteps = async ({
   }
 
   return mockCompositeSteps;
+};
+
+/*
+Based on the mockCompositeSteps passed in, dynamically update the steps in the
+composite action within the temp repo (i.e. ./repo/name_of_repo/...).
+*/
+const updateCompositeSteps = ({
+  mockCompositeSteps,
+  actionPath
+}: {
+  mockCompositeSteps: MockCompositeSteps,
+  actionPath?: string;
+}) => {
+  const actionYaml = yaml.load(readFileSync(actionPath, 'utf8'));
+
+  mockCompositeSteps?.forEach((mockStep) => {
+    const step = actionYaml?.runs?.steps.filter((step) => step?.name === mockStep?.name).shift();
+
+    if (step) updateStepAsMock({ step, mockStep });
+  });
+
+  writeFileSync(actionPath, yaml.dump(actionYaml));
+};
+
+export const updateCompositeWithMocks = async ({
+  repoName,
+  originDirectory,
+  mockSteps
+}: {
+  repoName: string,
+  originDirectory: string;
+  mockSteps?: MockCompositeSteps;
+}) => {
+  const actionPath = resolve(`repo`, repoName, 'action.yml');
+  const pathToCompositeFolder = originDirectory.replace('/test', '');
+  const mockCompositeSteps = await getCompositeMockSteps({ pathToCompositeFolder, mockSteps });
+
+  updateCompositeSteps({
+    actionPath,
+    mockCompositeSteps,
+  });
 };
 
 /*
@@ -83,7 +120,7 @@ export const updateWorkflowWithMocks = async ({
   // Loop through each job and the corresponding steps in the workflow
   for await (const entry of Object.entries(jobs)) {
     const [ key, value ] = entry;
-    for await (const step of value?.steps) {
+    for await (const step of value.steps) {
       // Only update steps that leverage a jupiterone composite action
       if (step?.uses?.includes('jupiterone')) {
         await updateStepInJob({
@@ -133,7 +170,10 @@ const updateStepInJob = async ({
   step: Step;
 }) => {
   const mockJobStep:MockStep = mockSteps[key]?.filter(({ name }) => name === step.name)?.shift();
-  const mockCompositeSteps = await getCompositeMockSteps({ mockJobStep, step });
+  const mockCompositeSteps = await getCompositeMockSteps({
+    mockSteps: mockJobStep?.mockCompositeSteps,
+    pathToCompositeFolder: localizePath(step.uses)
+  });
 
   // Update job step in workflow to point at local composite action
   step.uses = `./${localizePath(step.uses)}`;
@@ -141,7 +181,10 @@ const updateStepInJob = async ({
   // Mock out the steps in the composite action based on the mockSteps passed in
   // or dynamically use the mocks.ts file in the composite action directory
   if (mockCompositeSteps) {
-    updateCompositeSteps({ repoName, step, mockCompositeSteps });
+    const trimmedPath = step?.uses.replace('./', '');
+    const actionPath = `./repo/${repoName}/${trimmedPath}/action.yml`;
+
+    updateCompositeSteps({ actionPath, mockCompositeSteps });
   }
 
   // Will mock the entire workflow job step if mocked externally
@@ -150,32 +193,4 @@ const updateStepInJob = async ({
   }
 
   return step;
-};
-
-/*
-Based on the mockCompositeSteps passed in, dynamically update the steps in the
-composite action within the temp repo (i.e. ./repo/name_of_repo/...).
-*/
-const updateCompositeSteps = ({
-  repoName,
-  step,
-  mockCompositeSteps
-}: {
-  repoName: string,
-  step: {
-    uses: string;
-  },
-  mockCompositeSteps: MockCompositeSteps,
-}) => {
-  const trimmedPath = step?.uses.replace('./', '');
-  const actionPath = `./repo/${repoName}/${trimmedPath}/action.yml`;
-  const actionYaml = yaml.load(readFileSync(actionPath, 'utf8'));
-
-  mockCompositeSteps.forEach((mockStep) => {
-    const step = actionYaml?.runs?.steps.filter((step) => step?.name === mockStep?.name).shift();
-
-    if (step) updateStepAsMock({ step, mockStep });
-  });
-
-  writeFileSync(actionPath, yaml.dump(actionYaml));
 };

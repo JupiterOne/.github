@@ -1,0 +1,15 @@
+on: [push]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      # https://github.com/nektos/act#module_not_found
+      - uses: actions/checkout@v3
+        with:
+          path: validate
+      - id: validate
+        uses: ./validate
+        env:
+          HAS_SKIP: true

@@ -1,9 +1,8 @@
 import { MockGithub } from '@kie/mock-github';
 import { Act } from '@kie/act-js';
-import { mockCompositeStep } from 'tests/utils/mock_composite_step';
 import { getCompositeActionConfig, runCompositeAction } from 'tests/utils/setup';
 import { getTestResult } from 'tests/utils/helpers';
-import { E2E_RUN_MOCK_STEPS } from './mocks';
+import { E2E_RUN_MOCK_STEPS } from '../mocks';
 
 const repoName = 'e2e_run';
 
@@ -20,13 +19,11 @@ afterEach(async () => {
 });
 
 test('output of test_passed is true when cypress_run is successful', async () => {
-  mockCompositeStep({
-    originDirectory: __dirname,
-    repoPath: mockGithub.repo.getPath(repoName),
-    mockSteps: [ ...E2E_RUN_MOCK_STEPS ]
+  const results = await runCompositeAction({
+    act: new Act(mockGithub.repo.getPath(repoName)),
+    repoName,
+    originDirectory: __dirname
   });
-
-  const results = await runCompositeAction({ act: new Act(mockGithub.repo.getPath(repoName)), repoName });
 
   const result = getTestResult({
     results,
@@ -37,16 +34,15 @@ test('output of test_passed is true when cypress_run is successful', async () =>
 });
 
 test('stops at cypress_run step if tests fail', async () => {
-  mockCompositeStep({
+  const results = await runCompositeAction({
+    act: new Act(mockGithub.repo.getPath(repoName)),
+    repoName,
     originDirectory: __dirname,
-    repoPath: mockGithub.repo.getPath(repoName),
     mockSteps: [
       ...E2E_RUN_MOCK_STEPS,
       { name: 'cypress_run', mockWith: 'exit 1' },
     ]
   });
-
-  const results = await runCompositeAction({ act: new Act(mockGithub.repo.getPath(repoName)), repoName });
 
   const result = getTestResult({
     results,
@@ -56,5 +52,3 @@ test('stops at cypress_run step if tests fail', async () => {
   // The test_results step is never hit
   expect(result).toBeUndefined();
 });
-
-// TODO: Test scenario where if e2e_pass_on_error is true, test_results are still reported
