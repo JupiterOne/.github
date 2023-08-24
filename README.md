@@ -110,7 +110,7 @@ const act = new Act(mockGithub.repo.getPath(repoName));
 act.setInput('use_e2e', 'true');
 act.setInput('e2e_pass_on_error', 'true');
 
-const results = await runWorkflow({ act, repoName, mockSteps: false, config: {
+const results = await runWorkflow({ act, repoName, config: {
   mockSteps: {
     migration_number: [ { name: 'migration_number', mockWith: 'echo ""' } ],
     validate: [ { name: 'validate', mockWith: 'echo ""' } ],
@@ -152,6 +152,20 @@ When it comes to testing a composite action, you will notice the action has a te
 
 Note: You must ensure that `name` of the job and the `path` within in the `action_test.yml` match the `repoName` defined in the `action.test.ts`, otherwise the test will fail.
 
-#### Additional Files
+Note: All booleans in a composite action must leverage fromJSON to ensure the value are treated as booleans and not strings. See issue here: https://github.com/actions/runner/issues/1483
 
-...
+
+
+```
+const mockSteps = {
+  chromatic_upload: [
+    { 
+      name: 'chromatic_upload',
+      mockCompositeSteps:  [
+        { name: 'chromatic_upload' },
+        { name: 'chromatic_publish' },
+      ];
+    }
+  ],
+}
+```

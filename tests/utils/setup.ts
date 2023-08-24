@@ -1,6 +1,8 @@
 import { join, resolve } from 'node:path';
 import { cwd } from 'node:process';
 import { Act } from '@kie/act-js';
+import { MockGithub } from '@kie/mock-github';
+import { updateWorkflowWithMocks, MockSteps } from './mocking';
 
 export const getCompositeActionConfig = ({
   directory,
@@ -73,15 +75,10 @@ export const getWorkflowConfig = ({
 export const runCompositeAction = async ({
   act,
   repoName,
-  mockSteps = true,
 }: {
   act: Act;
   repoName: string;
-  mockSteps?: boolean;
 }) => {
-  // If true, will skip all steps in the composite action that contain "if: ${{ !env.TEST }}"
-  act.setEnv('TEST', String(mockSteps));
-
   const result = await act.runEventAndJob('push', repoName, { logFile: process.env.ACT_LOG ? `log-${repoName}.log` : undefined });
   
   /*
@@ -96,24 +93,29 @@ export const runCompositeAction = async ({
 export const runWorkflow = async ({
   act,
   repoName,
+  mockGithub,
+  mockSteps,
   config = {},
-  mockSteps = true,
 }: {
   act: Act;
   repoName: string;
+  mockGithub: MockGithub;
+  mockSteps?: MockSteps,
   config?: object;
-  mockSteps?: boolean;
 }) => {
-  // If true, will skip all steps in the workflow that contain "if: ${{ !env.TEST }}"
-  act.setEnv('TEST', String(mockSteps));
+  await updateWorkflowWithMocks({
+    repoPath: mockGithub?.repo?.getPath(repoName),
+    repoName,
+    mockSteps,
+  });
 
   // Need to leverage ubuntu-latest for tests to operate
   act.setInput('fallback_runner', 'true');
-
-  // Ensures we're not attempting to checkout the global repository in our tests as we're already in it
-  act.setInput('use_global_actions', 'false');
-  
-  const result = await act.runEvent('workflow_call', { logFile: process.env.ACT_LOG ? `log-${repoName}.log` : undefined, ...config });
+ 
+  const result = await act.runEvent('workflow_call', {
+    ...config,
+    logFile: process.env.ACT_LOG ? `log-${repoName}.log` : undefined
+  });
 
   return result;
 };

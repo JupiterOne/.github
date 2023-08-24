@@ -85,44 +85,41 @@ jobs:
       migration: ${{ steps.migration_number.outputs.migration }}
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/checkout@v3
-        if: ${{ inputs.use_global_actions }}
-        with:
-          repository: jupiterone/.github
-          sparse-checkout: .github/actions
       - id: migration_number
         name: migration_number
-        uses: ./.github/actions/frontend/runtime/migration_number
+        uses: jupiterone/.github/.github/actions/frontend/runtime/migration_number@main
 
   validate:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
     if: ${{ inputs.use_validate }}
     steps:
       - uses: actions/checkout@v3
-        if: ${{ inputs.use_global_actions }}
-        with:
-          repository: jupiterone/.github
-          sparse-checkout: .github/actions
-      - uses: actions/checkout@v3
         with:
           fetch-depth: 2
+      - name: setup_env
+        uses: jupiterone/.github/.github/actions/setup_env@main
+        with:
+          use_dev: true
+      - name: remote_types_install
+        uses: jupiterone/.github/.github/actions/frontend/runtime/remote_types_install@main
       - name: validate
-        uses: ./.github/actions/frontend/runtime/validate
+        uses: jupiterone/.github/.github/actions/validate@main
+      - name: build
+        uses: jupiterone/.github/.github/actions/build@main
 
   chromatic_upload:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
     if: ${{ inputs.use_chromatic }}
     steps:
       - uses: actions/checkout@v3
-        if: ${{ inputs.use_global_actions }}
-        with:
-          repository: jupiterone/.github
-          sparse-checkout: .github/actions
-      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
+      - name: setup_env
+        uses: jupiterone/.github/.github/actions/setup_env@main
+        with:
+          use_dev: true
       - name: chromatic_upload
-        uses: ./.github/actions/frontend/chromatic
+        uses: jupiterone/.github/.github/actions/frontend/chromatic@main
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           chromatic_project_token: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
@@ -132,13 +129,14 @@ jobs:
     needs: [migration_number]
     steps:
       - uses: actions/checkout@v3
-        if: ${{ inputs.use_global_actions }}
+      - name: setup_env
+        uses: jupiterone/.github/.github/actions/setup_env@main
         with:
-          repository: jupiterone/.github
-          sparse-checkout: .github/actions
-      - uses: actions/checkout@v3
+          use_dev: true
+      - name: build
+        uses: jupiterone/.github/.github/actions/build@main
       - name: magic_url
-        uses: ./.github/actions/frontend/runtime/magic_url
+        uses: jupiterone/.github/.github/actions/frontend/runtime/magic_url@main
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           migration_number: ${{ needs.migration_number.outputs.migration }}
@@ -155,14 +153,13 @@ jobs:
       artemis_users: ${{ steps.e2e_prepare.outputs.artemis_users }}
     steps:
       - uses: actions/checkout@v3
-        if: ${{ inputs.use_global_actions }}
+      - name: setup_env
+        uses: jupiterone/.github/.github/actions/setup_env@main
         with:
-          repository: jupiterone/.github
-          sparse-checkout: .github/actions
-      - uses: actions/checkout@v3
+          use_dev: true
       - id: e2e_prepare
         name: e2e_prepare
-        uses: ./.github/actions/frontend/runtime/e2e_prepare
+        uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_prepare@main
         with:
           e2e_artemis_config_path: ${{ inputs.e2e_artemis_config_path }}
           user_count: $(echo '${{ inputs.e2e_containers }}' | jq '. | length')
@@ -188,14 +185,13 @@ jobs:
       test_passed: ${{ steps.e2e_run.outputs.test_passed }}
     steps:
       - uses: actions/checkout@v3
-        if: ${{ inputs.use_global_actions }}
+      - name: setup_env
+        uses: jupiterone/.github/.github/actions/setup_env@main
         with:
-          repository: jupiterone/.github
-          sparse-checkout: .github/actions
-      - uses: actions/checkout@v3
+          use_dev: true
       - id: e2e_run
         name: e2e_run
-        uses: ./.github/actions/frontend/runtime/e2e_run
+        uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_run@main
         continue-on-error: ${{ inputs.e2e_pass_on_error }}
         with:
           artemis_account_name: ${{ needs.e2e_prepare.outputs.artemis_account_name }}
@@ -219,13 +215,12 @@ jobs:
     needs: [e2e_run]
     steps:
       - uses: actions/checkout@v3
-        if: ${{ inputs.use_global_actions }}
+      - name: setup_env
+        uses: jupiterone/.github/.github/actions/setup_env@main
         with:
-          repository: jupiterone/.github
-          sparse-checkout: .github/actions
-      - uses: actions/checkout@v3
+          use_dev: true
       - name: e2e_status
-        uses: ./.github/actions/frontend/runtime/e2e_status
+        uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_status@main
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           commit_info_sha: ${{ github.sha }}

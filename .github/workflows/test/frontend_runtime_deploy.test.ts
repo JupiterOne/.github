@@ -26,7 +26,7 @@ test('validate inputs and secrets', async () => {
   ] });
   act.setInput('publish_chromatic', 'true');
 
-  const results = await runWorkflow({ act, repoName });
+  const results = await runWorkflow({ act, repoName, mockGithub });
 
   // cortex
   const cortex_inputs = getTestResult({ results, name: 'cortex_inputs' });
@@ -42,7 +42,7 @@ test('validate inputs and secrets', async () => {
 test('default flow', async () => {
   const act = new Act(mockGithub.repo.getPath(repoName));
 
-  const results = await runWorkflow({ act, repoName });
+  const results = await runWorkflow({ act, repoName, mockGithub });
 
   const jobs_found = getTestResults({ results, names: [
     'cortex'
@@ -56,10 +56,7 @@ test('flow with chromatic turned on', async () => {
 
   act.setInput('publish_chromatic', 'true');
 
-  const results = await runWorkflow({
-    act,
-    repoName
-  });
+  const results = await runWorkflow({ act, repoName, mockGithub });
 
   const jobs_found = getTestResults({ results, names: [
     'cortex',

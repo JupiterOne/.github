@@ -1,0 +1,23 @@
+name: Run the remote-types test to look for breaking changes made. Will skip the test if "skip remote-type-check" is found.
+
+runs:
+  using: "composite"
+  steps:
+    # Check if we should skip validating runtime types
+    - name: remote_type_check_skip
+      shell: bash
+      run: |
+        if [[ $(git log -2 --pretty=format:'%s' | grep "\[skip remote-type-check\]")  ]]; then 
+          echo "HAS_SKIP=true" >> $GITHUB_ENV
+        fi
+    - name: echo_has_skip
+      shell: bash
+      run: echo "HAS_SKIP=${{ env.HAS_SKIP }}"
+    # Validate runtime types (if applicable)
+    - name: remote_type_test
+      if: ${{ !env.HAS_SKIP }}
+      shell: bash
+      run: |
+        npx -p @jupiterone/web-tools-remote-types@latest remote-types test
+        echo "No breaking changes found";
+

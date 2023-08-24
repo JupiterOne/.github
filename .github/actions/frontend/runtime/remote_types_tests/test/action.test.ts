@@ -18,25 +18,23 @@ afterEach(async () => {
   await mockGithub.teardown();
 });
 
-test('remote types test is skipped if HAS_SKIP is present', async () => {
-  mockCompositeStep({
-    originDirectory: __dirname,
-    repoPath: mockGithub.repo.getPath(repoName),
-    mockSteps: [
-      { name: 'setup_env' },
-      { name: 'validate' },
-      { name: 'remote_type_check_skip' },
-      { name: 'remote_type_test' },
-    ]
-  });
+test('remote types test is called', async () => {
+  const act = new Act(mockGithub.repo.getPath(repoName));
+  
+  const results = await runCompositeAction({ act, repoName });
 
+  const result = getTestResult({ results, name: 'remote_type_test' });
+
+  expect(result).toBeDefined();
+});
+
+test('remote types test is skipped if HAS_SKIP is present', async () => {
   const act = new Act(mockGithub.repo.getPath(repoName));
   
   act.setEnv('HAS_SKIP', 'true');
   
-  const results = await runCompositeAction({ act, repoName, mockSteps: false });
+  const results = await runCompositeAction({ act, repoName });
 
-  // The remote_type_test step is never hit
   const result = getTestResult({ results, name: 'remote_type_test' });
 
   expect(result).toBeUndefined();

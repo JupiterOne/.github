@@ -2,3 +2,4 @@ node_modules/
 repo
 *.log
 .DS_Store
+temp

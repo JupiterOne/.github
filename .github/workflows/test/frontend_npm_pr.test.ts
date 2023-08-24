@@ -2,10 +2,28 @@ import { MockGithub } from '@kie/mock-github';
 import { Act } from '@kie/act-js';
 import { getWorkflowConfig, runWorkflow } from 'tests/utils/setup';
 import { getTestResult, getTestResults, setSecrets } from 'tests/utils/helpers';
+import { CHROMATIC_MOCK_STEPS } from '~/actions/frontend/chromatic/mocks';
+
+let mockGithub: MockGithub;
 
 const repoName = 'frontend_npm_pr';
 
-let mockGithub: MockGithub;
+// Mock the steps/composite steps that will break tests
+const mockSteps = {
+  validate: [
+    { name: 'setup_env', mockWith: `echo ''` },
+    { name: 'validate', mockWith: `echo ''` },
+    { name: 'build', mockWith: `echo ''` }
+  ],
+  chromatic_upload: [
+    { name: 'setup_env', mockWith: `echo ''` },
+    { 
+      name: 'chromatic_upload',
+      mockWith: `echo ''`,
+      mockCompositeSteps: CHROMATIC_MOCK_STEPS
+    }
+  ],
+};
 
 beforeEach(async () => {
   mockGithub = new MockGithub(getWorkflowConfig({ repoName }));
@@ -28,9 +46,8 @@ test('validate inputs and secrets', async () => {
 
   act.setInput('use_chromatic', 'true');
 
-  const results = await runWorkflow({ act, repoName });
+  const results = await runWorkflow({ act, repoName, mockGithub });
 
-  // chromatic_upload
   const chromatic_inputs = getTestResult({ results, name: 'chromatic_inputs' });
   
   expect(chromatic_inputs.output).toContain(`chromatic_project_token=***`);
@@ -39,7 +56,7 @@ test('validate inputs and secrets', async () => {
 test('default flow', async () => {
   const act = new Act(mockGithub.repo.getPath(repoName));
 
-  const results = await runWorkflow({ act, repoName });
+  const results = await runWorkflow({ act, repoName, mockGithub });
 
   const jobs_found = getTestResults({ results, names: [
     'validate',
@@ -53,7 +70,7 @@ test('when use_chromatic is true', async () => {
 
   act.setInput('use_chromatic', 'true');
 
-  const results = await runWorkflow({ act, repoName });
+  const results = await runWorkflow({ act, repoName, mockGithub });
 
   const jobs_found = getTestResults({ results, names: [
     'validate',
@@ -68,7 +85,7 @@ test('when use_validate is false', async () => {
 
   act.setInput('use_validate', 'false');
 
-  const results = await runWorkflow({ act, repoName });
+  const results = await runWorkflow({ act, repoName, mockGithub });
 
   expect(results.length).toEqual(0);
 });

@@ -51,52 +51,48 @@ jobs:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
     steps:
       - uses: actions/checkout@v3
-        if: ${{ inputs.use_global_actions }}
+      - name: setup_env
+        uses: jupiterone/.github/.github/actions/setup_env
         with:
-          repository: jupiterone/.github
-          sparse-checkout: .github/actions
-      - uses: actions/checkout@v3
+          use_dev: true
       - name: validate
-        uses: ./.github/actions/frontend/npm/validate
-        with:
-          use_esbuild: ${{ inputs.use_esbuild }}
+        uses: jupiterone/.github/.github/actions/validate
+      - name: build
+        uses: jupiterone/.github/.github/actions/build
 
   chromatic_publish:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
     needs: validate
     if: ${{ inputs.use_chromatic }}
     steps:
-      - name: noah_use_chromatic
-        run: echo "use_chromatic ${{ inputs.use_chromatic }}"
-      - uses: actions/checkout@v3
-        if: ${{ inputs.use_global_actions }}
-        with:
-          repository: jupiterone/.github
-          sparse-checkout: .github/actions
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
+      - name: setup_env
+        uses: jupiterone/.github/.github/actions/setup_env
+        with:
+          use_dev: true
       - name: chromatic_publish
-        uses: ./.github/actions/frontend/chromatic
+        uses: jupiterone/.github/.github/actions/frontend/chromatic
         with:
           publish_chromatic: true
           github_token: ${{ secrets.GITHUB_TOKEN }}
           chromatic_project_token: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
 
-  release:
+  publish:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
     needs: validate
     steps:
       - uses: actions/checkout@v3
-        if: ${{ inputs.use_global_actions }}
+      - name: setup_env
+        uses: jupiterone/.github/.github/actions/setup_env
         with:
-          repository: jupiterone/.github
-          sparse-checkout: .github/actions
-      - uses: actions/checkout@v3
-      - name: release
-        uses: ./.github/actions/frontend/npm/release
+          use_dev: true
+      - name: build
+        uses: jupiterone/.github/.github/actions/build
+      - name: publish
+        uses: jupiterone/.github/.github/actions/frontend/npm/publish
         with:
-          use_esbuild: ${{ inputs.use_esbuild }}
           auto_token: ${{ secrets.AUTO_GITHUB_PAT_TOKEN }}
 
   cortex:
@@ -105,12 +101,11 @@ jobs:
     if: ${{ inputs.use_cortex }}
     steps:
       - uses: actions/checkout@v3
-        if: ${{ inputs.use_global_actions }}
+      - name: setup_env
+        uses: jupiterone/.github/.github/actions/setup_env
         with:
-          repository: jupiterone/.github
-          sparse-checkout: .github/actions
-      - uses: actions/checkout@v3
+          use_dev: true
       - name: cortex
-        uses: ./.github/actions/frontend/cortex
+        uses: jupiterone/.github/.github/actions/frontend/cortex
         with:
           cortex_api_key: ${{ secrets.CORTEX_API_KEY }}

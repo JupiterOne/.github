@@ -14,30 +14,19 @@ inputs:
     type: string
     default: '/'
 
-# All booleans in a composite action must leverage fromJSON to ensure the value are treated
-# as booleans and not strings. See issue here: https://github.com/actions/runner/issues/1483
-
 runs:
   using: "composite"
   steps:
     - name: magic_url_inputs
-      if: ${{ fromJSON(env.TEST) }}
       shell: bash
       run: |
         echo "github_token=${{ inputs.github_token }}"
         echo "migration=${{ inputs.migration_number }}"
         echo "magic_url_route=${{ inputs.magic_url_route }}"
-    - name: setup_env
-      if: ${{ !fromJSON(env.TEST) }}
-      uses: ./.github/actions/frontend/setup_env
-      with:
-        use_dev: true
     - name: npm_build
-      if: ${{ !fromJSON(env.TEST) }}
       shell: bash
       run: npm run build
     - name: configure_aws_credentials
-      if: ${{ !fromJSON(env.TEST) }}
       uses: aws-actions/configure-aws-credentials@v1
       with:
         # J1 AWS role with deploy permissions to dev
@@ -46,13 +35,11 @@ runs:
           ${{ github.event.repository.name }}-magic-url-role-session
         aws-region: us-east-2
     - name: deploy_artifacts_to_s3
-      if: ${{ !fromJSON(env.TEST) }}
       shell: bash
       # This bucket file location is static and editing it will break the Magic URL. This pushes the entire directory which includes the bundle and remote types if applicable
       run: |
         aws s3 sync deploy/dist s3://apps.dev.jupiterone.io/static/manual-deploy/${{ github.event.repository.name }}@${{ inputs.migration_number }}/PR-${{ github.event.number }}/
     - name: show_magic_url_in_pr
-      if: ${{ !fromJSON(env.TEST) }}
       uses: Sibz/github-status-action@v1
       with: 
         authToken: ${{ inputs.github_token }}

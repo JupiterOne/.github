@@ -20,27 +20,18 @@ outputs:
   test_passed:
     value: ${{ steps.test_results.outputs.test_passed }}
 
-# All booleans in a composite action must leverage fromJSON to ensure the value are treated
-# as booleans and not strings. See issue here: https://github.com/actions/runner/issues/1483
 
 runs:
   using: "composite"
   steps:
     - name: e2e_trigger_remote_tests_inputs
-      if: ${{ fromJSON(env.TEST) }}
       shell: bash
       run: |
         echo "e2e_pass_on_error=${{ inputs.e2e_pass_on_error }}"
         echo "e2e_auto=${{ inputs.e2e_auto }}"
         echo "repo_name=${{ inputs.repo_name }}"
         echo "repo_spec=${{ inputs.repo_spec }}"
-    - name: setup_env
-      if: ${{ !fromJSON(env.TEST) }}
-      uses: ./.github/actions/frontend/setup_env
-      with:
-        use_dev: true
     - name: cypress_run
-      if: ${{ !fromJSON(env.TEST) }}
       id: cypress_run
       continue-on-error: ${{ fromJSON(inputs.e2e_pass_on_error) }}
       uses: convictional/trigger-workflow-and-wait@v1.6.5
