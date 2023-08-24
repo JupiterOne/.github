@@ -12,35 +12,26 @@ inputs:
     required: false
     default: false
 
-# All booleans in a composite action must leverage fromJSON to ensure the value are treated
-# as booleans and not strings. See issue here: https://github.com/actions/runner/issues/1483
-
 runs:
   using: "composite"
   steps:
     - name: e2e_status_inputs
-      if: ${{ fromJSON(env.TEST) }}
       shell: bash
       run: |
         echo "github_token=${{ inputs.github_token }}"
         echo "e2e_passed=${{ inputs.e2e_passed }}"
         echo "e2e_pass_on_error=${{ inputs.e2e_pass_on_error }}"
-    - name: log_e2e_passed
-      shell: bash
-      run: |
-        echo "Test Status - ${{ inputs.e2e_passed }}"
     - name: pr_status
-      if: ${{ !fromJSON(env.TEST) }}
       uses: Sibz/github-status-action@v1
-      continue-on-error: ${{ inputs.e2e_pass_on_error == 'true' }}
+      continue-on-error: ${{ fromJSON(inputs.e2e_pass_on_error) }}
       with:
         authToken: ${{ inputs.github_token }}
         context: 'E2E Test Status'
-        description: ${{ (inputs.e2e_passed && 'E2E Test Passed') || 'E2E Test Failed' }}
-        state: ${{ (inputs.e2e_passed && 'success') || 'failures' }}
+        description: ${{ (fromJSON(inputs.e2e_passed) && 'E2E Test Passed') || 'E2E Test Failed' }}
+        state: ${{ (fromJSON(inputs.e2e_passed) && 'success') || 'failures' }}
         sha: ${{ github.sha }}
     # We have to manually output an exit code of 0 to ensure the action passes if e2e_pass_on_error is true
     - name: pass_with_failures
       shell: bash
-      if: ${{ inputs.e2e_pass_on_error == 'true' }}
+      if: ${{ fromJSON(inputs.e2e_pass_on_error) }}
       run: exit 0

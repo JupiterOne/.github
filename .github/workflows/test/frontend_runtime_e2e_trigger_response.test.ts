@@ -57,7 +57,7 @@ test('validate inputs and secrets', async () => {
   setSecrets({ act, mockSecrets });
   setInputs({ act, mockInputs });
 
-  const results = await runWorkflow({ act, repoName });
+  const results = await runWorkflow({ act, repoName, mockGithub });
 
   // e2e_run
   const e2e_run_inputs = getTestResult({ results, name: 'e2e_run_inputs' });
@@ -82,7 +82,7 @@ test('validate inputs and secrets', async () => {
 test('default flow', async () => {
   const act = new Act(mockGithub.repo.getPath(repoName));
 
-  const results = await runWorkflow({ act, repoName });
+  const results = await runWorkflow({ act, repoName, mockGithub });
 
   const jobs_found = getTestResults({ results, names: [
     'migration_number',

@@ -7,9 +7,9 @@ import mockArtemisRun from '~/actions/frontend/runtime/e2e_prepare/test/artemis-
 import { resolve } from 'node:path';
 import { cwd } from 'node:process';
 
-const repoName = 'frontend_runtime_application_pr';
-
 let mockGithub: MockGithub;
+
+const repoName = 'frontend_runtime_application_pr';
 
 const mockArtemisData = {
   id: mockArtemisRun[0].id,
@@ -61,7 +61,7 @@ test('validate inputs and secrets', async () => {
   act.setInput('use_chromatic', 'true');
   act.setInput('use_e2e', 'true');
 
-  const results = await runWorkflow({ act, repoName });
+  const results = await runWorkflow({ act, repoName, mockGithub });
 
   // chromatic_upload
   const chromatic_inputs = getTestResult({ results, name: 'chromatic_inputs' });
@@ -100,7 +100,7 @@ test('validate inputs and secrets', async () => {
 test('default flow', async () => {
   const act = new Act(mockGithub.repo.getPath(repoName));
 
-  const results = await runWorkflow({ act, repoName });
+  const results = await runWorkflow({ act, repoName, mockGithub });
 
   const jobs_found = getTestResults({ results, names: [
     'migration_number',
@@ -116,10 +116,7 @@ test('flow with chromatic turned on', async () => {
 
   act.setInput('use_chromatic', 'true');
 
-  const results = await runWorkflow({
-    act,
-    repoName
-  });
+  const results = await runWorkflow({ act, repoName, mockGithub });
 
   const jobs_found = getTestResults({ results, names: [
     'migration_number',
@@ -137,19 +134,17 @@ test('flow with e2e_pass_on_error set to true to make tests non blocking', async
   act.setInput('use_e2e', 'true');
   act.setInput('e2e_pass_on_error', 'true');
 
-  const results = await runWorkflow({ act, repoName, mockSteps: false, config: {
-    mockSteps: {
-      migration_number: [ { name: 'migration_number', mockWith: 'echo ""' } ],
-      validate: [ { name: 'validate', mockWith: 'echo ""' } ],
-      magic_url: [ { name: 'magic_url', mockWith: 'echo ""' } ],
-      e2e_prepare: [ { name: 'e2e_prepare', mockWith: 'echo ""' } ],
-      
-      // Purposefully fail to test e2e_pass_on_error
-      e2e_run: [{
-        name: 'e2e_run',
-        mockWith: 'exit 1',
-      }],
-    }
+  const results = await runWorkflow({ act, repoName, mockGithub, mockSteps: {
+    migration_number: [ { name: 'migration_number', mockWith: 'echo ""' } ],
+    validate: [ { name: 'validate', mockWith: 'echo ""' } ],
+    magic_url: [ { name: 'magic_url', mockWith: 'echo ""' } ],
+    e2e_prepare: [ { name: 'e2e_prepare', mockWith: 'echo ""' } ],
+    
+    // Purposefully fail to test e2e_pass_on_error
+    e2e_run: [{
+      name: 'e2e_run',
+      mockWith: 'exit 1',
+    }],
   }});
 
   const jobs_found = getTestResults({ results, names: [

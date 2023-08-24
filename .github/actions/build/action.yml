@@ -1,0 +1,9 @@
+name: Runs build on the repo
+
+runs:
+  using: "composite"
+  steps:
+    - name: build
+      shell: bash
+      run: npm run build
+

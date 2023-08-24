@@ -3,9 +3,9 @@ import { Act } from '@kie/act-js';
 import { getWorkflowConfig, runWorkflow } from 'tests/utils/setup';
 import { getTestResult, getTestResults, setSecrets } from 'tests/utils/helpers';
 
-const repoName = 'frontend_npm_pr';
-
 let mockGithub: MockGithub;
+
+const repoName = 'frontend_npm_pr';
 
 beforeEach(async () => {
   mockGithub = new MockGithub(getWorkflowConfig({ repoName }));
@@ -28,9 +28,8 @@ test('validate inputs and secrets', async () => {
 
   act.setInput('use_chromatic', 'true');
 
-  const results = await runWorkflow({ act, repoName });
+  const results = await runWorkflow({ act, repoName, mockGithub });
 
-  // chromatic_upload
   const chromatic_inputs = getTestResult({ results, name: 'chromatic_inputs' });
   
   expect(chromatic_inputs.output).toContain(`chromatic_project_token=***`);
@@ -39,7 +38,7 @@ test('validate inputs and secrets', async () => {
 test('default flow', async () => {
   const act = new Act(mockGithub.repo.getPath(repoName));
 
-  const results = await runWorkflow({ act, repoName });
+  const results = await runWorkflow({ act, repoName, mockGithub });
 
   const jobs_found = getTestResults({ results, names: [
     'validate',
@@ -53,7 +52,7 @@ test('when use_chromatic is true', async () => {
 
   act.setInput('use_chromatic', 'true');
 
-  const results = await runWorkflow({ act, repoName });
+  const results = await runWorkflow({ act, repoName, mockGithub });
 
   const jobs_found = getTestResults({ results, names: [
     'validate',
@@ -68,7 +67,7 @@ test('when use_validate is false', async () => {
 
   act.setInput('use_validate', 'false');
 
-  const results = await runWorkflow({ act, repoName });
+  const results = await runWorkflow({ act, repoName, mockGithub });
 
   expect(results.length).toEqual(0);
 });

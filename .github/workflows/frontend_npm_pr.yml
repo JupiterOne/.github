@@ -46,30 +46,28 @@ jobs:
     if: ${{ inputs.use_validate }}
     steps:
       - uses: actions/checkout@v3
-        if: ${{ inputs.use_global_actions }}
+      - name: setup_env
+        uses: jupiterone/.github/.github/actions/setup_env@main
         with:
-          repository: jupiterone/.github
-          sparse-checkout: .github/actions
-      - uses: actions/checkout@v3
+          use_dev: true
       - name: validate
-        uses: ./.github/actions/frontend/npm/validate
-        with:
-          use_esbuild: ${{ inputs.use_esbuild }}
+        uses: jupiterone/.github/.github/actions/validate@main
+      - name: build
+        uses: jupiterone/.github/.github/actions/build@main
 
   chromatic_upload:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
     if: ${{ inputs.use_chromatic }}
     steps:
       - uses: actions/checkout@v3
-        if: ${{ inputs.use_global_actions }}
-        with:
-          repository: jupiterone/.github
-          sparse-checkout: .github/actions
-      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
+      - name: setup_env
+        uses: jupiterone/.github/.github/actions/setup_env@main
+        with:
+          use_dev: true
       - name: chromatic_upload
-        uses: ./.github/actions/frontend/chromatic
+        uses: jupiterone/.github/.github/actions/frontend/chromatic@main
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           chromatic_project_token: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}

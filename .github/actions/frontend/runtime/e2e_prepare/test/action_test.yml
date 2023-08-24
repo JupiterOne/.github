@@ -11,8 +11,6 @@ jobs:
           path: e2e_prepare
       - id: e2e_prepare
         uses: ./e2e_prepare
-        env:
-          TEST: true
       - name: results_artemis_account_name
         run: echo ${{ steps.e2e_prepare.outputs.artemis_account_name }}
         shell: bash

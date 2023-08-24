@@ -3,9 +3,9 @@ import { Act } from '@kie/act-js';
 import { getWorkflowConfig, runWorkflow } from 'tests/utils/setup';
 import { getTestResult, getTestResults, setSecrets } from 'tests/utils/helpers';
 
-const repoName = 'frontend_npm_release';
-
 let mockGithub: MockGithub;
+
+const repoName = 'frontend_npm_release';
 
 beforeEach(async () => {
   mockGithub = new MockGithub(getWorkflowConfig({ repoName }));
@@ -29,17 +29,17 @@ test('validate inputs and secrets', async () => {
 
   act.setInput('use_chromatic', 'true');
 
-  const results = await runWorkflow({ act, repoName });
+  const results = await runWorkflow({ act, repoName, mockGithub });
 
   // chromatic_upload
   const chromatic_inputs = getTestResult({ results, name: 'chromatic_inputs' });
   
   expect(chromatic_inputs.output).toContain(`chromatic_project_token=***`);
 
-  // npm_release
-  const npm_release_inputs = getTestResult({ results, name: 'npm_release_inputs' });
+  // npm_publish
+  const npm_publish_inputs = getTestResult({ results, name: 'npm_publish_inputs' });
   
-  expect(npm_release_inputs.output).toContain(`auto_token=***`);
+  expect(npm_publish_inputs.output).toContain(`auto_token=***`);
 
   // cortex
   const cortex_inputs = getTestResult({ results, name: 'cortex_inputs' });
@@ -50,11 +50,11 @@ test('validate inputs and secrets', async () => {
 test('default flow', async () => {
   const act = new Act(mockGithub.repo.getPath(repoName));
 
-  const results = await runWorkflow({ act, repoName });
+  const results = await runWorkflow({ act, repoName, mockGithub });
 
   const jobs_found = getTestResults({ results, names: [
     'validate',
-    'release',
+    'publish',
     'cortex'
   ] });
 
@@ -66,12 +66,12 @@ test('when use_chromatic is true', async () => {
 
   act.setInput('use_chromatic', 'true');
 
-  const results = await runWorkflow({ act, repoName });
+  const results = await runWorkflow({ act, repoName, mockGithub });
 
   const jobs_found = getTestResults({ results, names: [
     'validate',
     'chromatic_publish',
-    'release',
+    'publish',
     'cortex'
   ] });
 

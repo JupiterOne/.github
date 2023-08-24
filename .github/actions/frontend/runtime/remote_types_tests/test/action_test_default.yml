@@ -11,5 +11,3 @@ jobs:
           path: validate
       - id: validate
         uses: ./validate
-        env:
-          TEST: true

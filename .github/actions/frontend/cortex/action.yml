@@ -6,24 +6,15 @@ inputs:
     type: string
     required: true
 
-# All booleans in a composite action must leverage fromJSON to ensure the value are treated
-# as booleans and not strings. See issue here: https://github.com/actions/runner/issues/1483
 
 runs:
   using: "composite"
   steps:
     - name: cortex_inputs
-      if: ${{ fromJSON(env.TEST) }}
       shell: bash
       run: |
         echo "cortex_api_key=${{ inputs.cortex_api_key }}"
-    - name: setup_env
-      if: ${{ !fromJSON(env.TEST) }}
-      uses: ./.github/actions/frontend/setup_env
-      with:
-        use_dev: true
-    - name: Create or update entity in Cortex
-      if: ${{ !fromJSON(env.TEST) }}
+    - name: push_to_cortex
       run: npx --yes -p @jupiterone/web-tools-platform-analytics@latest platform-analytics all
       shell: bash
       env:

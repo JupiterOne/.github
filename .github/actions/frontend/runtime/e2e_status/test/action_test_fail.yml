@@ -12,6 +12,3 @@ jobs:
         uses: ./e2e_status
         with:
           e2e_passed: false
-          e2e_pass_on_error: true
-        env:
-          TEST: true

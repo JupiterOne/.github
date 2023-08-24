@@ -27,7 +27,11 @@ afterEach(async () => {
 });
 
 test('output of artemis_info returns correct results based off artemis-run.json', async () => {
-  const results = await runCompositeAction({ act: new Act(mockGithub.repo.getPath(repoName)), repoName });
+  const results = await runCompositeAction({
+    act: new Act(mockGithub.repo.getPath(repoName)),
+    repoName,
+    originDirectory: __dirname
+  });
 
   const results_artemis_account_name = getTestResult({ results, name: 'results_artemis_account_name' });
   const results_artemis_account_subdomain = getTestResult({ results, name: 'results_artemis_account_subdomain' });
@@ -41,4 +45,3 @@ test('output of artemis_info returns correct results based off artemis-run.json'
   expect(results_artemis_users.output).toContain(artemisRun[1].metadata.token.tokenCsrf);
   expect(results_artemis_users.output).toContain(artemisRun[1].metadata.groupName);
 });
-

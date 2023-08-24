@@ -42,7 +42,7 @@ test('validate inputs and secrets', async () => {
     'E2E_AUTO'
   ]});
 
-  const results = await runWorkflow({ act, repoName });
+  const results = await runWorkflow({ act, repoName, mockGithub });
 
   // chromatic_upload
   const chromatic_inputs = getTestResult({ results, name: 'chromatic_inputs' });
@@ -65,7 +65,7 @@ test('validate inputs and secrets', async () => {
 
 test('default flow', async () => {
   const act = new Act(mockGithub.repo.getPath(repoName));
-  const results = await runWorkflow({ act, repoName });
+  const results = await runWorkflow({ act, repoName, mockGithub });
 
   const jobs_found = getTestResults({ results, names: [
     'migration_number',
@@ -81,7 +81,7 @@ test('flow with chromatic turned on', async () => {
 
   act.setInput('use_chromatic', 'true');
 
-  const results = await runWorkflow({ act, repoName });
+  const results = await runWorkflow({ act, repoName, mockGithub });
 
   const jobs_found = getTestResults({ results, names: [
     'migration_number',
@@ -101,7 +101,7 @@ test('flow with e2e trigger turned on', async () => {
     repos_to_test: '[{"repo":{"name":"web-home", "spec":"test/spec" }}]'
   }});
 
-  const results = await runWorkflow({ act, repoName });
+  const results = await runWorkflow({ act, repoName, mockGithub });
 
   const jobs_found = getTestResults({ results, names: [
     'migration_number',
@@ -123,7 +123,7 @@ test('flow with e2e_pass_on_error set to true to make tests non blocking', async
     repos_to_test: '[{"repo":{"name":"web-home", "spec":"test/spec" }}]'
   }});
 
-  const results = await runWorkflow({ act, repoName, mockSteps: false, config: {
+  const results = await runWorkflow({ act, repoName, mockGithub, config: {
     mockSteps: {
       migration_number: [ { name: 'migration_number', mockWith: 'echo ""' } ],
       validate: [ { name: 'validate', mockWith: 'echo ""' } ],

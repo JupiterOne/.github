@@ -63,44 +63,47 @@ jobs:
       migration: ${{ steps.migration_number.outputs.migration }}
     steps:
       - uses: actions/checkout@v3
-        if: ${{ inputs.use_global_actions }}
+      - name: setup_env
+        uses: jupiterone/.github/.github/actions/setup_env@main
         with:
-          repository: jupiterone/.github
-          sparse-checkout: .github/actions
-      - uses: actions/checkout@v3
+          use_dev: true
       - id: migration_number
         name: migration_number
-        uses: ./.github/actions/frontend/runtime/migration_number
+        uses: jupiterone/.github/.github/actions/frontend/runtime/migration_number
 
   validate:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
     if: ${{ inputs.use_validate }}
     steps:
       - uses: actions/checkout@v3
-        if: ${{ inputs.use_global_actions }}
-        with:
-          repository: jupiterone/.github
-          sparse-checkout: .github/actions
-      - uses: actions/checkout@v3
         with:
           fetch-depth: 2
+      - name: setup_env
+        uses: jupiterone/.github/.github/actions/setup_env@main
+        with:
+          use_dev: true
+      - name: remote_types_install
+        uses: jupiterone/.github/.github/actions/frontend/runtime/remote_types_install
       - name: validate
-        uses: ./.github/actions/frontend/runtime/validate
+        uses: jupiterone/.github/.github/actions/validate
+      - name: remote_types_tests
+        uses: jupiterone/.github/.github/actions/frontend/runtime/remote_types_tests
+      - name: build
+        uses: jupiterone/.github/.github/actions/build
 
   chromatic_upload:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
     if: ${{ inputs.use_chromatic }}
     steps:
       - uses: actions/checkout@v3
-        if: ${{ inputs.use_global_actions }}
-        with:
-          repository: jupiterone/.github
-          sparse-checkout: .github/actions
-      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
+      - name: setup_env
+        uses: jupiterone/.github/.github/actions/setup_env@main
+        with:
+          use_dev: true
       - name: chromatic_upload
-        uses: ./.github/actions/frontend/chromatic
+        uses: jupiterone/.github/.github/actions/frontend/chromatic
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           chromatic_project_token: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
@@ -110,13 +113,14 @@ jobs:
     needs: [migration_number]
     steps:
       - uses: actions/checkout@v3
-        if: ${{ inputs.use_global_actions }}
+      - name: setup_env
+        uses: jupiterone/.github/.github/actions/setup_env@main
         with:
-          repository: jupiterone/.github
-          sparse-checkout: .github/actions
-      - uses: actions/checkout@v3
+          use_dev: true
+      - name: build
+        uses: jupiterone/.github/.github/actions/build
       - name: magic_url
-        uses: ./.github/actions/frontend/runtime/magic_url
+        uses: jupiterone/.github/.github/actions/frontend/runtime/magic_url
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           migration_number: ${{ needs.migration_number.outputs.migration }}
@@ -135,14 +139,13 @@ jobs:
       test_passed: ${{ steps.e2e_trigger_remote_tests.outputs.test_passed }}
     steps:
       - uses: actions/checkout@v3
-        if: ${{ inputs.use_global_actions }}
+      - name: setup_env
+        uses: jupiterone/.github/.github/actions/setup_env@main
         with:
-          repository: jupiterone/.github
-          sparse-checkout: .github/actions
-      - uses: actions/checkout@v3
+          use_dev: true
       - id: e2e_trigger_remote_tests
         name: e2e_trigger_remote_tests
-        uses: ./.github/actions/frontend/runtime/e2e_trigger_remote_tests
+        uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_trigger_remote_tests
         continue-on-error: ${{ inputs.e2e_pass_on_error }}
         with:
           e2e_pass_on_error: ${{ inputs.e2e_pass_on_error }}
@@ -156,13 +159,12 @@ jobs:
     needs: [e2e_trigger_remote_tests]
     steps:
       - uses: actions/checkout@v3
-        if: ${{ inputs.use_global_actions }}
+      - name: setup_env
+        uses: jupiterone/.github/.github/actions/setup_env@main
         with:
-          repository: jupiterone/.github
-          sparse-checkout: .github/actions
-      - uses: actions/checkout@v3
+          use_dev: true
       - name: e2e_status
-        uses: ./.github/actions/frontend/runtime/e2e_status
+        uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_status
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           commit_info_sha: ${{ github.sha }}
