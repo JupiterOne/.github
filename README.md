@@ -163,3 +163,13 @@ When it comes to testing a composite action, you will notice the action has a te
 Note: You must ensure that `name` of the job and the `path` within in the `action_test.yml` match the `repoName` defined in the `action.test.ts`, otherwise the test will fail.
 
 Note: All booleans in a composite action must leverage fromJSON to ensure the value are treated as booleans and not strings. See issue here: https://github.com/actions/runner/issues/1483
+
+## Testing In Another Repo
+
+If you wish to copy/paste the workflows and/or composite actions into another repo to test these out live, you can leverage the following command. This will create a `temp` directory with the workflows/actions in it. These will have been updated to:
+- The `uses` property in the workflows will reference local composite actions - `jupiterone/.github/.github/actions/.../@main` updated to `./.github/actions/...`
+- Test/readme files will also be dropped as these can cause issues.
+
+```
+npm run generate-local-files
+```

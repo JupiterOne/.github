@@ -28,7 +28,7 @@ fs.cpSync(src, dest, {
 filesToUpdate.forEach((file) => {
   const data = fs.readFileSync(file, 'utf-8');
 
-  const result = data.replace(/uses: jupiterone\/.github\//g, './.github/');
+  const result = data.replace(/uses: jupiterone\/.github\//g, './');
 
   fs.writeFileSync(file, result, 'utf-8');
 });
