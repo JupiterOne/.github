@@ -193,7 +193,7 @@ jobs:
       - id: e2e_run
         name: e2e_run
         uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_run@main
-        continue-on-error: ${{ inputs.e2e_pass_on_error }}
+        continue-on-error: ${{ fromJson(inputs.e2e_pass_on_error) }}
         with:
           artemis_account_name: ${{ needs.e2e_prepare.outputs.artemis_account_name }}
           artemis_account_id: ${{ needs.e2e_prepare.outputs.artemis_account_id }}
