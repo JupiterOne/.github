@@ -27,7 +27,6 @@ on:
 
 env:
   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-  TEST: false
   
 jobs:
   chromatic_publish:
@@ -42,7 +41,7 @@ jobs:
         with:
           use_dev: true
       - name: chromatic_publish
-        uses: jupiterone/.github/.github/actions/frontend/chromatic
+        uses: jupiterone/.github/.github/actions/frontend/chromatic@main
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           chromatic_project_token: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
@@ -57,6 +56,6 @@ jobs:
         with:
           use_dev: true
       - name: cortex
-        uses: jupiterone/.github/.github/actions/frontend/cortex
+        uses: jupiterone/.github/.github/actions/frontend/cortex@main
         with:
           cortex_api_key: ${{ secrets.CORTEX_API_KEY }}

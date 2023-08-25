@@ -15,7 +15,11 @@ if (!fs.existsSync(dest)) {
 fs.cpSync(src, dest, {
   recursive: true,
   filter: (name) => {
-    const include = !name.includes('test') && !name.includes('.md') && !name.includes('.DS_Store');
+    const include = 
+      !name.includes('/test') && 
+      !name.includes('.md') &&
+      !name.includes('.DS_Store') &&
+      !name.includes('mocks.ts');
 
     if (include && name.includes('.yml')) {
       filesToUpdate.push(`temp/${name.split('.github/.github/')[1]}`);
@@ -28,7 +32,9 @@ fs.cpSync(src, dest, {
 filesToUpdate.forEach((file) => {
   const data = fs.readFileSync(file, 'utf-8');
 
-  const result = data.replace(/uses: jupiterone\/.github\//g, './');
+  const result = data
+    .replace(/uses: jupiterone\/.github\//g, 'uses: ./')
+    .replace(/@main/g, '');
 
   fs.writeFileSync(file, result, 'utf-8');
 });

@@ -65,10 +65,9 @@ on:
 
 env:
   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-  TEST: false
 
 concurrency:
-  group: ${{ github.head_ref || github.run_id }}
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 
 # Permissions needed to push the artifact to the S3 bucket and show the status in the PR.
@@ -90,6 +89,8 @@ jobs:
         uses: jupiterone/.github/.github/actions/frontend/runtime/migration_number@main
 
   validate:
+    # Name targeted by branch protections, do not change
+    name: Validate
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
     if: ${{ inputs.use_validate }}
     steps:
@@ -211,6 +212,8 @@ jobs:
 
   # Unless e2e_pass_on_error is true, this will never get hit if an E2E test fails
   e2e_status:
+    # Name targeted by branch protections, do not change
+    name: E2E Status
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
     needs: [e2e_run]
     steps:

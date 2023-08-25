@@ -43,10 +43,9 @@ on:
 
 env:
   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-  TEST: false
 
 concurrency:
-  group: ${{ github.head_ref || github.run_id }}
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 
 # Permissions needed to push the artifact to the S3 bucket and show the status in the PR.
@@ -69,9 +68,11 @@ jobs:
           use_dev: true
       - id: migration_number
         name: migration_number
-        uses: jupiterone/.github/.github/actions/frontend/runtime/migration_number
+        uses: jupiterone/.github/.github/actions/frontend/runtime/migration_number@main
 
   validate:
+    # Name targeted by branch protections, do not change
+    name: Validate
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
     if: ${{ inputs.use_validate }}
     steps:
@@ -83,13 +84,13 @@ jobs:
         with:
           use_dev: true
       - name: remote_types_install
-        uses: jupiterone/.github/.github/actions/frontend/runtime/remote_types_install
+        uses: jupiterone/.github/.github/actions/frontend/runtime/remote_types_install@main
       - name: validate
-        uses: jupiterone/.github/.github/actions/validate
+        uses: jupiterone/.github/.github/actions/validate@main
       - name: remote_types_tests
-        uses: jupiterone/.github/.github/actions/frontend/runtime/remote_types_tests
+        uses: jupiterone/.github/.github/actions/frontend/runtime/remote_types_tests@main
       - name: build
-        uses: jupiterone/.github/.github/actions/build
+        uses: jupiterone/.github/.github/actions/build@main
 
   chromatic_upload:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
@@ -103,7 +104,7 @@ jobs:
         with:
           use_dev: true
       - name: chromatic_upload
-        uses: jupiterone/.github/.github/actions/frontend/chromatic
+        uses: jupiterone/.github/.github/actions/frontend/chromatic@main
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           chromatic_project_token: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
@@ -118,9 +119,9 @@ jobs:
         with:
           use_dev: true
       - name: build
-        uses: jupiterone/.github/.github/actions/build
+        uses: jupiterone/.github/.github/actions/build@main
       - name: magic_url
-        uses: jupiterone/.github/.github/actions/frontend/runtime/magic_url
+        uses: jupiterone/.github/.github/actions/frontend/runtime/magic_url@main
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           migration_number: ${{ needs.migration_number.outputs.migration }}
@@ -145,7 +146,7 @@ jobs:
           use_dev: true
       - id: e2e_trigger_remote_tests
         name: e2e_trigger_remote_tests
-        uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_trigger_remote_tests
+        uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_trigger_remote_tests@main
         continue-on-error: ${{ inputs.e2e_pass_on_error }}
         with:
           e2e_pass_on_error: ${{ inputs.e2e_pass_on_error }}
@@ -155,6 +156,8 @@ jobs:
 
   # Unless e2e_pass_on_error is true, this will never get hit if an E2E test fails
   e2e_status:
+    # Name targeted by branch protections, do not change
+    name: E2E Status
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
     needs: [e2e_trigger_remote_tests]
     steps:
@@ -164,7 +167,7 @@ jobs:
         with:
           use_dev: true
       - name: e2e_status
-        uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_status
+        uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_status@main
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           commit_info_sha: ${{ github.sha }}
