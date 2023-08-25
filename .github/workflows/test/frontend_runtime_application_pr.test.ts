@@ -143,7 +143,10 @@ test('flow with e2e_pass_on_error set to true to make tests non blocking', async
     // Purposefully fail to test e2e_pass_on_error
     e2e_run: [{
       name: 'e2e_run',
-      mockWith: 'exit 1',
+      mockCompositeSteps:  [
+        { name: 'get_author_name' },
+        { name: 'cypress_run', mockWith: 'exit 1' },
+      ]
     }],
   }});
 
