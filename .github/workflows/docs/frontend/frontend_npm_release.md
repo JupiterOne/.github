@@ -37,6 +37,7 @@ jobs:
     uses: jupiterone/.github/.github/workflows/frontend_npm_release.yml
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+      AUTO_GITHUB_PAT_TOKEN: ${{ secrets.AUTO_GITHUB_PAT_TOKEN }} 
 ```
 
 #### Diagram
@@ -65,6 +66,7 @@ jobs:
       use_chromatic: true
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+      AUTO_GITHUB_PAT_TOKEN: ${{ secrets.AUTO_GITHUB_PAT_TOKEN }} 
       CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
 ```
 

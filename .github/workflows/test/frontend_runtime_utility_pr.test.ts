@@ -123,7 +123,7 @@ test('flow with e2e_pass_on_error set to true to make tests non blocking', async
     repos_to_test: '[{"repo":{"name":"web-home", "spec":"test/spec" }}]'
   }});
 
-  const results = await runWorkflow({ act, repoName, mockGithub, config: {
+  const results = await runWorkflow({ act, repoName, mockGithub,
     mockSteps: {
       migration_number: [ { name: 'migration_number', mockWith: 'echo ""' } ],
       validate: [ { name: 'validate', mockWith: 'echo ""' } ],
@@ -132,10 +132,12 @@ test('flow with e2e_pass_on_error set to true to make tests non blocking', async
       // Purposefully fail trigger to test e2e_pass_on_error
       e2e_trigger_remote_tests: [{
         name: 'e2e_trigger_remote_tests',
-        mockWith: 'exit 1',
+        mockCompositeSteps:  [
+          { name: 'cypress_run', mockWith: 'exit 1' },
+        ]
       }],
     }
-  }});
+  });
 
   const jobs_found = getTestResults({ results, names: [
     'migration_number',
