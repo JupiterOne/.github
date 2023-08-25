@@ -16,5 +16,5 @@ runs:
     - name: deploy_to_npm
       env:
         GH_TOKEN: ${{ inputs.auto_token }}
-      run: npx --yes -p auto@latest auto shipit
+      run: npx --yes -p auto@11 auto shipit
       shell: bash
