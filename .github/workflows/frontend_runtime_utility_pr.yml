@@ -147,7 +147,6 @@ jobs:
       - id: e2e_trigger_remote_tests
         name: e2e_trigger_remote_tests
         uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_trigger_remote_tests@main
-        continue-on-error: ${{ fromJson(inputs.e2e_pass_on_error) }}
         with:
           e2e_pass_on_error: ${{ inputs.e2e_pass_on_error }}
           e2e_auto: ${{ secrets.E2E_AUTO }}
