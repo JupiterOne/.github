@@ -13,11 +13,8 @@ runs:
       shell: bash
       run: |
         echo "auto_token=${{ inputs.auto_token }}"
-    - name: add_auto_to_globals
-      run: npm install -g auto@10.37.4
-      shell: bash
     - name: deploy_to_npm
       env:
         GH_TOKEN: ${{ inputs.auto_token }}
-      run: npx auto shipit
+      run: npx --yes -p auto@latest auto shipit
       shell: bash

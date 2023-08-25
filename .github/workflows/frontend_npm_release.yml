@@ -40,25 +40,26 @@ on:
 
 env:
   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-  TEST: false
 
 concurrency:
-  group: ${{ github.head_ref || github.run_id }}
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 
 jobs:
   validate:
+    # Name targeted by branch protections, do not change
+    name: Validate
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
     steps:
       - uses: actions/checkout@v3
       - name: setup_env
-        uses: jupiterone/.github/.github/actions/setup_env
+        uses: jupiterone/.github/.github/actions/setup_env@main
         with:
           use_dev: true
       - name: validate
-        uses: jupiterone/.github/.github/actions/validate
+        uses: jupiterone/.github/.github/actions/validate@main
       - name: build
-        uses: jupiterone/.github/.github/actions/build
+        uses: jupiterone/.github/.github/actions/build@main
 
   chromatic_publish:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
@@ -69,11 +70,11 @@ jobs:
         with:
           fetch-depth: 0
       - name: setup_env
-        uses: jupiterone/.github/.github/actions/setup_env
+        uses: jupiterone/.github/.github/actions/setup_env@main
         with:
           use_dev: true
       - name: chromatic_publish
-        uses: jupiterone/.github/.github/actions/frontend/chromatic
+        uses: jupiterone/.github/.github/actions/frontend/chromatic@main
         with:
           publish_chromatic: true
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -85,13 +86,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: setup_env
-        uses: jupiterone/.github/.github/actions/setup_env
+        uses: jupiterone/.github/.github/actions/setup_env@main
         with:
           use_dev: true
       - name: build
-        uses: jupiterone/.github/.github/actions/build
+        uses: jupiterone/.github/.github/actions/build@main
       - name: publish
-        uses: jupiterone/.github/.github/actions/frontend/npm/publish
+        uses: jupiterone/.github/.github/actions/frontend/npm/publish@main
         with:
           auto_token: ${{ secrets.AUTO_GITHUB_PAT_TOKEN }}
 
@@ -102,10 +103,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: setup_env
-        uses: jupiterone/.github/.github/actions/setup_env
+        uses: jupiterone/.github/.github/actions/setup_env@main
         with:
           use_dev: true
       - name: cortex
-        uses: jupiterone/.github/.github/actions/frontend/cortex
+        uses: jupiterone/.github/.github/actions/frontend/cortex@main
         with:
           cortex_api_key: ${{ secrets.CORTEX_API_KEY }}

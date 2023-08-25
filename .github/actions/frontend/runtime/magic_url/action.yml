@@ -23,9 +23,6 @@ runs:
         echo "github_token=${{ inputs.github_token }}"
         echo "migration=${{ inputs.migration_number }}"
         echo "magic_url_route=${{ inputs.magic_url_route }}"
-    - name: npm_build
-      shell: bash
-      run: npm run build
     - name: configure_aws_credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
