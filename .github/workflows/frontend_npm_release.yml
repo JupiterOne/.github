@@ -85,10 +85,11 @@ jobs:
     needs: validate
     steps:
       - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.AUTO_GITHUB_PAT_TOKEN }}
+          fetch-depth: 0
       - name: setup_env
         uses: jupiterone/.github/.github/actions/setup_env@main
-        with:
-          use_dev: true
       - name: build
         uses: jupiterone/.github/.github/actions/build@main
       - name: publish
