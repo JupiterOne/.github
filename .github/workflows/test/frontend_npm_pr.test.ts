@@ -30,9 +30,15 @@ test('validate inputs and secrets', async () => {
 
   const results = await runWorkflow({ act, repoName, mockGithub });
 
+  // chromatic_upload
   const chromatic_inputs = getTestResult({ results, name: 'chromatic_inputs' });
   
   expect(chromatic_inputs.output).toContain(`chromatic_project_token=***`);
+
+  // code_ql
+  const code_ql_inputs = getTestResult({ results, name: 'code_ql_inputs' });
+  
+  expect(code_ql_inputs.output).toContain(`language=javascript`);
 });
 
 test('default flow', async () => {
@@ -42,9 +48,10 @@ test('default flow', async () => {
 
   const jobs_found = getTestResults({ results, names: [
     'validate',
+    'code_ql'
   ] });
 
-  expect(jobs_found.length).toEqual(1);
+  expect(jobs_found.length).toEqual(2);
 });
 
 test('when use_chromatic is true', async () => {
@@ -55,11 +62,10 @@ test('when use_chromatic is true', async () => {
   const results = await runWorkflow({ act, repoName, mockGithub });
 
   const jobs_found = getTestResults({ results, names: [
-    'validate',
     'chromatic_upload'
   ] });
 
-  expect(jobs_found.length).toEqual(2);
+  expect(jobs_found.length).toEqual(1);
 });
 
 test('when use_validate is false', async () => {
@@ -69,5 +75,23 @@ test('when use_validate is false', async () => {
 
   const results = await runWorkflow({ act, repoName, mockGithub });
 
-  expect(results.length).toEqual(0);
+  const jobs_found = getTestResults({ results, names: [
+    'validate'
+  ] });
+
+  expect(jobs_found.length).toEqual(0);
+});
+
+test('when use_security is false', async () => {
+  const act = new Act(mockGithub.repo.getPath(repoName));
+
+  act.setInput('use_security', 'false');
+
+  const results = await runWorkflow({ act, repoName, mockGithub });
+
+  const jobs_found = getTestResults({ results, names: [
+    'code_ql'
+  ] });
+
+  expect(jobs_found.length).toEqual(0);
 });

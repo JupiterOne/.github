@@ -37,6 +37,11 @@ test('validate inputs and secrets', async () => {
   const chromatic_inputs = getTestResult({ results, name: 'chromatic_inputs' });
   
   expect(chromatic_inputs.output).toContain(`chromatic_project_token=***`);
+  
+  // code_ql
+  const code_ql_inputs = getTestResult({ results, name: 'code_ql_inputs' });
+
+  expect(code_ql_inputs.output).toContain(`language=javascript`);
 });
 
 test('default flow', async () => {
@@ -45,10 +50,12 @@ test('default flow', async () => {
   const results = await runWorkflow({ act, repoName, mockGithub });
 
   const jobs_found = getTestResults({ results, names: [
+    'validate',
+    'code_ql',
     'cortex'
   ] });
 
-  expect(jobs_found.length).toEqual(1);
+  expect(jobs_found.length).toEqual(3);
 });
 
 test('flow with chromatic turned on', async () => {
@@ -59,9 +66,11 @@ test('flow with chromatic turned on', async () => {
   const results = await runWorkflow({ act, repoName, mockGithub });
 
   const jobs_found = getTestResults({ results, names: [
+    'validate',
+    'code_ql',
     'cortex',
     'chromatic_publish'
   ] });
 
-  expect(jobs_found.length).toEqual(2);
+  expect(jobs_found.length).toEqual(4);
 });

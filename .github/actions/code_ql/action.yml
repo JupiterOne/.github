@@ -1,0 +1,24 @@
+name: Runs CodeQL on the repository
+
+inputs:
+  language:
+    description: 'Specify the language you wish to target. CodeQL supports [ cpp, csharp, go, java, javascript, python, ruby ]'
+    required: true
+    type: string
+
+runs:
+  using: "composite"
+  steps:
+    - name: code_ql_inputs
+      shell: bash
+      run: |
+        echo "language=${{ inputs.language }}"
+    - name: initialize_code_ql
+      uses: github/codeql-action/init@v2
+      with:
+        languages: ${{ inputs.language }}
+        queries: security-extended,security-and-quality    
+    - name: auto_build
+      uses: github/codeql-action/autobuild@v2
+    - name: analyze
+      uses: github/codeql-action/analyze@v2

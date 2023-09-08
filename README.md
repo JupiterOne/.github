@@ -47,27 +47,6 @@ The workflows above take advantage of the composite actions listed below, levera
 - [validate](.github/actions/frontend/npm/validate/README.md)
 - [release](.github/actions/frontend/npm/release/README.md)
 
-### 
-
-When using composite actions, you will need to perform the following checkouts:
-
-```
-# Checks out the global repository where the composite actions live (jupiterone/.github),
-# without this, the composite action will not be found as each job is run in virtual container:
-- uses: actions/checkout@v3
-  if: ${{ inputs.use_global_actions }}
-  with:
-    repository: jupiterone/.github
-    sparse-checkout: .github/actions
-
-# Checks out the repository where the workflow is being run
-- uses: actions/checkout@v3
-
-# You can now use the composite action
-- name: some_composite_action
-  uses: ./.github/actions/some_composite_action
-```
-
 ## Local Testing
 
 We are using [act-js](https://github.com/kiegroup/act-js) and [mock-github](https://www.npmjs.com/package/@kie/mock-github#mockgithub) to test our workflows and composite actions. These tests are intended to simplify development, speed up the feedback loop, and bring more stability to our flows and actions. To run the tests, please execute the following command:

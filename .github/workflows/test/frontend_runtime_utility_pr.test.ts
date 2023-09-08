@@ -61,6 +61,11 @@ test('validate inputs and secrets', async () => {
   expect(e2e_trigger_remote_tests_inputs.output).toContain(`e2e_auto=***`);
   expect(e2e_trigger_remote_tests_inputs.output).toContain(JSON.parse(mockInputs.repos_to_test)[0].repo.name);
   expect(e2e_trigger_remote_tests_inputs.output).toContain(JSON.parse(mockInputs.repos_to_test)[0].repo.spec);
+
+  // code_ql
+  const code_ql_inputs = getTestResult({ results, name: 'code_ql_inputs' });
+  
+  expect(code_ql_inputs.output).toContain(`language=javascript`);
 });
 
 test('default flow', async () => {
@@ -70,13 +75,42 @@ test('default flow', async () => {
   const jobs_found = getTestResults({ results, names: [
     'migration_number',
     'validate',
+    'code_ql',
     'magic_url'
   ] });
 
-  expect(jobs_found.length).toEqual(3);
+  expect(jobs_found.length).toEqual(4);
 });
 
-test('flow with chromatic turned on', async () => {
+test('when use_validate is false', async () => {
+  const act = new Act(mockGithub.repo.getPath(repoName));
+
+  act.setInput('use_validate', 'false');
+
+  const results = await runWorkflow({ act, repoName, mockGithub });
+
+  const jobs_found = getTestResults({ results, names: [
+    'validate'
+  ] });
+
+  expect(jobs_found.length).toEqual(0);
+});
+
+test('when use_security is false', async () => {
+  const act = new Act(mockGithub.repo.getPath(repoName));
+
+  act.setInput('use_security', 'false');
+
+  const results = await runWorkflow({ act, repoName, mockGithub });
+
+  const jobs_found = getTestResults({ results, names: [
+    'code_ql'
+  ] });
+
+  expect(jobs_found.length).toEqual(0);
+});
+
+test('when use_chromatic is true', async () => {
   const act = new Act(mockGithub.repo.getPath(repoName));
 
   act.setInput('use_chromatic', 'true');
@@ -84,13 +118,10 @@ test('flow with chromatic turned on', async () => {
   const results = await runWorkflow({ act, repoName, mockGithub });
 
   const jobs_found = getTestResults({ results, names: [
-    'migration_number',
-    'validate',
-    'magic_url',
     'chromatic_upload'
   ] });
 
-  expect(jobs_found.length).toEqual(4);
+  expect(jobs_found.length).toEqual(1);
 });
 
 test('flow with e2e trigger turned on', async () => {
@@ -106,12 +137,13 @@ test('flow with e2e trigger turned on', async () => {
   const jobs_found = getTestResults({ results, names: [
     'migration_number',
     'validate',
+    'code_ql',
     'magic_url',
     'e2e_trigger_remote_tests',
     'e2e_status'
   ] });
 
-  expect(jobs_found.length).toEqual(5);
+  expect(jobs_found.length).toEqual(6);
 });
 
 test('flow with e2e_pass_on_error set to true to make tests non blocking', async () => {
@@ -142,10 +174,11 @@ test('flow with e2e_pass_on_error set to true to make tests non blocking', async
   const jobs_found = getTestResults({ results, names: [
     'migration_number',
     'validate',
+    'code_ql',
     'magic_url',
     'e2e_trigger_remote_tests',
     'e2e_status'
   ] });
 
-  expect(jobs_found.length).toEqual(5);
+  expect(jobs_found.length).toEqual(6);
 });

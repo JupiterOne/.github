@@ -11,6 +11,10 @@ on:
         description: "Run validation, in most case we want this"
         default: true
         type: boolean
+      use_security:
+        description: "Run security checks, in most case we want this"
+        default: true
+        type: boolean
       use_chromatic:
         description: "Run VRT Storybook tests with chromatic"
         default: false
@@ -26,10 +30,6 @@ on:
       repos_to_test:
         description: "Kick off a n+ spec files within n+ repos"
         type: string
-      use_global_actions:
-        description: "Will leverage composite actions from the jupiterone/.github repo. If false, will look for the actions to exist locally which is useful for testing these actions locally."
-        default: true
-        type: boolean
     secrets:
       NPM_TOKEN:
         description: "A J1 npm.com Publish token"
@@ -54,6 +54,7 @@ permissions:
   contents: read
   pull-requests: write
   statuses: write
+  actions: read
 
 jobs:
   migration_number:
@@ -92,6 +93,16 @@ jobs:
       - name: build
         uses: jupiterone/.github/.github/actions/build@main
 
+  security:
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "amd64"]') }}
+    if: ${{ inputs.use_security }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: code_ql
+        uses: jupiterone/.github/.github/actions/code_ql@main
+        with:
+          language: 'javascript'
+          
   chromatic_upload:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
     if: ${{ inputs.use_chromatic }}

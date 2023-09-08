@@ -36,10 +36,6 @@ on:
         description: 'Used by the e2e_trigger to tag builds in Cypress with the appropriate repo name associated with the repo that triggered the flow'
         type: string
         required: true
-      use_global_actions:
-        description: "Will leverage composite actions from the jupiterone/.github repo. If false, will look for the actions to exist locally which is useful for testing these actions locally."
-        default: true
-        type: boolean
     secrets:
       NPM_TOKEN:
         description: "A J1 npm.com Publish token"
