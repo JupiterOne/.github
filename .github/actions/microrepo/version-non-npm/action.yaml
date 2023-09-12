@@ -1,0 +1,44 @@
+name: Version and Release Non NPM Project
+
+inputs:
+  github-token:
+    type: string
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    # Even if we already have the code checked out, we need to check it out again with the PAT
+    - name: checkout_with_automation_pat
+      uses: actions/checkout@v3
+      with:
+        persist-credentials: true
+        fetch-depth: 0
+        token: ${{ inputs.github-token }}
+    # curl the auto binary and instead of installing it with npm to avoid installing node
+    # TODO: use a docker image with auto pre-installed
+    - name: download_auto
+      shell: bash
+      run: |
+        curl -vkL -o - https://github.com/intuit/auto/releases/download/v10.28.0/auto-linux.gz | gunzip > ~/auto
+        chmod +x ~/auto
+    # Instead of calling shipit, manually call each command
+    # This lets us control the tag names and avoids the plugins flow.
+    # This also lets us avoid having to commit an .autorc file into every repo
+    - name: run_auto_versioning_and_release
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+      run: |
+        VERSION=`~/auto version`
+        if [ ! -z "$VERSION" ]; then
+          ## Update Changelog, all [skip ci] commits will be omitted
+          ~/auto changelog
+          ## Update package.json version
+          npm version $VERSION -m "Bump version to: %s [skip ci]"
+          ## Create GitHub Release
+          git push --follow-tags --set-upstream origin main
+          ~/auto release
+        fi
+    # When this job ends, subsequent jobs will NOT have the updated version
+    # Use the on release event to trigger a new workflow that will have the updated version
