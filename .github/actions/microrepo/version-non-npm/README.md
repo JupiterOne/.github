@@ -24,6 +24,6 @@ No outputs provided.
 ```yaml
 steps:
   # Checkout not required
-  - name: validate
+  - name: Release
     uses: ./.github/actions/microrepo/version-non-npm
 ```
