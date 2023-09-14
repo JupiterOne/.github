@@ -1,4 +1,4 @@
-name: Version and Release Non NPM Project
+name: Version and Release Docker Project
 
 inputs:
   github-token:

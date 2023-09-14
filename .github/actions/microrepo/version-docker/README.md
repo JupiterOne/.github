@@ -1,9 +1,9 @@
 # Micro Repo - Version Non NPM
 
-This [composite action](./action.yml) is responsible for versioning non-npm
-packages. This action will create a new commit with the updated version and push
-it back to the main branch. It will also create a new tag, release, and update
-the changelog.
+This [composite action](./action.yml) is responsible for versioning docker, as
+in non-npm, packages. This action will create a new commit with the updated
+version and push it back to the main branch. It will also create a new tag,
+release, and update the changelog.
 
 Monorepos are not supported and NPM packages should use Auto Shipit instead.
 
@@ -17,7 +17,7 @@ This action takes the following inputs:
 
 ## Outputs
 
-No outputs provided.
+No outputs.
 
 ## Example Usage
 
@@ -25,5 +25,5 @@ No outputs provided.
 steps:
   # Checkout not required
   - name: Release
-    uses: ./.github/actions/microrepo/version-non-npm
+    uses: ./.github/actions/microrepo/version-docker
 ```
