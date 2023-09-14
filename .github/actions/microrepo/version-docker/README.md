@@ -1,4 +1,4 @@
-# Micro Repo - Version Non NPM
+# Micro Repo - Version Docker
 
 This [composite action](./action.yml) is responsible for versioning docker, as
 in non-npm, packages. This action will create a new commit with the updated
