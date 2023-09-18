@@ -3,15 +3,15 @@ name: Build and Package Collector Image
 on:
   workflow_call:
     inputs:
-      registry: 
-        description:
-          'The image repository where the image should be pushed'
+      registry:
+        description: 'The image repository where the image should be pushed'
         type: string
         required: false
         default: 'ghcr.io'
       image-name:
         description:
-          'The name of the image. Defaults to repository name (ex. jupiterone/graph-github)'
+          'The name of the image. Defaults to repository name (ex.
+          jupiterone/graph-github)'
         type: string
         default: ${{ github.repository }}
         required: false
@@ -22,7 +22,6 @@ on:
         GHCR_PASSWORD:
           description: 'GHCR password to authenticate and publish with'
           required: true
-
 
 jobs:
   build:
@@ -39,7 +38,9 @@ jobs:
         uses: sigstore/cosign-installer@v3
 
       - name: Lowercase the image name
-        run: echo "IMAGE_NAME=$(echo "${{ inputs.image-name }}" | tr '[:upper:]' '[:lower:]')" >>${GITHUB_ENV}
+        run:
+          echo "IMAGE_NAME=$(echo "${{ inputs.image-name }}" | tr '[:upper:]'
+          '[:lower:]')" >>${GITHUB_ENV}
 
       # Login against a Docker registry
       # https://github.com/docker/login-action
@@ -73,6 +74,6 @@ jobs:
       # https://github.com/sigstore/cosign-installer
       - name: Sign the images with GH OIDC Token
         run:
-          COSIGN_REPOSITORY=${{ inputs.registry }}/${{ env.IMAGE_NAME }}-signatures cosign sign -y
-          ${{ inputs.registry}}/${{ env.IMAGE_NAME }}@${{ steps.build-and-push.outputs.DIGEST }}
-
+          COSIGN_REPOSITORY=${{ inputs.registry }}/${{ env.IMAGE_NAME
+          }}-signatures cosign sign -y ${{ inputs.registry}}/${{ env.IMAGE_NAME
+          }}@${{ steps.build-and-push.outputs.DIGEST }}
