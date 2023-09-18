@@ -10,7 +10,6 @@ This action takes the following inputs:
 | --------------------------- | ------- | ---------------------------- | --------- | -------------------------------------------------------------------------------------- |
 | `fallback_runner`           | String  | False                        | False      | If true will leverage ubuntu-latest, otherwise will fall back to the J1 in-house runner
 | `use_validate`              | Boolean | True                         | False      | Run validation, in most case we want this
-| `use_security`              | Boolean | True                         | False      | Run security checks, in most case we want this
 | `use_chromatic`             | Boolean | False                        | False      | Run VRT Storybook tests with chromatic
                                                                            
 ## Secrets

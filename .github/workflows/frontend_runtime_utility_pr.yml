@@ -11,10 +11,6 @@ on:
         description: "Run validation, in most case we want this"
         default: true
         type: boolean
-      use_security:
-        description: "Run security checks, in most case we want this"
-        default: true
-        type: boolean
       use_chromatic:
         description: "Run VRT Storybook tests with chromatic"
         default: false
@@ -95,7 +91,6 @@ jobs:
 
   security:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "amd64"]') }}
-    if: ${{ inputs.use_security }}
     steps:
       - uses: actions/checkout@v3
       - name: code_ql

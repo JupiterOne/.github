@@ -81,17 +81,3 @@ test('when use_validate is false', async () => {
 
   expect(jobs_found.length).toEqual(0);
 });
-
-test('when use_security is false', async () => {
-  const act = new Act(mockGithub.repo.getPath(repoName));
-
-  act.setInput('use_security', 'false');
-
-  const results = await runWorkflow({ act, repoName, mockGithub });
-
-  const jobs_found = getTestResults({ results, names: [
-    'code_ql'
-  ] });
-
-  expect(jobs_found.length).toEqual(0);
-});
