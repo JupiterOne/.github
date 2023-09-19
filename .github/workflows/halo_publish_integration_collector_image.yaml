@@ -15,7 +15,7 @@ on:
         type: string
         default: ${{ github.repository }}
         required: false
-      secrets:
+    secrets:
         GHCR_USERNAME:
           description: 'GHCR Username to authenticate and publish with'
           required: true
