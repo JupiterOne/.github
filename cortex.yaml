@@ -1,0 +1,10 @@
+title: Github Workflows
+description: JupiterOne Organization-Wide GitHub Workflows.
+x-cortex-git:
+  github:
+    repository: //oauth2
+x-cortex-owners:
+  - type: group
+    name: JupiterOne/sre
+x-cortex-service-groups: tier-4
+x-cortex-tag: github workflows
