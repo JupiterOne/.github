@@ -93,6 +93,8 @@ jobs:
         uses: jupiterone/.github/.github/actions/build@main
 
   chromatic_upload:
+    # Name targeted by branch protections, do not change
+    name: Visual Regression
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
     if: ${{ inputs.use_chromatic }}
     steps:
