@@ -1,7 +1,7 @@
 # Frontend Runtime Deploy
 
 
-This is the [default workflow](../../frontend_runtime_application_pr.yml) that is run when a `PR is merged to main` for a `runtime`.
+This is the [default workflow](../../frontend_runtime_application_pr.yml@main) that is run when a `PR is merged to main` for a `runtime`.
 
 **NOTE:** Our current workflow mostly goes through Jenkins at the moment. However the long term goal is to transition our entire deploy flow to Github actions, where the following flow becomes single source of truth.
 
@@ -13,7 +13,6 @@ This action takes the following inputs:
 | --------------------------- | ------- | ---------------------------- | --------- | -------------------------------------------------------------------------------------- |
 | `fallback_runner`           | String  | False                        | False      | If true will leverage ubuntu-latest, otherwise will fall back to the J1 in-house runner
 | `publish_chromatic`         | Boolean | True                         | False      | If true, will publish to Chromatic
-| `use_global_actions`        | String  | True                         | False      | Will leverage composite actions from the jupiterone/.github repo. If false, will look for the actions to exist locally which is useful for testing these actions locally.
                                                                            
 ## Secrets
 
@@ -34,7 +33,7 @@ This action takes the following secrets:
 ```yaml
 jobs:
   deploy:
-    uses: jupiterone/.github/.github/workflows/frontend_runtime_deploy.yml
+    uses: jupiterone/.github/.github/workflows/frontend_runtime_deploy.yml@main
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
       CORTEX_API_KEY: ${{ secrets.CORTEX_API_KEY }}
@@ -45,9 +44,12 @@ jobs:
 ```mermaid
 graph LR;
     A[start flow];
-    B[cortex];
+    B[security];
+    C[validate];
+    D[cortex];
 
     A --> B;
+    A --> C --> D;
 ```
 
 ### With Chromatic
@@ -57,7 +59,7 @@ graph LR;
 ```yaml
 jobs:
   deploy:
-    uses: jupiterone/.github/.github/workflows/frontend_runtime_deploy.yml
+    uses: jupiterone/.github/.github/workflows/frontend_runtime_deploy.yml@main
     with:
       publish_chromatic: true 
     secrets:
@@ -71,9 +73,13 @@ jobs:
 ```mermaid
 graph LR;
     A[start flow];
-    B[cortex];
-    C[chromatic_publish];
+    B[security];
+    C[validate];
+    D[cortex];
+    E[chromatic_publish];
 
     A --> B;
     A --> C;
+    C --> D;
+    C --> E;
 ```

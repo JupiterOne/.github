@@ -10,10 +10,6 @@ on:
       publish_chromatic:
         description: "If true, will publish to Chromatic"
         type: boolean
-      use_global_actions:
-        description: "Will leverage composite actions from the jupiterone/.github repo. If false, will look for the actions to exist locally which is useful for testing these actions locally."
-        default: true
-        type: boolean
     secrets:
       NPM_TOKEN:
         description: "A J1 npm.com Publish token"
@@ -29,8 +25,37 @@ env:
   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
   
 jobs:
+  validate:
+    # Name targeted by branch protections, do not change
+    name: Validate
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+      - name: setup_env
+        uses: jupiterone/.github/.github/actions/setup_env@main
+        with:
+          use_dev: true
+      - name: remote_types_install
+        uses: jupiterone/.github/.github/actions/frontend/runtime/remote_types_install@main
+      - name: validate
+        uses: jupiterone/.github/.github/actions/validate@main
+      - name: build
+        uses: jupiterone/.github/.github/actions/build@main
+
+  security:
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "amd64"]') }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: code_ql
+        uses: jupiterone/.github/.github/actions/code_ql@main
+        with:
+          language: 'javascript'
+          
   chromatic_publish:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
+    needs: validate
     if: ${{ inputs.publish_chromatic }}
     steps:
       - uses: actions/checkout@v3
@@ -49,6 +74,7 @@ jobs:
 
   cortex:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
+    needs: validate
     steps:
       - uses: actions/checkout@v3
       - name: setup_env

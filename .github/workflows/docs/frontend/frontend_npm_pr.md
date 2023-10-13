@@ -1,6 +1,6 @@
 # Default flow for an NPM package when a PR is opened
 
-This is the [default workflow](../../frontend_npm_pr.yml) that is run when a `PR is opened` for an `npm package`. It is meant to test the quality and safety of the code being committed.
+This is the [default workflow](../../frontend_npm_pr.yml@main) that is run when a `PR is opened` for an `npm package`. It is meant to test the quality and safety of the code being committed.
 
 ## Inputs
 
@@ -9,10 +9,8 @@ This action takes the following inputs:
 | Name                        | Type    | Default                      | Required  | Description                                                                            |
 | --------------------------- | ------- | ---------------------------- | --------- | -------------------------------------------------------------------------------------- |
 | `fallback_runner`           | String  | False                        | False      | If true will leverage ubuntu-latest, otherwise will fall back to the J1 in-house runner
-| `use_validate   `           | Boolean | True                         | False      | Run validation, in most case we want this
+| `use_validate`              | Boolean | True                         | False      | Run validation, in most case we want this
 | `use_chromatic`             | Boolean | False                        | False      | Run VRT Storybook tests with chromatic
-| `use_esbuild`               | Boolean | True                         | False      | If using esbuild, ensures its required build scripts are run
-| `use_global_actions`        | String  | True                         | False      | Will leverage composite actions from the jupiterone/.github repo. If false, will look for the actions to exist locally which is useful for testing these actions locally.
                                                                            
 ## Secrets
 
@@ -32,7 +30,7 @@ This action takes the following secrets:
 ```yaml
 jobs:
   pr:
-    uses: jupiterone/.github/.github/workflows/frontend_npm_pr.yml
+    uses: jupiterone/.github/.github/workflows/frontend_npm_pr.yml@main
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
 ```
@@ -43,8 +41,10 @@ jobs:
 graph LR;
     A[start flow];
     B[validate];
+    C[security];
 
     A --> B;
+    A --> C;
 ```
 
 ### With Chromatic
@@ -54,7 +54,7 @@ graph LR;
 ```yaml
 jobs:
   pr:
-    uses: jupiterone/.github/.github/workflows/frontend_npm_pr.yml
+    uses: jupiterone/.github/.github/workflows/frontend_npm_pr.yml@main
     with:
       use_chromatic: true
     secrets:
@@ -69,8 +69,10 @@ graph LR;
     A[start flow];
     B[validate];
     C[chromatic_upload];
+    D[security];
 
     A --> B;
     A --> C;
+    A --> D;
 ```
 

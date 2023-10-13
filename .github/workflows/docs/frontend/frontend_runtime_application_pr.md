@@ -1,7 +1,7 @@
 # Default workflow for a runtime application when a PR is opened
 
 
-This is the [default workflow](../../frontend_runtime_application_pr.yml) that is run when a `PR is opened` for an `application runtime`. It is meant to test the quality and safety of the code being committed.
+This is the [default workflow](../../frontend_runtime_application_pr.yml@main) that is run when a `PR is opened` for an `application runtime`. It is meant to test the quality and safety of the code being committed.
 
 ## Inputs
 
@@ -10,7 +10,7 @@ This action takes the following inputs:
 | Name                        | Type    | Default                      | Required  | Description                                                                            |
 | --------------------------- | ------- | ---------------------------- | --------- | -------------------------------------------------------------------------------------- |
 | `fallback_runner`           | String  | False                        | False      | If true will leverage ubuntu-latest, otherwise will fall back to the J1 in-house runner
-| `use_validate   `           | Boolean | True                         | False      | Run validation, in most case we want this
+| `use_validate`              | Boolean | True                         | False      | Run validation, in most case we want this
 | `use_chromatic`             | Boolean | False                        | False      | Run VRT Storybook tests with chromatic
 | `use_magic_url`             | Boolean | True                         | False      | Deploy to dev via a query param, required for normal SPAs
 | `use_e2e`                   | Boolean | False                        | False      | Run E2E test, in most case we want this
@@ -20,7 +20,6 @@ This action takes the following inputs:
 | `e2e_artemis_config_path`   | String  | cypress/artemis-config.yaml  | False      | Used to determine the path to the artemis config file
 | `spec_to_run`               | String  | cypress/e2e/**/*.feature     | False      | Used to determine which test to run
 | `magic_url_route`           | String  | '/'                          | False      | The relative route the magic url should go to
-| `use_global_actions`        | String  | True                         | False      | Will leverage composite actions from the jupiterone/.github repo. If false, will look for the actions to exist locally which is useful for testing these actions locally.
                                                                            
 ## Secrets
 
@@ -43,7 +42,7 @@ This action takes the following secrets:
 ```yaml
 jobs:
   pr:
-    uses: jupiterone/.github/.github/workflows/frontend_runtime_application_pr.yml
+    uses: jupiterone/.github/.github/workflows/frontend_runtime_application_pr.yml@main
     with:
       magic_url_route: '/home'
     secrets:
@@ -58,9 +57,11 @@ graph LR;
     B[migration_number];
     C[magic_url];
     D[validate];
+    E[security];
 
     A --> B;
     A --> D;
+    A --> E;
     B --> C;
 ```
 
@@ -71,7 +72,7 @@ graph LR;
 ```yaml
 jobs:
   pr:
-    uses: jupiterone/.github/.github/workflows/frontend_runtime_application_pr.yml
+    uses: jupiterone/.github/.github/workflows/frontend_runtime_application_pr.yml@main
     with:
       magic_url_route: '/home'
       use_chromatic: true
@@ -89,11 +90,13 @@ graph LR;
     C[magic_url];
     D[validate];
     E[chromatic_upload];
+    F[security];
 
     A --> B;
     A --> D;
     A --> E;
     B --> C;
+    A --> F
 ```
 
 ### With E2E Tests
@@ -103,7 +106,7 @@ graph LR;
 ```yaml
 jobs:
   pr:
-    uses: jupiterone/.github/.github/workflows/frontend_runtime_application_pr.yml
+    uses: jupiterone/.github/.github/workflows/frontend_runtime_application_pr.yml@main
     with:
       magic_url_route: '/home'
       use_e2e: true
@@ -125,10 +128,10 @@ graph LR;
     E[e2e_prepare];
     F[e2e_run];
     G[e2e_status];
+    H[security];
 
     B --> D;
     B --> E;
-    B --> F;
     D --> F;
     E --> F;
 
@@ -136,4 +139,6 @@ graph LR;
 
     A --> B;
     A --> C;
+
+    A --> H
 ```

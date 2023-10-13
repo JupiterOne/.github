@@ -1,6 +1,6 @@
 # PR flow running E2E tests when triggered by an external repo
 
-This is the [default workflow](../../frontend_runtime_application_pr.yml) that is run when E2E tests are triggered by an external repo.
+This is the [default workflow](../../frontend_runtime_application_pr.yml@main) that is run when E2E tests are triggered by an external repo.
 
 ## Inputs
 
@@ -16,7 +16,6 @@ This action takes the following inputs:
 | `external_pr_author`        | String  |                              | True      | Used by the e2e_trigger to give builds in Cypress the correct author name associated with the owner of the PR
 | `external_pr_sha`           | String  |                              | True      | Used by the e2e_trigger to pass in the PR number associated with the PR that triggered the flow
 | `external_pr_repo_name`     | String  |                              | True      | Used by the e2e_trigger to tag builds in Cypress with the appropriate repo name associated with the repo that triggered the flow
-| `use_global_actions`        | String  | True                         | False      | Will leverage composite actions from the jupiterone/.github repo. If false, will look for the actions to exist locally which is useful for testing these actions locally.
                                                                            
 ## Secrets
 
@@ -68,7 +67,7 @@ on:
         
 jobs:
   trigger_response:
-    uses: jupiterone/.github/.github/workflows/frontend_runtime_e2e_trigger_response.yml
+    uses: jupiterone/.github/.github/workflows/frontend_runtime_e2e_trigger_response.yml@main
     with:
       external_pr_number: ${{ inputs.external_pr_number }}
       external_pr_title: ${{ inputs.external_pr_title }}
