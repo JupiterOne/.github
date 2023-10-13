@@ -1,10 +1,10 @@
 {
-  "name": "github workflows",
-  "version": "1.0.0",
-  "description": "JupiterOne Organization-Wide GitHub Workflows.",
+  "name": ".github",
+  "version": "0.0.0",
+  "description": "Automatically generated package.json, please edit manually",
   "repository": {
     "type": "git",
-    "url": "https://github.com/JupiterOne/JupiterOne/.github"
+    "url": "https://github.com/.github"
   },
   "license": "UNLICENSED",
   "private": true,

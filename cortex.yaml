@@ -14,7 +14,7 @@ info:
   description: JupiterOne Organization-Wide GitHub Workflows.
   x-cortex-git:
     github:
-      repository: //oauth2
+      repository: JupiterOne/.github
   x-cortex-owners:
     - type: group
       name: JupiterOne/sre
