@@ -54,7 +54,7 @@ permissions:
 
 jobs:
   migration_number:
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
     outputs:
       migration: ${{ steps.migration_number.outputs.migration }}
     steps:
@@ -70,7 +70,7 @@ jobs:
   validate:
     # Name targeted by branch protections, do not change
     name: Validate
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
     if: ${{ inputs.use_validate }}
     steps:
       - uses: actions/checkout@v3
@@ -90,7 +90,7 @@ jobs:
         uses: jupiterone/.github/.github/actions/build@main
 
   security:
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "amd64"]') }}
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-amd64' }}
     steps:
       - uses: actions/checkout@v3
       - name: code_ql
@@ -101,7 +101,7 @@ jobs:
   chromatic_upload:
     # Name targeted by branch protections, do not change
     name: Visual Regression
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
     if: ${{ inputs.use_chromatic }}
     steps:
       - uses: actions/checkout@v3
@@ -118,7 +118,7 @@ jobs:
           chromatic_project_token: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
 
   magic_url:
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
     needs: [migration_number]
     steps:
       - uses: actions/checkout@v3
@@ -137,7 +137,7 @@ jobs:
           magic_url_route: '/home'
 
   e2e_trigger_remote_tests:
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
     needs: [magic_url]
     if: ${{ inputs.use_e2e_trigger }}
     strategy:
@@ -165,7 +165,7 @@ jobs:
   e2e_status:
     # Name targeted by branch protections, do not change
     name: E2E Status
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
     needs: [e2e_trigger_remote_tests]
     steps:
       - uses: actions/checkout@v3

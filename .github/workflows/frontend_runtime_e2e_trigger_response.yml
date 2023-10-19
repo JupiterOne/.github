@@ -66,7 +66,7 @@ permissions:
 
 jobs:
   migration_number:
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
     outputs:
       migration: ${{ steps.migration_number.outputs.migration }}
     steps:
@@ -80,7 +80,7 @@ jobs:
         uses: jupiterone/.github/.github/actions/frontend/runtime/migration_number@main
 
   e2e_prepare:
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
     needs: [migration_number]
     outputs:
       artemis_account_name: ${{ steps.e2e_prepare.outputs.artemis_account_name }}
@@ -99,7 +99,7 @@ jobs:
 
   e2e_run:
     # Note this is the only job that leverages amd64
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "amd64"]') }}
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-amd64' }}
     container: cypress/browsers:node18.12.0-chrome106-ff106
     permissions: write-all
     timeout-minutes: 25

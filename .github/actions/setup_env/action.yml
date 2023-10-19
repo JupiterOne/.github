@@ -25,14 +25,10 @@ runs:
       if: ${{ fromJSON(inputs.use_dev) }}
       run: npm ci --ignore-scripts
       shell: bash
-      env:
-        NODE_AUTH_TOKEN: ${{ env.NODE_AUTH_TOKEN }}
     - name: npm_install_prod_and_dev_deps
       if: ${{ !fromJSON(inputs.use_dev)}}
       run: npm ci --ignore-scripts --omit=dev
       shell: bash
-      env:
-        NODE_AUTH_TOKEN: ${{ env.NODE_AUTH_TOKEN }}
     - name: npm_rebuild
       run: npm rebuild && npm run prepare --if-present
       shell: bash

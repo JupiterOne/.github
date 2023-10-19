@@ -41,7 +41,7 @@ jobs:
     name: Validate
     runs-on:
       ${{ (inputs.fallback_runner && 'ubuntu-latest') ||
-      fromJson('["jupiterone-dev", "arm64"]') }}
+      'scaleset-jupiterone-infra-arm64' }}
     timeout-minutes: 15
     if:
       "!contains(github.event.head_commit.message, 'ci skip') &&
@@ -70,7 +70,7 @@ jobs:
     needs: validate
     runs-on:
       ${{ (inputs.fallback_runner && 'ubuntu-latest') ||
-      fromJson('["jupiterone-dev", "arm64"]') }}
+      'scaleset-jupiterone-infra-arm64' }}
     timeout-minutes: 15
     name: Deploy to NPM
     steps:
@@ -114,7 +114,7 @@ jobs:
   chromatic-deployment:
     runs-on:
       ${{ (inputs.fallback_runner && 'ubuntu-latest') ||
-      fromJson('["jupiterone-dev", "arm64"]') }}
+      'scaleset-jupiterone-infra-arm64' }}
     timeout-minutes: 15
     if: ${{ inputs.use_chromatic }}
     steps:
@@ -145,7 +145,7 @@ jobs:
   cortex:
     runs-on:
       ${{ (inputs.fallback_runner && 'ubuntu-latest') ||
-      fromJson('["jupiterone-dev", "arm64"]') }}
+      'scaleset-jupiterone-infra-arm64' }}
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v3

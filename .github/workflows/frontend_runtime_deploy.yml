@@ -28,7 +28,7 @@ jobs:
   validate:
     # Name targeted by branch protections, do not change
     name: Validate
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -45,7 +45,7 @@ jobs:
         uses: jupiterone/.github/.github/actions/build@main
 
   security:
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "amd64"]') }}
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-amd64' }}
     steps:
       - uses: actions/checkout@v3
       - name: code_ql
@@ -54,7 +54,7 @@ jobs:
           language: 'javascript'
           
   chromatic_publish:
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
     needs: validate
     if: ${{ inputs.publish_chromatic }}
     steps:
@@ -73,7 +73,7 @@ jobs:
           publish_chromatic: true
 
   cortex:
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
     needs: validate
     steps:
       - uses: actions/checkout@v3
