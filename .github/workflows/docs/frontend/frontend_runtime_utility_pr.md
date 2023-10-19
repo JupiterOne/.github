@@ -64,7 +64,7 @@ graph LR;
 ```yaml
 jobs:
   pr:
-    uses: jupiterone/.github/.github/workflows/frontend_runtime_application_pr.yml@main
+    uses: jupiterone/.github/.github/workflows/frontend_runtime_utility_pr.yml@main
     with:
       use_chromatic: true
     secrets:

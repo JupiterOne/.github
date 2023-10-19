@@ -114,6 +114,7 @@ runs:
       continue-on-error: ${{ fromJSON(inputs.e2e_pass_on_error) }}
       uses: cypress-io/github-action@v5
       with:
+        install: false
         record: true
         parallel: true
         group: PR
