@@ -180,7 +180,6 @@ jobs:
     if: ${{ inputs.use_e2e }}
     continue-on-error: ${{ inputs.e2e_pass_on_error }}
     permissions: write-all
-    timeout-minutes: 25
     needs: [migration_number, magic_url, e2e_prepare]
     strategy:
       # when one test fails, DO NOT cancel the other containers, because this will kill Cypress processes
@@ -201,6 +200,7 @@ jobs:
       - id: e2e_run
         name: e2e_run
         uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_run@main
+        timeout-minutes: 25
         with:
           artemis_account_name: ${{ needs.e2e_prepare.outputs.artemis_account_name }}
           artemis_account_id: ${{ needs.e2e_prepare.outputs.artemis_account_id }}
