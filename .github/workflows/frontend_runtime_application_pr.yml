@@ -60,7 +60,7 @@ on:
         required: false
       DOCKER_HUB_SRE:
         description: "The password to login to docker hub sre"
-        required: true
+        # required: true
 
 env:
   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
