@@ -42,6 +42,10 @@ on:
         description: 'The relative route the magic url should go to'
         type: string
         default: '/'
+      auto_cancel_after_failures:
+        description: 'Cancel the tests after this many failures'
+        default: 2
+        type: number
     secrets:
       NPM_TOKEN:
         description: "A J1 npm.com Publish token"
@@ -60,7 +64,7 @@ on:
         required: false
       DOCKER_HUB_SRE:
         description: "The password to login to docker hub sre"
-        # required: true
+        required: true
 
 env:
   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -223,6 +227,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           migration_number: ${{ needs.migration_number.outputs.migration }}
           spec_to_run: ${{ inputs.spec_to_run }}
+          auto_cancel_after_failures: ${{ inputs.auto_cancel_after_failures }}
 
   # Unless e2e_pass_on_error is true, this will never get hit if an E2E test fails
   e2e_status:

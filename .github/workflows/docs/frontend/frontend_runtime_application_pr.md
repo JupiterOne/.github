@@ -9,17 +9,18 @@ This action takes the following inputs:
 
 | Name                        | Type    | Default                      | Required  | Description                                                                            |
 | --------------------------- | ------- | ---------------------------- | --------- | -------------------------------------------------------------------------------------- |
-| `fallback_runner`           | String  | False                        | False      | If true will leverage ubuntu-latest, otherwise will fall back to the J1 in-house runner
-| `use_validate`              | Boolean | True                         | False      | Run validation, in most case we want this
-| `use_chromatic`             | Boolean | False                        | False      | Run VRT Storybook tests with chromatic
-| `use_magic_url`             | Boolean | True                         | False      | Deploy to dev via a query param, required for normal SPAs
-| `use_e2e`                   | Boolean | False                        | False      | Run E2E test, in most case we want this
-| `e2e_filter_tags`           | String  |                              | False      | Tests will be filtered based on the tags defined here
-| `e2e_containers`            | String  | '["1"]'                      | False      | The number of tests that you want Cypress to run in parallel (ex. 1, 2, 3, ...)
-| `e2e_pass_on_error`         | Boolean | False                        | False      | Pass the workflow even if the E2E test fail
-| `e2e_artemis_config_path`   | String  | cypress/artemis-config.yaml  | False      | Used to determine the path to the artemis config file
-| `spec_to_run`               | String  | cypress/e2e/**/*.feature     | False      | Used to determine which test to run
-| `magic_url_route`           | String  | '/'                          | False      | The relative route the magic url should go to
+| `fallback_runner`            | String  | False                        | False      | If true will leverage ubuntu-latest, otherwise will fall back to the J1 in-house runner
+| `use_validate`               | Boolean | True                         | False      | Run validation, in most case we want this
+| `use_chromatic`              | Boolean | False                        | False      | Run VRT Storybook tests with chromatic
+| `use_magic_url`              | Boolean | True                         | False      | Deploy to dev via a query param, required for normal SPAs
+| `use_e2e`                    | Boolean | False                        | False      | Run E2E test, in most case we want this
+| `e2e_filter_tags`            | String  |                              | False      | Tests will be filtered based on the tags defined here
+| `e2e_containers`             | String  | '["1"]'                      | False      | The number of tests that you want Cypress to run in parallel (ex. 1, 2, 3, ...)
+| `e2e_pass_on_error`          | Boolean | False                        | False      | Pass the workflow even if the E2E test fail
+| `e2e_artemis_config_path`    | String  | cypress/artemis-config.yaml  | False      | Used to determine the path to the artemis config file
+| `spec_to_run`                | String  | cypress/e2e/**/*.feature     | False      | Used to determine which test to run
+| `magic_url_route`            | String  | '/'                          | False      | The relative route the magic url should go to
+| `auto_cancel_after_failures` | Number  | 2                            | False      | Cancel the tests after this many failures
                                                                            
 ## Secrets
 
@@ -32,6 +33,7 @@ This action takes the following secrets:
 | `CYPRESS_RECORD_KEY`        | False     | The record key associated with the project in Cypress.
 | `CYPRESS_PROJECT_ID`        | False     | The project ID associated with the project in Cypress
 | `CYPRESS_PASSWORD`          | False     | The password of the E2E username
+| `DOCKER_HUB_SRE`            | False     | The password to login to docker hub sre
 
 ## Example Usage
 
@@ -47,6 +49,7 @@ jobs:
       magic_url_route: '/home'
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+      DOCKER_HUB_SRE: ${{ secrets.DOCKER_HUB_SRE }}
 ```
 
 #### Diagram
@@ -78,6 +81,7 @@ jobs:
       use_chromatic: true
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+      DOCKER_HUB_SRE: ${{ secrets.DOCKER_HUB_SRE }}
       CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
 ```
 
@@ -112,6 +116,7 @@ jobs:
       use_e2e: true
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+      DOCKER_HUB_SRE: ${{ secrets.DOCKER_HUB_SRE }}
       CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
       CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
 ```
