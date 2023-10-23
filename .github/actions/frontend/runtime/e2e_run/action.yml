@@ -73,6 +73,10 @@ inputs:
     description: 'Used to determine which test to run'
     default: 'cypress/e2e/**/*.feature'
     type: string
+  auto_cancel_after_failures:
+    description: 'Cancel the tests after this many failures'
+    default: 2
+    type: number
 
 outputs:
   test_passed:
@@ -115,6 +119,8 @@ runs:
       uses: cypress-io/github-action@v5
       with:
         install: false
+        # Cancel the run after 2 failed tests
+        auto-cancel-after-failures: ${{ inputs.auto_cancel_after_failures }}
         record: true
         parallel: true
         group: PR

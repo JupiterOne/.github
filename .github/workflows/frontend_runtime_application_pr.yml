@@ -42,6 +42,10 @@ on:
         description: 'The relative route the magic url should go to'
         type: string
         default: '/'
+      auto_cancel_after_failures:
+        description: 'Cancel the tests after this many failures'
+        default: 2
+        type: number
     secrets:
       NPM_TOKEN:
         description: "A J1 npm.com Publish token"
@@ -58,6 +62,9 @@ on:
       CYPRESS_PASSWORD:
         description: "The password of the E2E username"
         required: false
+      DOCKER_HUB_SRE:
+        description: "The password to login to docker hub sre"
+        required: true
 
 env:
   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -180,10 +187,12 @@ jobs:
       # Available containers here: https://hub.docker.com/r/cypress/browsers/tags
       image: cypress/browsers:node-18.16.1-chrome-114.0.5735.133-1-ff-114.0.2-edge-114.0.1823.51-1
       options: --user 1001
+      credentials:
+        username: jupiteronesre
+        password: ${{ secrets.DOCKER_HUB_SRE }}
     if: ${{ inputs.use_e2e }}
     continue-on-error: ${{ inputs.e2e_pass_on_error }}
     permissions: write-all
-    timeout-minutes: 25
     needs: [migration_number, magic_url, e2e_prepare]
     strategy:
       # when one test fails, DO NOT cancel the other containers, because this will kill Cypress processes
@@ -203,6 +212,7 @@ jobs:
       - id: e2e_run
         name: e2e_run
         uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_run@main
+        timeout-minutes: 120
         with:
           artemis_account_name: ${{ needs.e2e_prepare.outputs.artemis_account_name }}
           artemis_account_id: ${{ needs.e2e_prepare.outputs.artemis_account_id }}
@@ -218,6 +228,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           migration_number: ${{ needs.migration_number.outputs.migration }}
           spec_to_run: ${{ inputs.spec_to_run }}
+          auto_cancel_after_failures: ${{ inputs.auto_cancel_after_failures }}
 
   # Unless e2e_pass_on_error is true, this will never get hit if an E2E test fails
   e2e_status:
