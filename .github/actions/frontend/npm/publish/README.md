@@ -21,7 +21,7 @@ No outputs provided.
 
 ```yaml
 steps:
-  - uses: ./.github/actions/frontend/npm/release
+  - uses: jupiterone/.github/.github/actions/frontend/npm/release
     with:
       auto_token: ${{ secrets.AUTO_GITHUB_PAT_TOKEN }}
 ```
@@ -30,7 +30,7 @@ steps:
 
 ```yaml
 steps:
-  - uses: ./.github/actions/frontend/npm/release
+  - uses: jupiterone/.github/.github/actions/frontend/npm/release
     with:
       use_esbuild: ${{ inputs.use_esbuild }}
       auto_token: ${{ secrets.AUTO_GITHUB_PAT_TOKEN }}

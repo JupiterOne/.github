@@ -25,9 +25,12 @@ This action returns the following outputs:
 ## Example Usage
 
 ```yaml
+permissions:
+  id-token: write
+  contents: read
 steps:
   - name: e2e_prepare
-    uses: ./.github/actions/frontend/runtime/e2e_prepare
+    uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_prepare
   - name: e2e_prepare_results
     run: |
       echo ${{ steps.e2e_prepare.outputs.artemis_account_name }}

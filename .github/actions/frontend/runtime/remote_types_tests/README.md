@@ -15,5 +15,5 @@ No outputs provided.
 ```yaml
 steps:
   - name: remote_types_install
-    uses: ./.github/actions/frontend/runtime/remote_types_tests
+    uses: jupiterone/.github/.github/actions/frontend/runtime/remote_types_tests
 ```

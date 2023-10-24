@@ -20,7 +20,7 @@ This action returns the following outputs:
 steps:
   # Call composite action
   - id: migration_number
-    uses: ./.github/actions/frontend/runtime/migration_number
+    uses: jupiterone/.github/.github/actions/frontend/runtime/migration_number
   # Print out returned migration number
   - name: print_migration_number
     run: echo migration_number ${{ steps.migration_number.outputs.migration }}

@@ -34,7 +34,7 @@ jobs:
   validate:
     # Name targeted by branch protections, do not change
     name: Validate
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
     if: ${{ inputs.use_validate }}
     steps:
       - uses: actions/checkout@v3
@@ -48,7 +48,11 @@ jobs:
         uses: jupiterone/.github/.github/actions/build@main
 
   security:
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "amd64"]') }}
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-amd64' }}
+    permissions:
+      actions: read
+      security-events: write
+      contents: read
     steps:
       - uses: actions/checkout@v3
       - name: code_ql
@@ -59,7 +63,7 @@ jobs:
   chromatic_upload:
     # Name targeted by branch protections, do not change
     name: Visual Regression
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || fromJson('["jupiterone-dev", "arm64"]') }}
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
     if: ${{ inputs.use_chromatic }}
     steps:
       - uses: actions/checkout@v3

@@ -40,7 +40,7 @@ jobs:
     name: Validate
     runs-on:
       ${{ (inputs.fallback_runner && 'ubuntu-latest') ||
-      fromJson('["jupiterone-dev", "arm64"]') }}
+      'scaleset-jupiterone-infra-arm64' }}
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v3
@@ -72,7 +72,7 @@ jobs:
   chromatic-deployment:
     runs-on:
       ${{ (inputs.fallback_runner && 'ubuntu-latest') ||
-      fromJson('["jupiterone-dev", "arm64"]') }}
+      'scaleset-jupiterone-infra-arm64' }}
     if: ${{ inputs.use_chromatic }}
     timeout-minutes: 15
     steps:

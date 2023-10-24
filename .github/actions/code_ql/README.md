@@ -17,6 +17,10 @@ No outputs provided.
 ## Example Usage
 
 ```yaml
+permissions:
+  actions: read
+  security-events: write
+  contents: read
 steps:
   - name: code_ql
     uses: jupiterone/.github/.github/actions/code_ql@main

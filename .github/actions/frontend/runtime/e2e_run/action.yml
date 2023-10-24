@@ -116,8 +116,9 @@ runs:
     - name: cypress_run
       id: cypress_run
       continue-on-error: ${{ fromJSON(inputs.e2e_pass_on_error) }}
-      uses: cypress-io/github-action@v5
+      uses: cypress-io/github-action@v6
       with:
+        install: false
         # Cancel the run after 2 failed tests
         auto-cancel-after-failures: ${{ inputs.auto_cancel_after_failures }}
         record: true

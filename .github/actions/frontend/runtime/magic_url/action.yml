@@ -24,7 +24,7 @@ runs:
         echo "migration=${{ inputs.migration_number }}"
         echo "magic_url_route=${{ inputs.magic_url_route }}"
     - name: configure_aws_credentials
-      uses: aws-actions/configure-aws-credentials@v1
+      uses: aws-actions/configure-aws-credentials@v4
       with:
         # J1 AWS role with deploy permissions to dev
         role-to-assume: arn:aws:iam::564077667165:role/github-pull-request-role

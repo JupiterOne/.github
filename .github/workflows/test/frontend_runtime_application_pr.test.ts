@@ -44,7 +44,8 @@ test('validate inputs and secrets', async () => {
     'CYPRESS_MAILINATOR_API_KEY',
     'CYPRESS_RECORD_KEY',
     'CYPRESS_PROJECT_ID',
-    'CYPRESS_PASSWORD'
+    'CYPRESS_PASSWORD',
+    'DOCKER_HUB_SRE'
   ];
   const mockInputs = {
     magic_url_route: 'magic_url_route_test',
@@ -148,6 +149,7 @@ test('when use_chromatic is true', async () => {
 test('flow with e2e_pass_on_error set to true to make tests non blocking', async () => {
   const act = new Act(mockGithub.repo.getPath(repoName));
 
+  act.setSecret('DOCKER_HUB_SRE', 'DOCKER_HUB_SRE');
   act.setInput('use_e2e', 'true');
   act.setInput('e2e_pass_on_error', 'true');
 
