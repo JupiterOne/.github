@@ -21,7 +21,7 @@ No outputs provided.
 ```yaml
 steps:
   - name: e2e_status
-    uses: ./.github/actions/frontend/runtime/e2e_status
+    uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_status
     with:
       github_token: ${{ secrets.GITHUB_TOKEN }}
       e2e_passed: ${{ needs.e2e_run.outputs.test_passed }}

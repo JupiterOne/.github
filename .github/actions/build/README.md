@@ -17,5 +17,5 @@ No outputs.
 steps:
   - uses: actions/checkout@v3
   - name: build
-    uses: ./.github/actions/build
+    uses: jupiterone/.github/.github/actions/build
 ```

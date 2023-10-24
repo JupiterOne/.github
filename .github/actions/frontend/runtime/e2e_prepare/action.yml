@@ -27,7 +27,7 @@ runs:
         echo "e2e_artemis_config_path=${{ inputs.e2e_artemis_config_path }}"
         echo "user_count=${{ inputs.user_count }}"
     - name: configure_aws_credentials
-      uses: aws-actions/configure-aws-credentials@v1
+      uses: aws-actions/configure-aws-credentials@v4
       with:
         role-to-assume: arn:aws:iam::564077667165:role/github-pull-request-role
         role-session-name:

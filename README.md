@@ -26,12 +26,19 @@ The following workflows are for the entire JupiterOne organization.
 
 The workflows above take advantage of the composite actions listed below, leveraging composition to execute those jobs that pertain to the workflow. The actions below enable us to consolidate repeatable jobs into a single location. This makes our workflows DRY, easier to reason about and more stable.
 
+### Common
+
+- [validate](.github/actions/validate/README.md)
+- [build](.github/actions/build/README.md)
+- [code_ql](.github/actions/code_ql/README.md)
+- [setup_env](.github/actions/setup_env/README.md)
+
 ### Frontend
 
 #### Common
 
-- [setup_env](.github/actions/frontend/setup_env/README.md)
 - [chromatic](.github/actions/frontend/chromatic/README.md)
+- [cortex](.github/actions/frontend/cortex/README.md)
 
 #### Runtime
 
@@ -41,11 +48,12 @@ The workflows above take advantage of the composite actions listed below, levera
 - [e2e_trigger_remote_tests](.github/actions/frontend/runtime/e2e_trigger_remote_tests/README.md)
 - [magic_url](.github/actions/frontend/runtime/magic_url/README.md)
 - [migration_number](.github/actions/frontend/runtime/migration_number/README.md)
-- [validate](.github/actions/frontend/runtime/validate/README.md)
+- [remote_types_install](.github/actions/frontend/runtime/remote_types_install/README.md)
+- [remote_types_tests](.github/actions/frontend/runtime/remote_types_tests/README.md)
 
 #### NPM Packages
-- [validate](.github/actions/frontend/npm/validate/README.md)
-- [release](.github/actions/frontend/npm/release/README.md)
+
+- [publish](.github/actions/frontend/npm/publish/README.md)
 
 ## Local Testing
 

@@ -26,7 +26,7 @@ This action takes the following inputs:
 ```yaml
 steps:
   - name: validate
-    uses: ./.github/actions/frontend/runtime/e2e_trigger_remote_tests
+    uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_trigger_remote_tests
     with:
       e2e_pass_on_error: ${{ inputs.e2e_pass_on_error }}
       e2e_auto: ${{ secrets.E2E_AUTO }}

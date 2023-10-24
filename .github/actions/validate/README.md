@@ -19,5 +19,5 @@ steps:
     with:
       fetch-depth: 2
   - name: validate
-    uses: ./.github/actions/frontend/runtime/validate
+    uses: jupiterone/.github/.github/actions/frontend/runtime/validate
 ```

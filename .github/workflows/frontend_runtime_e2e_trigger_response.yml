@@ -57,13 +57,6 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 
-# Permissions needed to push the artifact to the S3 bucket and show the status in the PR.
-permissions:
-  id-token: write
-  contents: read
-  pull-requests: write
-  statuses: write
-
 jobs:
   migration_number:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
@@ -82,6 +75,9 @@ jobs:
   e2e_prepare:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
     needs: [migration_number]
+    permissions:
+      id-token: write
+      contents: read
     outputs:
       artemis_account_name: ${{ steps.e2e_prepare.outputs.artemis_account_name }}
       artemis_account_id: ${{ steps.e2e_prepare.outputs.artemis_account_id }}

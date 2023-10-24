@@ -15,5 +15,5 @@ No outputs provided.
 ```yaml
 steps:
   - name: setup_env
-    uses: ./.github/actions/frontend/setup_env
+    uses: jupiterone/.github/.github/actions/frontend/setup_env
 ```

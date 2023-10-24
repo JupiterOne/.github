@@ -73,14 +73,6 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 
-# Permissions needed to push the artifact to the S3 bucket and show the status in the PR.
-permissions:
-  id-token: write
-  contents: read
-  pull-requests: write
-  statuses: write
-  actions: read
-
 jobs:
   migration_number:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
@@ -114,6 +106,10 @@ jobs:
 
   security:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-amd64' }}
+    permissions:
+      actions: read
+      security-events: write
+      contents: read
     steps:
       - uses: actions/checkout@v3
       - name: code_ql
@@ -143,6 +139,11 @@ jobs:
   magic_url:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
     needs: [migration_number]
+    permissions:
+      id-token: write
+      contents: read
+      pull-requests: write
+      statuses: write
     steps:
       - uses: actions/checkout@v3
       - name: setup_env
@@ -162,6 +163,9 @@ jobs:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
     needs: [migration_number]
     if: ${{ inputs.use_e2e }}
+    permissions:
+      id-token: write
+      contents: read
     outputs:
       artemis_account_name: ${{ steps.e2e_prepare.outputs.artemis_account_name }}
       artemis_account_id: ${{ steps.e2e_prepare.outputs.artemis_account_id }}
@@ -246,6 +250,5 @@ jobs:
         uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_status@main
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          commit_info_sha: ${{ github.sha }}
           e2e_passed: ${{ needs.e2e_run.outputs.test_passed }}
           e2e_pass_on_error: ${{ inputs.e2e_pass_on_error }}

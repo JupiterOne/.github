@@ -25,6 +25,6 @@ steps:
     with:
       fetch-depth: 0
   - name: validate
-    uses: ./.github/actions/frontend/runtime/chromatic
+    uses: jupiterone/.github/.github/actions/frontend/runtime/chromatic
 ```
 

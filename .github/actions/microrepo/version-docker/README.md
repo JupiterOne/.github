@@ -25,5 +25,5 @@ No outputs.
 steps:
   # Checkout not required
   - name: Release
-    uses: ./.github/actions/microrepo/version-docker
+    uses: jupiterone/.github/.github/actions/microrepo/version-docker
 ```

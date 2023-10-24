@@ -19,9 +19,14 @@ No outputs provided.
 ## Example Usage
 
 ```yaml
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+  statuses: write
 steps:
   - name: magic_url
-    uses: ./.github/actions/frontend/runtime/magic_url
+    uses: jupiterone/.github/.github/actions/frontend/runtime/magic_url
     with:
       github_token: ${{ secrets.GITHUB_TOKEN }}
       migration_number: ${{ needs.migration_number.outputs.migration }}

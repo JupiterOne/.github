@@ -19,7 +19,7 @@ No outputs provided.
 ```yaml
 steps:
   - name: cortex
-    uses: ./.github/actions/frontend/cortex
+    uses: jupiterone/.github/.github/actions/frontend/cortex
     with:
       cortex_api_key: ${{ secrets.CORTEX_API_KEY }}
 ```

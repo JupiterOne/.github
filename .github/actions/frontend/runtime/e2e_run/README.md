@@ -44,7 +44,7 @@ This action returns the following outputs:
 ```yaml
 steps:
   - name: validate
-    uses: ./.github/actions/frontend/runtime/e2e_run
+    uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_run
     with:
       artemis_account_name: ${{ needs.e2e_prepare.outputs.artemis_account_name }}
       artemis_account_id: ${{ needs.e2e_prepare.outputs.artemis_account_id }}
@@ -70,9 +70,11 @@ steps:
 The e2e_run can be triggered by another repo (see `frontend_runtime_e2e_trigger_response.yml`). As such it's necessary to make the `commit_info_*` props configurable to ensure the run in Cypress reflects the appropriate details of the PR it's associated with.
 
 ```yaml
+permissions:
+  write-all
 steps:
   - name: validate
-    uses: ./.github/actions/frontend/runtime/e2e_run
+    uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_run
     with:
       # ...see-props-above
       commit_info_sha: ${{ inputs.external_pr_sha }}

@@ -46,6 +46,10 @@ jobs:
 
   security:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-amd64' }}
+    permissions:
+      actions: read
+      security-events: write
+      contents: read
     steps:
       - uses: actions/checkout@v3
       - name: code_ql
