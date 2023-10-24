@@ -17,7 +17,7 @@ runs:
         echo "the secret \"NODE_AUTH_TOKEN\" has not been set"
         exit 1
     - name: setup_node
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         cache: 'npm'
         registry-url: 'https://registry.npmjs.org'
