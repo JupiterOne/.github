@@ -60,7 +60,7 @@ The workflows above take advantage of the composite actions listed below, levera
 As [demonstrated here](https://github.com/JupiterOne/web-alerts/blob/7f2b8e491a728cc48ffaacbda647938a91436d89/.github/workflows/pull_request.yml#L7), our workflows are version locked to major versions ([seen here](https://github.com/JupiterOne/.github/tags)).
 
 If you wish to make a `breaking change` to a workflow, follow the steps below:
-1. Run `npm run update-tags TAG_VERSION`, where `TAG_VERSION` represents the next major version (ex. `@v2` -> `@v3`).
+1. Run `npm run update-composite-tags TAG_VERSION`, where `TAG_VERSION` represents the next major version (ex. `@v2` -> `@v3`).
 2. Merge the change to main (it will not be picked up by the workflows as they're locked into a version).
 3. [Tag](https://git-scm.com/book/en/v2/Git-Basics-Tagging) your changes to the next major release (ex. `git tag -a v3 -m "v3 release..."` & `git push origin v3`).
 4. Confirm you see your new tag represented [here](https://github.com/JupiterOne/.github/tags).
@@ -69,10 +69,6 @@ If you wish to make a `breaking change` to a workflow, follow the steps below:
 If you are making `non-breaking changes` to a workflow, follow the steps below:
 1. Merge the change to main (it will not be picked up by the workflows as they're locked into a version).
 2. Re-tag your changes to the latest major release (ex. `git tag -f v3 -m "v3 update..."` & `git push origin v3 --force`). At this point, all workflows will automatically receive your updates.
-
-```
-npm run update-tags TAG_VERSION
-```
 
 ## Local Testing
 

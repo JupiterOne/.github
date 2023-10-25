@@ -52,12 +52,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: setup_env
-        uses: jupiterone/.github/.github/actions/setup_env@main
+        uses: jupiterone/.github/.github/actions/setup_env@v2
         with:
           use_dev: true
       - id: migration_number
         name: migration_number
-        uses: jupiterone/.github/.github/actions/frontend/runtime/migration_number@main
+        uses: jupiterone/.github/.github/actions/frontend/runtime/migration_number@v2
 
   validate:
     # Name targeted by branch protections, do not change
@@ -69,17 +69,17 @@ jobs:
         with:
           fetch-depth: 2
       - name: setup_env
-        uses: jupiterone/.github/.github/actions/setup_env@main
+        uses: jupiterone/.github/.github/actions/setup_env@v2
         with:
           use_dev: true
       - name: remote_types_install
-        uses: jupiterone/.github/.github/actions/frontend/runtime/remote_types_install@main
+        uses: jupiterone/.github/.github/actions/frontend/runtime/remote_types_install@v2
       - name: validate
-        uses: jupiterone/.github/.github/actions/validate@main
+        uses: jupiterone/.github/.github/actions/validate@v2
       - name: remote_types_tests
-        uses: jupiterone/.github/.github/actions/frontend/runtime/remote_types_tests@main
+        uses: jupiterone/.github/.github/actions/frontend/runtime/remote_types_tests@v2
       - name: build
-        uses: jupiterone/.github/.github/actions/build@main
+        uses: jupiterone/.github/.github/actions/build@v2
 
   security:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-amd64' }}
@@ -90,7 +90,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: code_ql
-        uses: jupiterone/.github/.github/actions/code_ql@main
+        uses: jupiterone/.github/.github/actions/code_ql@v2
         with:
           language: 'javascript'
           
@@ -104,11 +104,11 @@ jobs:
         with:
           fetch-depth: 0
       - name: setup_env
-        uses: jupiterone/.github/.github/actions/setup_env@main
+        uses: jupiterone/.github/.github/actions/setup_env@v2
         with:
           use_dev: true
       - name: chromatic_upload
-        uses: jupiterone/.github/.github/actions/frontend/chromatic@main
+        uses: jupiterone/.github/.github/actions/frontend/chromatic@v2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           chromatic_project_token: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
@@ -124,13 +124,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: setup_env
-        uses: jupiterone/.github/.github/actions/setup_env@main
+        uses: jupiterone/.github/.github/actions/setup_env@v2
         with:
           use_dev: true
       - name: build
-        uses: jupiterone/.github/.github/actions/build@main
+        uses: jupiterone/.github/.github/actions/build@v2
       - name: magic_url
-        uses: jupiterone/.github/.github/actions/frontend/runtime/magic_url@main
+        uses: jupiterone/.github/.github/actions/frontend/runtime/magic_url@v2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           migration_number: ${{ needs.migration_number.outputs.migration }}
@@ -150,12 +150,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: setup_env
-        uses: jupiterone/.github/.github/actions/setup_env@main
+        uses: jupiterone/.github/.github/actions/setup_env@v2
         with:
           use_dev: true
       - id: e2e_trigger_remote_tests
         name: e2e_trigger_remote_tests
-        uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_trigger_remote_tests@main
+        uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_trigger_remote_tests@v2
         with:
           e2e_pass_on_error: ${{ inputs.e2e_pass_on_error }}
           e2e_auto: ${{ secrets.E2E_AUTO }}
@@ -171,11 +171,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: setup_env
-        uses: jupiterone/.github/.github/actions/setup_env@main
+        uses: jupiterone/.github/.github/actions/setup_env@v2
         with:
           use_dev: true
       - name: e2e_status
-        uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_status@main
+        uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_status@v2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           commit_info_sha: ${{ github.sha }}

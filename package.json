@@ -15,7 +15,7 @@
     "lint": "eslint . --ext .ts",
     "validate": "npm run lint && npm run typecheck && npm run test",
     "generate-local-files": "node ./bin/generate-local-files",
-    "update-tags": "node ./bin/update-tags"
+    "update-composite-tags": "node ./bin/update-composite-tags"
   },
   "config": {
     "migration": 1
