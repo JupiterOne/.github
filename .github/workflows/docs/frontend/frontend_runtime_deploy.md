@@ -1,7 +1,7 @@
 # Frontend Runtime Deploy
 
 
-This is the [default workflow](../../frontend_runtime_application_pr.yml@main) that is run when a `PR is merged to main` for a `runtime`.
+This is the [default workflow](../../frontend_runtime_application_pr.yml@v#) that is run when a `PR is merged to main` for a `runtime`.
 
 **NOTE:** Our current workflow mostly goes through Jenkins at the moment. However the long term goal is to transition our entire deploy flow to Github actions, where the following flow becomes single source of truth.
 
@@ -33,7 +33,7 @@ This action takes the following secrets:
 ```yaml
 jobs:
   deploy:
-    uses: jupiterone/.github/.github/workflows/frontend_runtime_deploy.yml@main
+    uses: jupiterone/.github/.github/workflows/frontend_runtime_deploy.yml@v#
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
       CORTEX_API_KEY: ${{ secrets.CORTEX_API_KEY }}
@@ -59,7 +59,7 @@ graph LR;
 ```yaml
 jobs:
   deploy:
-    uses: jupiterone/.github/.github/workflows/frontend_runtime_deploy.yml@main
+    uses: jupiterone/.github/.github/workflows/frontend_runtime_deploy.yml@v#
     with:
       publish_chromatic: true 
     secrets:

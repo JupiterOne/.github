@@ -169,7 +169,7 @@ Note: All booleans in a composite action must leverage fromJSON to ensure the va
 ## Testing In Another Repo
 
 If you wish to copy/paste the workflows and/or composite actions into another repo to test these out live, you can leverage the following command. This will create a `temp` directory with the workflows/actions in it. These will have been updated to:
-- The `uses` property in the workflows will reference local composite actions - `jupiterone/.github/.github/actions/.../@main` updated to `./.github/actions/...`
+- The `uses` property in the workflows will reference local composite actions - `jupiterone/.github/.github/actions/.../@v#` updated to `./.github/actions/...`
 - Test/readme files will also be dropped as these can cause issues.
 
 ```

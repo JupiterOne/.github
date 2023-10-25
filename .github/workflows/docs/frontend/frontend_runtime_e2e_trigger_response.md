@@ -1,6 +1,6 @@
 # PR flow running E2E tests when triggered by an external repo
 
-This is the [default workflow](../../frontend_runtime_application_pr.yml@main) that is run when E2E tests are triggered by an external repo.
+This is the [default workflow](../../frontend_runtime_application_pr.yml@v#) that is run when E2E tests are triggered by an external repo.
 
 ## Inputs
 
@@ -67,7 +67,7 @@ on:
         
 jobs:
   trigger_response:
-    uses: jupiterone/.github/.github/workflows/frontend_runtime_e2e_trigger_response.yml@main
+    uses: jupiterone/.github/.github/workflows/frontend_runtime_e2e_trigger_response.yml@v#
     with:
       external_pr_number: ${{ inputs.external_pr_number }}
       external_pr_title: ${{ inputs.external_pr_title }}

@@ -1,7 +1,7 @@
 # Default workflow for a runtime application when a PR is opened
 
 
-This is the [default workflow](../../frontend_runtime_application_pr.yml@main) that is run when a `PR is opened` for a `utility runtime`. It is meant to test the quality and safety of the code being committed.
+This is the [default workflow](../../frontend_runtime_application_pr.yml@v#) that is run when a `PR is opened` for a `utility runtime`. It is meant to test the quality and safety of the code being committed.
 
 ## Inputs
 
@@ -35,7 +35,7 @@ This action takes the following secrets:
 ```yaml
 jobs:
   pr:
-    uses: jupiterone/.github/.github/workflows/frontend_runtime_utility_pr.yml@main
+    uses: jupiterone/.github/.github/workflows/frontend_runtime_utility_pr.yml@v#
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
       E2E_AUTO: ${{ secrets.E2E_AUTO }}
@@ -64,7 +64,7 @@ graph LR;
 ```yaml
 jobs:
   pr:
-    uses: jupiterone/.github/.github/workflows/frontend_runtime_utility_pr.yml@main
+    uses: jupiterone/.github/.github/workflows/frontend_runtime_utility_pr.yml@v#
     with:
       use_chromatic: true
     secrets:
@@ -98,7 +98,7 @@ graph LR;
 ```yaml
 jobs:
   pr:
-    uses: jupiterone/.github/.github/workflows/frontend_runtime_application_pr.yml@main
+    uses: jupiterone/.github/.github/workflows/frontend_runtime_application_pr.yml@v#
     with:
       use_e2e_trigger: true
     secrets:
