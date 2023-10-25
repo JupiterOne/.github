@@ -30,7 +30,7 @@ export type MockSteps = {
 
 const localizePath = (path: string) => path
   .replace(/jupiterone\/.github\//g, '')
-  .replace(/@main/g, '');
+  .replace(/@.*/g, '');
 
 const getCompositeMockSteps = async ({
   mockSteps,
@@ -97,7 +97,7 @@ export const updateCompositeWithMocks = async ({
 };
 
 /*
-Updates the paths in the workflow matching "jupiterone/.github/actions/some-action@main"
+Updates the paths in the workflow matching "jupiterone/.github/actions/some-action@[version]"
 to point at the local composite action "./.github/actions/some-action"
 */
 export const updateWorkflowWithMocks = async ({
