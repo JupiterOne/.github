@@ -49,6 +49,9 @@ on:
       CYPRESS_PASSWORD:
         description: "The password of the E2E username"
         required: false
+      DOCKER_HUB_SRE:
+        description: "The password to login to docker hub sre"
+        # required: true
 
 env:
   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -96,9 +99,14 @@ jobs:
   e2e_run:
     # Note this is the only job that leverages amd64
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-amd64' }}
-    container: cypress/browsers:node18.12.0-chrome106-ff106
+    container:
+      # Available containers here: https://hub.docker.com/r/cypress/browsers/tags
+      image: cypress/browsers:latest
+      options: --user 1001
+      # credentials:
+        # username: jupiteronesre
+        # password: ${{ secrets.DOCKER_HUB_SRE }}
     permissions: write-all
-    timeout-minutes: 25
     needs: [migration_number, e2e_prepare]
     strategy:
       # when one test fails, DO NOT cancel the other containers, because this will kill Cypress processes
@@ -115,6 +123,7 @@ jobs:
       - id: e2e_run
         name: e2e_run
         uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_run@v2
+        timeout-minutes: 120
         with:
           artemis_account_name: ${{ needs.e2e_prepare.outputs.artemis_account_name }}
           artemis_account_id: ${{ needs.e2e_prepare.outputs.artemis_account_id }}
