@@ -23,7 +23,7 @@ permissions:
   contents: read
 steps:
   - name: code_ql
-    uses: jupiterone/.github/.github/actions/code_ql@main
+    uses: jupiterone/.github/.github/actions/code_ql@v#
     with:
       language: 'javascript'
 ```

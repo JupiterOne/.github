@@ -34,7 +34,7 @@ filesToUpdate.forEach((file) => {
 
   const result = data
     .replace(/uses: jupiterone\/.github\//g, 'uses: ./')
-    .replace(/@main/g, '');
+    .replace(/(uses: .\/.github\/actions.*)(@.*)/g, `$1 `);
 
   fs.writeFileSync(file, result, 'utf-8');
 });

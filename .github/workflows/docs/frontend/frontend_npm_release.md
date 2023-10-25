@@ -1,6 +1,6 @@
 # Default flow for an NPM package when its merged to mai
 
-This is the [default workflow](../../frontend_npm_release.yml@main) that is run when a `PR is merged to main` for an `npm package`. It is meant to release the package and capture information in Cortex related to the package.
+This is the [default workflow](../../frontend_npm_release.yml@v#) that is run when a `PR is merged to main` for an `npm package`. It is meant to release the package and capture information in Cortex related to the package.
 
 ## Inputs
 
@@ -32,7 +32,7 @@ This action takes the following secrets:
 ```yaml
 jobs:
   release:
-    uses: jupiterone/.github/.github/workflows/frontend_npm_release.yml@main
+    uses: jupiterone/.github/.github/workflows/frontend_npm_release.yml@v#
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
       AUTO_GITHUB_PAT_TOKEN: ${{ secrets.AUTO_GITHUB_PAT_TOKEN }} 
@@ -61,7 +61,7 @@ graph LR;
 ```yaml
 jobs:
   release:
-    uses: jupiterone/.github/.github/workflows/frontend_npm_release.yml@main
+    uses: jupiterone/.github/.github/workflows/frontend_npm_release.yml@v#
     with:
       use_chromatic: true
     secrets:
