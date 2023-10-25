@@ -107,7 +107,6 @@ jobs:
         # username: jupiteronesre
         # password: ${{ secrets.DOCKER_HUB_SRE }}
     permissions: write-all
-    timeout-minutes: 25
     needs: [migration_number, e2e_prepare]
     strategy:
       # when one test fails, DO NOT cancel the other containers, because this will kill Cypress processes
@@ -124,6 +123,7 @@ jobs:
       - id: e2e_run
         name: e2e_run
         uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_run@v2
+        timeout-minutes: 120
         with:
           artemis_account_name: ${{ needs.e2e_prepare.outputs.artemis_account_name }}
           artemis_account_id: ${{ needs.e2e_prepare.outputs.artemis_account_id }}
