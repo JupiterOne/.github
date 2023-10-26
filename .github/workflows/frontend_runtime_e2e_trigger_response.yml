@@ -51,7 +51,7 @@ on:
         required: false
       DOCKER_HUB_SRE:
         description: "The password to login to docker hub sre"
-        # required: true
+        required: true
 
 env:
   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -103,9 +103,9 @@ jobs:
       # Available containers here: https://hub.docker.com/r/cypress/browsers/tags
       image: cypress/browsers:node-20.9.0-chrome-118.0.5993.88-1-ff-118.0.2-edge-118.0.2088.46-1
       options: --user 1001
-      # credentials:
-        # username: jupiteronesre
-        # password: ${{ secrets.DOCKER_HUB_SRE }}
+      credentials:
+        username: jupiteronesre
+        password: ${{ secrets.DOCKER_HUB_SRE }}
     permissions: write-all
     needs: [migration_number, e2e_prepare]
     strategy:
