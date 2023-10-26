@@ -42,7 +42,8 @@ test('validate inputs and secrets', async () => {
   const mockSecrets = [
     'CYPRESS_RECORD_KEY',
     'CYPRESS_PROJECT_ID',
-    'CYPRESS_PASSWORD'
+    'CYPRESS_PASSWORD',
+    'DOCKER_HUB_SRE'
   ];
   const mockInputs = {
     spec_to_run: 'spec_to_run_test',

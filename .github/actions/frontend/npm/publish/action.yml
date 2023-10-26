@@ -16,5 +16,9 @@ runs:
     - name: deploy_to_npm
       env:
         GH_TOKEN: ${{ inputs.auto_token }}
-      run: npx --yes -p auto@11 auto shipit
+      # Running git config to avoid the following error: unable to auto-detect email address
+      run: |
+        git config --global user.email "automation@jupiterone.com"
+        git config --global user.name "Automation"
+        npx --yes -p auto@11 auto shipit
       shell: bash

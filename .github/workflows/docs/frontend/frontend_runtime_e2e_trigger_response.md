@@ -27,6 +27,7 @@ This action takes the following secrets:
 | `CYPRESS_RECORD_KEY`        | False     | The record key associated with the project in Cypress.
 | `CYPRESS_PROJECT_ID`        | False     | The project ID associated with the project in Cypress
 | `CYPRESS_PASSWORD`          | False     | The password of the E2E username
+| `DOCKER_HUB_SRE`            | True      | The password to login to docker hub sre
 
 ## Example Usage
 
@@ -78,6 +79,7 @@ jobs:
       spec_to_run: ${{ inputs.spec_to_run }}
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+      DOCKER_HUB_SRE: ${{ secrets.DOCKER_HUB_SRE }}
       CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
       CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
       CYPRESS_PASSWORD: ${{ secrets.CYPRESS_PASSWORD }}
