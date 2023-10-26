@@ -19,6 +19,10 @@ on:
         description: "Run E2E test, in most case we want this"
         type: boolean
         default: false
+      disable_e2e:
+        description: "Disable the E2E test from running in this workflow"
+        type: boolean
+        default: true
       e2e_filter_tags:
         description: "Tests will be filtered based on the tags defined here"
         type: string  
@@ -162,7 +166,7 @@ jobs:
   e2e_prepare:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
     needs: [migration_number]
-    if: ${{ inputs.use_e2e }}
+    if: ${{ inputs.use_e2e && !inputs.disable_e2e }}
     permissions:
       id-token: write
       contents: read
@@ -194,7 +198,7 @@ jobs:
       credentials:
         username: jupiteronesre
         password: ${{ secrets.DOCKER_HUB_SRE }}
-    if: ${{ inputs.use_e2e }}
+    if: ${{ inputs.use_e2e && !inputs.disable_e2e }}
     continue-on-error: ${{ inputs.e2e_pass_on_error }}
     permissions: write-all
     needs: [migration_number, magic_url, e2e_prepare]
