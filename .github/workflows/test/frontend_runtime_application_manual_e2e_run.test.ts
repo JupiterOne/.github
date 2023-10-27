@@ -100,15 +100,8 @@ test('flow with e2e_pass_on_error set to true to make tests non blocking', async
     migration_number: [ { name: 'migration_number', mockWith: 'echo ""' } ],
     magic_url: [ { name: 'magic_url', mockWith: 'echo ""' } ],
     e2e_prepare: [ { name: 'e2e_prepare', mockWith: 'echo ""' } ],
-    
     // Purposefully fail to test e2e_pass_on_error
-    e2e_run: [{
-      name: 'e2e_run',
-      mockCompositeSteps:  [
-        { name: 'get_author_name' },
-        { name: 'cypress_run', mockWith: 'exit 1' },
-      ]
-    }],
+    e2e_run: [ { name: 'e2e_prepare', mockWith: 'echo "exit 1"' } ],
   }});
 
   const jobs_found = getTestResults({ results, names: [

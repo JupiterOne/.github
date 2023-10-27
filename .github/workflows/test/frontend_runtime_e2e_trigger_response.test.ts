@@ -83,6 +83,8 @@ test('validate inputs and secrets', async () => {
 test('default flow', async () => {
   const act = new Act(mockGithub.repo.getPath(repoName));
 
+  act.setSecret('DOCKER_HUB_SRE', 'DOCKER_HUB_SRE');
+
   const results = await runWorkflow({ act, repoName, mockGithub });
 
   const jobs_found = getTestResults({ results, names: [

@@ -116,9 +116,10 @@ jobs:
     needs: [migration_number]
     permissions:
       id-token: write
-      contents: read
-      pull-requests: write
       statuses: write
+      contents: read
+      issues: read
+      pull-requests: read
     steps:
       - uses: actions/checkout@v3
       - name: setup_env

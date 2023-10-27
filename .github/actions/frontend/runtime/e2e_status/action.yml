@@ -43,7 +43,7 @@ runs:
         status: ${{ job.status }}
         context: 'pr / E2E Status'
     # Manually set the commit status to success to allow the PR to be merged
-    - name: override_commit_status
+    - name: force_status_as_success
       uses: myrotvorets/set-commit-status-action@v2.0.0
       if: ${{ fromJSON(inputs.e2e_pass_on_error) }}
       with:

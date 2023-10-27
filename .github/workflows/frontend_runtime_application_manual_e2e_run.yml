@@ -83,9 +83,10 @@ jobs:
     needs: [migration_number]
     permissions:
       id-token: write
-      contents: read
-      pull-requests: write
       statuses: write
+      contents: read
+      issues: read
+      pull-requests: read
     steps:
       - uses: actions/checkout@v3
       - name: setup_env
@@ -136,7 +137,7 @@ jobs:
         password: ${{ secrets.DOCKER_HUB_SRE }}
     continue-on-error: ${{ inputs.e2e_pass_on_error }}
     permissions: write-all
-    needs: [e2e_prepare, magic_url]
+    needs: [e2e_prepare, migration_number, magic_url]
     strategy:
       # when one test fails, DO NOT cancel the other containers, because this will kill Cypress processes
       # leaving Cypress Cloud hanging: https://github.com/cypress-io/github-action/issues/48 
