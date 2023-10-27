@@ -22,5 +22,4 @@ steps:
     uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_status
     with:
       github_token: ${{ secrets.GITHUB_TOKEN }}
-      e2e_pass_on_error: ${{ inputs.e2e_pass_on_error }}
 ```
