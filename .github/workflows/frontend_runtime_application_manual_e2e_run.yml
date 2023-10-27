@@ -11,7 +11,7 @@ on:
         description: "Tests will be filtered based on the tags defined here"
         type: string  
       e2e_containers:
-        description: "The number of tests that you want Cypress to run in parallel (ex. 1, 2, 3, ...)"
+        description: "The number of tests that you want Cypress to run in parallel. For example to run your tests via 3 containers you would set the value to the following: '["1", "2", "3"]'."
         type: string
         default: '["1"]'
       e2e_pass_on_error:

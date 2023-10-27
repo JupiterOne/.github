@@ -13,7 +13,7 @@ This action takes the following inputs:
 | `use_magic_url`              | Boolean | True                         | False      | Deploy to dev via a query param, required for normal SPAs
 | `use_e2e`                    | Boolean | False                        | False      | Run E2E test, in most case we want this
 | `e2e_filter_tags`            | String  |                              | False      | Tests will be filtered based on the tags defined here
-| `e2e_containers`             | String  | '["1"]'                      | False      | The number of tests that you want Cypress to run in parallel (ex. 1, 2, 3, ...)
+| `e2e_containers`             | String  | '["1"]'                      | False      | The number of tests that you want Cypress to run in parallel. For example to run your tests via 3 containers you would set the value to the following: '["1", "2", "3"]'.
 | `e2e_pass_on_error`          | Boolean | False                        | False      | Pass the workflow even if the E2E test fail
 | `e2e_artemis_config_path`    | String  | cypress/artemis-config.yaml  | False      | Used to determine the path to the artemis config file
 | `spec_to_run`                | String  | cypress/e2e/**/*.feature     | False      | Used to determine which test to run
