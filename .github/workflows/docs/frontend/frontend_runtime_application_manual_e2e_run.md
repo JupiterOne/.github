@@ -39,9 +39,14 @@ This action takes the following secrets:
 #### Usage
 
 ```yaml
+# Triggered by adding a comment to a PR
+on:
+  issue_comment:
+    types: [created]
+
 jobs:
   e2e_run:
-    # check if the comments come from pull request and contains '/run-e2e-test'
+    # Check if the comments come from pull request and contains '/run-e2e-test'
     if: github.event.issue.pull_request && contains(github.event.comment.body, '/run-e2e-tests')
     uses: jupiterone/.github/.github/workflows/frontend_runtime_application_manual_e2e_run.yml@v#
     secrets:

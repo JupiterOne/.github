@@ -36,12 +36,14 @@ runs:
       # This bucket file location is static and editing it will break the Magic URL. This pushes the entire directory which includes the bundle and remote types if applicable
       run: |
         aws s3 sync deploy/dist s3://apps.dev.jupiterone.io/static/manual-deploy/${{ github.event.repository.name }}@${{ inputs.migration_number }}/PR-${{ github.event.number }}/
+    - name: get_branch_of_pr
+      id: get_branch_of_pr
+      uses: xt0rted/pull-request-comment-branch@v2
     - name: show_magic_url_in_pr
-      uses: Sibz/github-status-action@v1
-      with: 
-        authToken: ${{ inputs.github_token }}
-        state: 'success'
+      uses: myrotvorets/set-commit-status-action@v2.0.0
+      with:
+        sha: ${{ steps.get_branch_of_pr.outputs.head_sha }}
+        token: ${{ inputs.github_token }}
+        status: success
         context: 'Magic URL'
-        description: "Use the 'Details' link to view this PR in dev"
         target_url: https://apps.dev.jupiterone.io${{ inputs.magic_url_route }}?magic2=%7B%22${{ github.event.repository.name }}%40${{ inputs.migration_number }}%22:%22PR-${{ github.event.pull_request.number }}%22%7D
-        sha: ${{github.event.pull_request.head.sha || github.sha}}
