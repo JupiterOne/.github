@@ -2,7 +2,6 @@ import { MockGithub } from '@kie/mock-github';
 import { Act } from '@kie/act-js';
 import { getWorkflowConfig, runWorkflow } from 'tests/utils/setup';
 import { getTestResult, getTestResults, setInputs, setSecrets } from 'tests/utils/helpers';
-import mockPackageJson from 'tests/package.json';
 import { resolve } from 'node:path';
 import { cwd } from 'node:process';
 
