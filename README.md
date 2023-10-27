@@ -11,7 +11,8 @@ The following workflows are for the entire JupiterOne organization.
 - [frontend_runtime_application_pr](.github/workflows/docs/frontend/frontend_runtime_application_pr.md)
 - [frontend_runtime_application_manual_e2e_run](.github/workflows/docs/frontend/frontend_runtime_application_manual_e2e_run.md)
 - [frontend_runtime_utility_pr](.github/workflows/docs/frontend/frontend_runtime_utility_pr.md)
-- [frontend_runtime_e2e_trigger_response](.github/workflows/docs/frontend/frontend_runtime_e2e_trigger_response.md)
+- [frontend_runtime_utility_pr](.github/workflows/docs/frontend/frontend_runtime_utility_pr.md)
+- [frontend_runtime_utility_manual_e2e_trigger](.github/workflows/docs/frontend/frontend_runtime_utility_manual_e2e_trigger.md)
 - [frontend_runtime_deploy](.github/workflows/docs/frontend/frontend_runtime_deploy.md)
 
 #### NPM Packages
