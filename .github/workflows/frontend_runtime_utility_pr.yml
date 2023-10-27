@@ -15,26 +15,12 @@ on:
         description: "Run VRT Storybook tests with chromatic"
         default: false
         type: boolean
-      use_e2e_trigger:
-        description: "Trigger E2E tests in other repos"
-        type: boolean
-        default: false
-      e2e_pass_on_error:
-        description: "Pass the workflow even if the E2E test fail"
-        type: boolean
-        default: false
-      repos_to_test:
-        description: "Kick off a n+ spec files within n+ repos"
-        type: string
     secrets:
       NPM_TOKEN:
         description: "A J1 npm.com Publish token"
         required: true
       CHROMATIC_PROJECT_TOKEN:
         description: "The Chromatic API token"
-        required: false
-      E2E_AUTO:
-        description: "A J1 token for kicking off cypress tests"
         required: false
 
 env:
@@ -51,10 +37,6 @@ jobs:
       migration: ${{ steps.migration_number.outputs.migration }}
     steps:
       - uses: actions/checkout@v3
-      - name: setup_env
-        uses: jupiterone/.github/.github/actions/setup_env@v2
-        with:
-          use_dev: true
       - id: migration_number
         name: migration_number
         uses: jupiterone/.github/.github/actions/frontend/runtime/migration_number@v2
@@ -135,48 +117,3 @@ jobs:
           migration_number: ${{ needs.migration_number.outputs.migration }}
           # runtime utilities do not have a route of there own, so we default to home
           magic_url_route: '/home'
-
-  e2e_trigger_remote_tests:
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
-    needs: [magic_url]
-    if: ${{ inputs.use_e2e_trigger }}
-    strategy:
-      matrix:
-        repos: ${{ fromJson(inputs.repos_to_test) }}
-    continue-on-error: ${{ inputs.e2e_pass_on_error }}
-    outputs:
-      test_passed: ${{ steps.e2e_trigger_remote_tests.outputs.test_passed }}
-    steps:
-      - uses: actions/checkout@v3
-      - name: setup_env
-        uses: jupiterone/.github/.github/actions/setup_env@v2
-        with:
-          use_dev: true
-      - id: e2e_trigger_remote_tests
-        name: e2e_trigger_remote_tests
-        uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_trigger_remote_tests@v2
-        with:
-          e2e_pass_on_error: ${{ inputs.e2e_pass_on_error }}
-          e2e_auto: ${{ secrets.E2E_AUTO }}
-          repo_name: ${{ matrix.repos.repo.name }}
-          repo_spec: ${{ matrix.repos.repo.spec }}
-
-  # Unless e2e_pass_on_error is true, this will never get hit if an E2E test fails
-  e2e_status:
-    # Name targeted by branch protections, do not change
-    name: E2E Status
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
-    needs: [e2e_trigger_remote_tests]
-    steps:
-      - uses: actions/checkout@v3
-      - name: setup_env
-        uses: jupiterone/.github/.github/actions/setup_env@v2
-        with:
-          use_dev: true
-      - name: e2e_status
-        uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_status@v2
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          commit_info_sha: ${{ github.sha }}
-          e2e_passed: ${{ needs.e2e_trigger_remote_tests.outputs.test_passed }}
-          e2e_pass_on_error: ${{ inputs.e2e_pass_on_error }}

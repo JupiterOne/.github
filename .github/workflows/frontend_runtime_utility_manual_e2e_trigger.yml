@@ -1,0 +1,112 @@
+name: Default workflow for a runtime utility when a PR is opened
+
+on:
+  workflow_call:
+    inputs:
+      fallback_runner:
+        description: "If true will leverage ubuntu-latest, otherwise will fall back to the J1 in-house runner"
+        default: false
+        type: boolean
+      e2e_pass_on_error:
+        description: "Pass the workflow even if the E2E test fail"
+        type: boolean
+        default: false
+      repos_to_test:
+        description: "Kick off a n+ spec files within n+ repos"
+        type: string
+    secrets:
+      NPM_TOKEN:
+        description: "A J1 npm.com Publish token"
+        required: true
+      E2E_AUTO:
+        description: "A J1 token for kicking off cypress tests"
+        required: false
+
+env:
+  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  e2e_pending_status:
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: e2e_pending_status
+        uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_pending_status
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+  migration_number:
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
+    outputs:
+      migration: ${{ steps.migration_number.outputs.migration }}
+    steps:
+      - uses: actions/checkout@v3
+      - id: migration_number
+        name: migration_number
+        uses: jupiterone/.github/.github/actions/frontend/runtime/migration_number@v2
+
+  magic_url:
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
+    needs: [migration_number]
+    permissions:
+      id-token: write
+      statuses: write
+      contents: read
+      issues: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@v3
+      - name: setup_env
+        uses: jupiterone/.github/.github/actions/setup_env@v2
+        with:
+          use_dev: true
+      - name: build
+        uses: jupiterone/.github/.github/actions/build@v2
+      - name: magic_url
+        uses: jupiterone/.github/.github/actions/frontend/runtime/magic_url@v2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          migration_number: ${{ needs.migration_number.outputs.migration }}
+          # runtime utilities do not have a route of there own, so we default to home
+          magic_url_route: '/home'
+
+  e2e_trigger_remote_tests:
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
+    needs: [magic_url]
+    strategy:
+      matrix:
+        repos: ${{ fromJson(inputs.repos_to_test) }}
+    continue-on-error: ${{ inputs.e2e_pass_on_error }}
+    outputs:
+      test_passed: ${{ steps.e2e_trigger_remote_tests.outputs.test_passed }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: setup_env
+        uses: jupiterone/.github/.github/actions/setup_env@v2
+        with:
+          use_dev: true
+      - id: e2e_trigger_remote_tests
+        name: e2e_trigger_remote_tests
+        uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_trigger_remote_tests@v2
+        with:
+          e2e_pass_on_error: ${{ inputs.e2e_pass_on_error }}
+          e2e_auto: ${{ secrets.E2E_AUTO }}
+          repo_name: ${{ matrix.repos.repo.name }}
+          repo_spec: ${{ matrix.repos.repo.spec }}
+
+  e2e_status:
+    name: E2E Status
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
+    needs: [e2e_pending_status, e2e_trigger_remote_tests]
+    steps:
+      - uses: actions/checkout@v3
+      - name: e2e_status
+        uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_status
+        if: always()
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          e2e_pass_on_error: ${{ inputs.e2e_pass_on_error }}
