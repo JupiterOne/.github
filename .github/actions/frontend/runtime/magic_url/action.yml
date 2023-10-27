@@ -46,4 +46,4 @@ runs:
         token: ${{ inputs.github_token }}
         status: success
         context: 'Magic URL'
-        target_url: https://apps.dev.jupiterone.io${{ inputs.magic_url_route }}?magic2=%7B%22${{ github.event.repository.name }}%40${{ inputs.migration_number }}%22:%22PR-${{ github.event.pull_request.number }}%22%7D
+        targetUrl: https://apps.dev.jupiterone.io${{ inputs.magic_url_route }}?magic2=%7B%22${{ github.event.repository.name }}%40${{ inputs.migration_number }}%22:%22PR-${{ github.event.pull_request.number }}%22%7D
