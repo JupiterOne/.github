@@ -78,8 +78,6 @@ jobs:
         uses: jupiterone/.github/.github/actions/validate@v2
       - name: remote_types_tests
         uses: jupiterone/.github/.github/actions/frontend/runtime/remote_types_tests@v2
-      - name: build
-        uses: jupiterone/.github/.github/actions/build@v2
 
   security:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-amd64' }}

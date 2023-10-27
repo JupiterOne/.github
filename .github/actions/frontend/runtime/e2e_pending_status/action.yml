@@ -1,0 +1,24 @@
+name: Set the status of the PR when E2E tests have been triggered
+
+inputs:
+  github_token:
+    type: string
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: e2e_pr_status_inputs
+      shell: bash
+      run: |
+        echo "github_token=${{ inputs.github_token }}"
+    - name: get_branch_of_pr
+      id: get_branch_of_pr
+      uses: xt0rted/pull-request-comment-branch@v2
+    - name: set_status_as_pending
+      uses: myrotvorets/set-commit-status-action@v2.0.0
+      with:
+        sha: ${{ steps.get_branch_of_pr.outputs.head_sha }}
+        token: ${{ inputs.github_token }}
+        status: pending
+        context: 'pr / E2E Status'
