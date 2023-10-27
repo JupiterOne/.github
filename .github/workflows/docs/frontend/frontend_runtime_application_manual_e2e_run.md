@@ -27,8 +27,8 @@ This action takes the following secrets:
 | Name                        | Required  | Description                               |
 | --------------------------- | --------- | ----------------------------------------- |
 | `NPM_TOKEN`                 | True      | A J1 npm.com Publish token
-| `CYPRESS_RECORD_KEY`        | False     | The record key associated with the project in Cypress.
-| `CYPRESS_PROJECT_ID`        | False     | The project ID associated with the project in Cypress
+| `CYPRESS_RECORD_KEY`        | True      | The record key associated with the project in Cypress.
+| `CYPRESS_PROJECT_ID`        | True      | The project ID associated with the project in Cypress
 | `CYPRESS_PASSWORD`          | False     | The password of the E2E username
 | `DOCKER_HUB_SRE`            | True      | The password to login to docker hub sre
 

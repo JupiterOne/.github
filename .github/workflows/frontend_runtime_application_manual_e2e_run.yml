@@ -40,10 +40,10 @@ on:
         required: true
       CYPRESS_RECORD_KEY:
         description: "The record key associated with the project in Cypress"
-        required: false
+        required: true
       CYPRESS_PROJECT_ID:
         description: "The project ID associated with the project in Cypress"
-        required: false
+        required: true
       CYPRESS_PASSWORD:
         description: "The password of the E2E username"
         required: false
