@@ -173,7 +173,6 @@ jobs:
           auto_cancel_after_failures: ${{ inputs.auto_cancel_after_failures }}
 
   e2e_status:
-    # if: github.event.issue.pull_request && contains(github.event.comment.body, '/run-e2e-tests')
     name: E2E Status
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
     needs: [e2e_pending_status, e2e_run]

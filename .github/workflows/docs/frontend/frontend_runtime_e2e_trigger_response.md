@@ -1,6 +1,6 @@
 # PR flow running E2E tests when triggered by an external repo
 
-This is the [default workflow](../../frontend_runtime_application_pr.yml@v#) that is run when E2E tests are triggered by an external repo.
+This is the [default workflow](../../frontend_runtime_application_pr.yml) that is run when E2E tests are triggered by an external repo.
 
 ## Inputs
 

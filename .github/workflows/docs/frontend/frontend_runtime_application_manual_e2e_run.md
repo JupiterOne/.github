@@ -1,7 +1,7 @@
-# Default workflow for a runtime application when a PR is opened
+# Default workflow for running E2E tests when a PR comment is left
 
 
-This is the [default workflow](../../frontend_runtime_application_pr.yml@v#) that is run when a `PR is opened` for an `application runtime`. It is meant to test the quality and safety of the code being committed.
+This is the [default workflow](../../frontend_runtime_application_manual_e2e_run.yml) that is leveraged to trigger E2E tests for for an `application runtime`. Specifically, when a PR is opened and a comment of `/run-e2e-tests` is left, it will trigger an E2E test run.
 
 ## Inputs
 

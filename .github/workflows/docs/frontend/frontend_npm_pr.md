@@ -1,6 +1,6 @@
 # Default flow for an NPM package when a PR is opened
 
-This is the [default workflow](../../frontend_npm_pr.yml@v#) that is run when a `PR is opened` for an `npm package`. It is meant to test the quality and safety of the code being committed.
+This is the [default workflow](../../frontend_npm_pr.yml) that is run when a `PR is opened` for an `npm package`. It is meant to test the quality and safety of the code being committed.
 
 ## Inputs
 

@@ -1,7 +1,7 @@
 # Default workflow for a runtime application when a PR is opened
 
 
-This is the [default workflow](../../frontend_runtime_application_pr.yml@v#) that is run when a `PR is opened` for a `utility runtime`. It is meant to test the quality and safety of the code being committed.
+This is the [default workflow](../../frontend_runtime_application_pr.yml) that is run when a `PR is opened` for a `utility runtime`. It is meant to test the quality and safety of the code being committed.
 
 ## Inputs
 
