@@ -43,7 +43,7 @@ jobs:
       - uses: actions/checkout@v3
       - id: migration_number
         name: migration_number
-        uses: jupiterone/.github/.github/actions/frontend/runtime/migration_number@v2
+        uses: jupiterone/.github/.github/actions/frontend/runtime/migration_number@v3
 
   validate:
     # Name targeted by branch protections, do not change
@@ -55,13 +55,13 @@ jobs:
         with:
           fetch-depth: 2
       - name: setup_env
-        uses: jupiterone/.github/.github/actions/setup_env@v2
+        uses: jupiterone/.github/.github/actions/setup_env@v3
         with:
           use_dev: true
       - name: remote_types_install
-        uses: jupiterone/.github/.github/actions/frontend/runtime/remote_types_install@v2
+        uses: jupiterone/.github/.github/actions/frontend/runtime/remote_types_install@v3
       - name: validate
-        uses: jupiterone/.github/.github/actions/validate@v2
+        uses: jupiterone/.github/.github/actions/validate@v3
   
   security:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-amd64' }}
@@ -72,7 +72,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: code_ql
-        uses: jupiterone/.github/.github/actions/code_ql@v2
+        uses: jupiterone/.github/.github/actions/code_ql@v3
         with:
           language: 'javascript'
 
@@ -86,11 +86,11 @@ jobs:
         with:
           fetch-depth: 0
       - name: setup_env
-        uses: jupiterone/.github/.github/actions/setup_env@v2
+        uses: jupiterone/.github/.github/actions/setup_env@v3
         with:
           use_dev: true
       - name: chromatic_upload
-        uses: jupiterone/.github/.github/actions/frontend/chromatic@v2
+        uses: jupiterone/.github/.github/actions/frontend/chromatic@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           chromatic_project_token: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
@@ -107,13 +107,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: setup_env
-        uses: jupiterone/.github/.github/actions/setup_env@v2
+        uses: jupiterone/.github/.github/actions/setup_env@v3
         with:
           use_dev: true
       - name: build
-        uses: jupiterone/.github/.github/actions/build@v2
+        uses: jupiterone/.github/.github/actions/build@v3
       - name: magic_url
-        uses: jupiterone/.github/.github/actions/frontend/runtime/magic_url@v2
+        uses: jupiterone/.github/.github/actions/frontend/runtime/magic_url@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           migration_number: ${{ needs.migration_number.outputs.migration }}
