@@ -25,6 +25,15 @@ This action takes the following secrets:
 
 ### Default Flow
 
+In the flow below, we use the `repos_to_test` to kick off tests in:
+- `web-navbar` repo - Targets two tests in the `integrations` directory,
+those containing the text `query-engine` and `searchbar`. 
+- `web-settings` repo - Targets one test in the `integrations directory.`
+
+Using this approach you can see how one repo that shares code with other
+repos is able to target tests in those repos to ensure when it updates
+the shared code, it's not breaking the implementation of that shared code.
+
 #### Usage
 
 ```yaml
@@ -37,7 +46,13 @@ jobs:
   trigger_e2e_tests:
     # Check if the comments come from pull request and contains '/run-e2e-test'
     if: github.event.issue.pull_request && contains(github.event.comment.body, '/run-e2e-tests')
-    uses: jupiterone/.github/.github/workflows/frontend_runtime_application_pr.yml@v#
+    uses: jupiterone/.github/.github/workflows/frontend_runtime_utility_manual_e2e_trigger.yml@v#
+    with:
+      repos_to_test: >-
+        [
+          {"repo":{"name":"web-navbar", "spec":"cypress/e2e/integrations/*(?:query-engine|searchbar)*.feature" }},
+          {"repo":{"name":"web-settings", "spec":"cypress/e2e/integrations/web-query-engine.feature" }}
+        ]
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
       E2E_AUTO: ${{ secrets.E2E_AUTO }}
