@@ -21,9 +21,10 @@ No outputs provided.
 ```yaml
 permissions:
   id-token: write
-  contents: read
-  pull-requests: write
   statuses: write
+  contents: read
+  issues: read
+  pull-requests: read
 steps:
   - name: magic_url
     uses: jupiterone/.github/.github/actions/frontend/runtime/magic_url

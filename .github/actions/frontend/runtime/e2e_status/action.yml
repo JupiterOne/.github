@@ -4,9 +4,6 @@ inputs:
   github_token:
     type: string
     required: true
-  e2e_passed:
-    type: boolean
-    required: true
   e2e_pass_on_error:
     type: boolean
     required: false
@@ -19,19 +16,38 @@ runs:
       shell: bash
       run: |
         echo "github_token=${{ inputs.github_token }}"
-        echo "e2e_passed=${{ inputs.e2e_passed }}"
         echo "e2e_pass_on_error=${{ inputs.e2e_pass_on_error }}"
-    - name: pr_status
-      uses: Sibz/github-status-action@v1
-      continue-on-error: ${{ fromJSON(inputs.e2e_pass_on_error) }}
+    - name: add_result_as_pr_comment
+      uses: actions/github-script@v6
       with:
-        authToken: ${{ inputs.github_token }}
-        context: 'E2E Test Status'
-        description: ${{ (fromJSON(inputs.e2e_passed) && 'E2E Test Passed') || 'E2E Test Failed' }}
-        state: ${{ (fromJSON(inputs.e2e_passed) && 'success') || 'failures' }}
-        sha: ${{ github.sha }}
-    # We have to manually output an exit code of 0 to ensure the action passes if e2e_pass_on_error is true
-    - name: pass_with_failures
-      shell: bash
+        script: |
+          const name = 'pr / E2E Status';
+          const url = '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}';
+          const success = '${{ inputs.job_status }}' === 'success';
+          const body = `${name}: ${success ? 'succeeded ✅' : 'failed ❌'}\n${url}`;
+
+          await github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: body
+          })
+    - name: get_branch_of_pr
+      id: get_branch_of_pr
+      uses: xt0rted/pull-request-comment-branch@v2
+    - name: set_commit_status
+      uses: myrotvorets/set-commit-status-action@v2.0.0
+      with:
+        sha: ${{ steps.get_branch_of_pr.outputs.head_sha }}
+        token: ${{ inputs.github_token }}
+        status: ${{ job.status }}
+        context: 'pr / E2E Status'
+    # Manually set the commit status to success to allow the PR to be merged
+    - name: force_status_as_success
+      uses: myrotvorets/set-commit-status-action@v2.0.0
       if: ${{ fromJSON(inputs.e2e_pass_on_error) }}
-      run: exit 0
+      with:
+        sha: ${{ inputs.branch_sha }}
+        token: ${{ inputs.github_token }}
+        status: success
+        context: 'pr / E2E Status'

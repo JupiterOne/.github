@@ -1,0 +1,186 @@
+name: Default workflow for a runtime application when E2E tests get triggred by a comment on the PR
+
+on:
+  workflow_call:
+    inputs:
+      fallback_runner:
+        description: "If true will leverage ubuntu-latest, otherwise will fall back to the J1 in-house runner"
+        default: false
+        type: boolean
+      e2e_filter_tags:
+        description: "Tests will be filtered based on the tags defined here"
+        type: string  
+      e2e_containers:
+        description: "The number of tests that you want Cypress to run in parallel. For example to run your tests via 3 containers you would set the value to the following: '[`1`, `2`, `3`]'."
+        type: string
+        default: '["1"]'
+      e2e_pass_on_error:
+        description: "Pass the workflow even if the E2E test fail"
+        type: boolean
+        default: false
+      e2e_artemis_config_path:
+        description: 'Used to determine the path to the artemis config file'
+        type: string
+        default: 'cypress/artemis-config.yaml'
+      spec_to_run:
+        description: 'Used to determine which test to run'
+        type: string
+        default: 'cypress/e2e/**/*.feature'
+      magic_url_route: 
+        description: 'The relative route the magic url should go to'
+        type: string
+        default: '/'
+      auto_cancel_after_failures:
+        description: 'Cancel the tests after this many failures'
+        default: 2
+        type: number
+    secrets:
+      NPM_TOKEN:
+        description: "A J1 npm.com Publish token"
+        required: true
+      CYPRESS_RECORD_KEY:
+        description: "The record key associated with the project in Cypress"
+        required: true
+      CYPRESS_PROJECT_ID:
+        description: "The project ID associated with the project in Cypress"
+        required: true
+      CYPRESS_PASSWORD:
+        description: "The password of the E2E username"
+        required: false
+      DOCKER_HUB_SRE:
+        description: "The password to login to docker hub sre"
+        required: true
+
+env:
+  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  e2e_pending_status:
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: e2e_pending_status
+        uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_pending_status
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+  migration_number:
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
+    outputs:
+      migration: ${{ steps.migration_number.outputs.migration }}
+    steps:
+      - uses: actions/checkout@v3
+      - id: migration_number
+        name: migration_number
+        uses: jupiterone/.github/.github/actions/frontend/runtime/migration_number@v2
+
+  magic_url:
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
+    needs: [migration_number]
+    permissions:
+      id-token: write
+      statuses: write
+      contents: read
+      issues: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@v3
+      - name: setup_env
+        uses: jupiterone/.github/.github/actions/setup_env@v2
+        with:
+          use_dev: true
+      - name: build
+        uses: jupiterone/.github/.github/actions/build@v2
+      - name: magic_url
+        uses: jupiterone/.github/.github/actions/frontend/runtime/magic_url@v2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          migration_number: ${{ needs.migration_number.outputs.migration }}
+          magic_url_route: ${{ inputs.magic_url_route }}
+
+  e2e_prepare:
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
+    permissions:
+      id-token: write
+      contents: read
+    outputs:
+      artemis_account_name: ${{ steps.e2e_prepare.outputs.artemis_account_name }}
+      artemis_account_id: ${{ steps.e2e_prepare.outputs.artemis_account_id }}
+      artemis_account_subdomain: ${{ steps.e2e_prepare.outputs.artemis_account_subdomain }}
+      artemis_users: ${{ steps.e2e_prepare.outputs.artemis_users }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: setup_env
+        uses: jupiterone/.github/.github/actions/setup_env@v2
+        with:
+          use_dev: true
+      - id: e2e_prepare
+        name: e2e_prepare
+        uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_prepare@v2
+        with:
+          e2e_artemis_config_path: ${{ inputs.e2e_artemis_config_path }}
+          user_count: $(echo '${{ inputs.e2e_containers }}' | jq '. | length')
+
+  e2e_run:
+    # Note this is the only job that leverages amd64
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-amd64' }}
+    container:
+      # Available containers here: https://hub.docker.com/r/cypress/browsers/tags
+      image: cypress/browsers:latest
+      options: --user 1001
+      credentials:
+        username: jupiteronesre
+        password: ${{ secrets.DOCKER_HUB_SRE }}
+    continue-on-error: ${{ inputs.e2e_pass_on_error }}
+    permissions: write-all
+    needs: [e2e_prepare, migration_number, magic_url]
+    strategy:
+      # when one test fails, DO NOT cancel the other containers, because this will kill Cypress processes
+      # leaving Cypress Cloud hanging: https://github.com/cypress-io/github-action/issues/48 
+      fail-fast: false
+      matrix:
+        # run copies of the current job in parallel
+        containers: ${{ fromJson(inputs.e2e_containers) }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: setup_env
+        uses: jupiterone/.github/.github/actions/setup_env@v2
+        with:
+          use_dev: true
+      - id: e2e_run
+        name: e2e_run
+        uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_run@v2
+        timeout-minutes: 120
+        with:
+          artemis_account_name: ${{ needs.e2e_prepare.outputs.artemis_account_name }}
+          artemis_account_id: ${{ needs.e2e_prepare.outputs.artemis_account_id }}
+          artemis_account_subdomain: ${{ needs.e2e_prepare.outputs.artemis_account_subdomain }}
+          artemis_users: ${{ needs.e2e_prepare.outputs.artemis_users }}
+          cypress_container: ${{ matrix.containers }}
+          cypress_mailinator_api_key: ${{ secrets.CYPRESS_MAILINATOR_API_KEY }}
+          cypress_record_key: ${{ secrets.CYPRESS_RECORD_KEY }}
+          cypress_project_id: ${{ secrets.CYPRESS_PROJECT_ID }}
+          cypress_password: ${{ secrets.CYPRESS_PASSWORD }}
+          e2e_filter_tags: ${{ inputs.e2e_filter_tags }}
+          e2e_pass_on_error: ${{ inputs.e2e_pass_on_error }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          migration_number: ${{ needs.migration_number.outputs.migration }}
+          spec_to_run: ${{ inputs.spec_to_run }}
+          auto_cancel_after_failures: ${{ inputs.auto_cancel_after_failures }}
+
+  e2e_status:
+    name: E2E Status
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
+    needs: [e2e_pending_status, e2e_run]
+    steps:
+      - uses: actions/checkout@v3
+      - name: e2e_status
+        uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_status
+        if: always()
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          e2e_pass_on_error: ${{ inputs.e2e_pass_on_error }}

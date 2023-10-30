@@ -7,9 +7,9 @@ import mockArtemisRun from '~/actions/frontend/runtime/e2e_prepare/test/artemis-
 import { resolve } from 'node:path';
 import { cwd } from 'node:process';
 
-const repoName = 'frontend_runtime_e2e_trigger_response';
-
 let mockGithub: MockGithub;
+
+const repoName = 'frontend_runtime_application_manual_e2e_run';
 
 const mockArtemisData = {
   id: mockArtemisRun[0].id,
@@ -40,25 +40,37 @@ afterEach(async () => {
 test('validate inputs and secrets', async () => {
   const act = new Act(mockGithub.repo.getPath(repoName));
   const mockSecrets = [
+    'CYPRESS_MAILINATOR_API_KEY',
     'CYPRESS_RECORD_KEY',
     'CYPRESS_PROJECT_ID',
     'CYPRESS_PASSWORD',
     'DOCKER_HUB_SRE'
   ];
   const mockInputs = {
-    spec_to_run: 'spec_to_run_test',
-    external_pr_sha: 'external_pr_sha_test',
-    external_pr_number: 'external_pr_number_test',
-    external_pr_title: 'external_pr_title_test',
-    external_pr_branch: 'external_pr_branch_test',
-    external_pr_author: 'external_pr_author_test',
-    external_pr_repo_name: 'external_pr_repo_name_test'
+    magic_url_route: 'magic_url_route_test',
+    e2e_artemis_config_path: 'e2e_artemis_config_path_test',
+    e2e_containers: '["1", "2"]',
+    e2e_filter_tags: 'e2e_filter_tags_test',
+    e2e_pass_on_error: true,
+    spec_to_run: 'spec_to_run_test'
   };
 
   setSecrets({ act, mockSecrets });
   setInputs({ act, mockInputs });
 
   const results = await runWorkflow({ act, repoName, mockGithub });
+
+  // magic_url
+  const magic_url_inputs = getTestResult({ results, name: 'magic_url_inputs' });
+
+  expect(magic_url_inputs.output).toContain(`migration=${mockPackageJson.config.migration}`);
+  expect(magic_url_inputs.output).toContain(`magic_url_route=${mockInputs.magic_url_route}`);
+
+  // e2e_prepare
+  const e2e_prepare_inputs = getTestResult({ results, name: 'e2e_prepare_inputs' });
+
+  expect(e2e_prepare_inputs.output).toContain(`e2e_artemis_config_path=${mockInputs.e2e_artemis_config_path}`);
+  expect(e2e_prepare_inputs.output).toContain(`user_count=${JSON.parse(mockInputs.e2e_containers).length}`);
 
   // e2e_run
   const e2e_run_inputs = getTestResult({ results, name: 'e2e_run_inputs' });
@@ -67,31 +79,39 @@ test('validate inputs and secrets', async () => {
   expect(e2e_run_inputs.output).toContain(`artemis_account_subdomain=${mockArtemisData.accountSubdomain}`);
   expect(e2e_run_inputs.output).toContain(`artemis_account_id=${mockArtemisData.id}`);
   expect(e2e_run_inputs.output).toContain(`artemis_users=[${JSON.stringify(mockArtemisData.users).replace(/"([^"]+)"/g, '$1')}]`);
+  expect(e2e_run_inputs.output).toContain(`cypress_mailinator_api_key=***`);
   expect(e2e_run_inputs.output).toContain(`cypress_record_key=***`);
   expect(e2e_run_inputs.output).toContain(`cypress_project_id=***`);
   expect(e2e_run_inputs.output).toContain(`cypress_password=***`);
+  expect(e2e_run_inputs.output).toContain(`e2e_filter_tags=${mockInputs.e2e_filter_tags}`);
+  expect(e2e_run_inputs.output).toContain(`e2e_pass_on_error=${mockInputs.e2e_pass_on_error}`);
   expect(e2e_run_inputs.output).toContain(`migration_number=${mockPackageJson.config.migration}`);
   expect(e2e_run_inputs.output).toContain(`spec_to_run=${mockInputs.spec_to_run}`);
-  expect(e2e_run_inputs.output).toContain(`commit_info_sha=${mockInputs.external_pr_sha}`);
-  expect(e2e_run_inputs.output).toContain(`commit_info_pr_number=${mockInputs.external_pr_number}`);
-  expect(e2e_run_inputs.output).toContain(`commit_info_pr_title=${mockInputs.external_pr_title}`);
-  expect(e2e_run_inputs.output).toContain(`commit_info_branch=${mockInputs.external_pr_branch}`);
-  expect(e2e_run_inputs.output).toContain(`commit_info_author=${mockInputs.external_pr_author}`);
-  expect(e2e_run_inputs.output).toContain(`commit_info_repo_name=${mockInputs.external_pr_repo_name}`);
 });
 
-test('default flow', async () => {
+test('flow with e2e_pass_on_error set to true to make tests non blocking', async () => {
   const act = new Act(mockGithub.repo.getPath(repoName));
 
   act.setSecret('DOCKER_HUB_SRE', 'DOCKER_HUB_SRE');
+  act.setInput('e2e_pass_on_error', 'true');
 
-  const results = await runWorkflow({ act, repoName, mockGithub });
+  const results = await runWorkflow({ act, repoName, mockGithub, mockSteps: {
+    e2e_pending_status: [ { name: 'e2e_pending_status', mockWith: 'echo ""' } ],
+    migration_number: [ { name: 'migration_number', mockWith: 'echo ""' } ],
+    magic_url: [ { name: 'magic_url', mockWith: 'echo ""' } ],
+    e2e_prepare: [ { name: 'e2e_prepare', mockWith: 'echo ""' } ],
+    // Purposefully fail to test e2e_pass_on_error
+    e2e_run: [ { name: 'e2e_prepare', mockWith: 'echo "exit 1"' } ],
+  }});
 
   const jobs_found = getTestResults({ results, names: [
+    'e2e_pending_status',
     'migration_number',
+    'magic_url',
     'e2e_prepare',
-    'e2e_run'
+    'e2e_run',
+    'e2e_status'
   ] });
 
-  expect(jobs_found.length).toEqual(3);
+  expect(jobs_found.length).toEqual(6);
 });

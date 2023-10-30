@@ -1,6 +1,6 @@
 # Default flow for an NPM package when its merged to mai
 
-This is the [default workflow](../../frontend_npm_release.yml@v#) that is run when a `PR is merged to main` for an `npm package`. It is meant to release the package and capture information in Cortex related to the package.
+This is the [default workflow](../../frontend_npm_release.yml) that is run when a `PR is merged to main` for an `npm package`. It is meant to release the package and capture information in Cortex related to the package.
 
 ## Inputs
 
