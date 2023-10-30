@@ -179,7 +179,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: e2e_status
-        uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_status
+        uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_status@v3
         if: always()
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
