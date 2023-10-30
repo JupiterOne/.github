@@ -46,7 +46,7 @@ jobs:
   trigger_e2e_tests:
     # Check if the comments come from pull request and contains '/run-e2e-test'
     if: github.event.issue.pull_request && contains(github.event.comment.body, '/run-e2e-tests')
-    uses: jupiterone/.github/.github/workflows/frontend_runtime_application_pr.yml@v#
+    uses: jupiterone/.github/.github/workflows/frontend_runtime_utility_manual_e2e_trigger.yml@v#
     with:
       repos_to_test: >-
         [
