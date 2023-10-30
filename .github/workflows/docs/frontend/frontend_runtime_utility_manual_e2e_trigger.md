@@ -49,10 +49,10 @@ jobs:
     uses: jupiterone/.github/.github/workflows/frontend_runtime_application_pr.yml@v#
     with:
       repos_to_test: >-
-        [ {"repo":{"name":"web-navbar",
-        "spec":"cypress/e2e/integrations/*(?:query-engine|searchbar)*.feature" }},
-        {"repo":{"name":"web-settings",
-        "spec":"cypress/e2e/integrations/web-query-engine.feature" }} ]
+        [
+          {"repo":{"name":"web-navbar", "spec":"cypress/e2e/integrations/*(?:query-engine|searchbar)*.feature" }},
+          {"repo":{"name":"web-settings", "spec":"cypress/e2e/integrations/web-query-engine.feature" }}
+        ]
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
       E2E_AUTO: ${{ secrets.E2E_AUTO }}
