@@ -33,9 +33,11 @@ jobs:
   e2e_pending_status:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
     steps:
+      - id: comment_branch
+        uses: xt0rted/pull-request-comment-branch@v2
       - uses: actions/checkout@v3
         with:
-          ref: refs/pull/${{ github.event.issue.number }}/head
+          ref: ${{ steps.comment_branch.outputs.head_ref }}
       - name: e2e_pending_status
         uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_pending_status@v3
         with:
@@ -46,9 +48,11 @@ jobs:
     outputs:
       migration: ${{ steps.migration_number.outputs.migration }}
     steps:
+      - id: comment_branch
+        uses: xt0rted/pull-request-comment-branch@v2
       - uses: actions/checkout@v3
         with:
-          ref: refs/pull/${{ github.event.issue.number }}/head
+          ref: ${{ steps.comment_branch.outputs.head_ref }}
       - id: migration_number
         name: migration_number
         uses: jupiterone/.github/.github/actions/frontend/runtime/migration_number@v3
@@ -63,9 +67,11 @@ jobs:
       issues: read
       pull-requests: read
     steps:
+      - id: comment_branch
+        uses: xt0rted/pull-request-comment-branch@v2
       - uses: actions/checkout@v3
         with:
-          ref: refs/pull/${{ github.event.issue.number }}/head
+          ref: ${{ steps.comment_branch.outputs.head_ref }}
       - name: setup_env
         uses: jupiterone/.github/.github/actions/setup_env@v3
         with:
@@ -90,9 +96,11 @@ jobs:
     outputs:
       test_passed: ${{ steps.e2e_trigger_remote_tests.outputs.test_passed }}
     steps:
+      - id: comment_branch
+        uses: xt0rted/pull-request-comment-branch@v2
       - uses: actions/checkout@v3
         with:
-          ref: refs/pull/${{ github.event.issue.number }}/head
+          ref: ${{ steps.comment_branch.outputs.head_ref }}
       - name: setup_env
         uses: jupiterone/.github/.github/actions/setup_env@v3
         with:
@@ -111,9 +119,11 @@ jobs:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
     needs: [e2e_pending_status, e2e_trigger_remote_tests]
     steps:
+      - id: comment_branch
+        uses: xt0rted/pull-request-comment-branch@v2
       - uses: actions/checkout@v3
         with:
-          ref: refs/pull/${{ github.event.issue.number }}/head
+          ref: ${{ steps.comment_branch.outputs.head_ref }}
       - name: e2e_status
         uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_status@v3
         if: always()
