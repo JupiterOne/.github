@@ -1,0 +1,18 @@
+name: Reset the E2E status back to the last successful/failed run
+
+runs:
+  using: "composite"
+  steps:
+    - name: find_comment
+      id: find_comment
+      uses: peter-evans/find-comment@v2
+      with:
+        issue-number: 220
+        body-includes: pr / E2E Status
+        direction: last
+    - name: reset_status
+      uses: myrotvorets/set-commit-status-action@v2.0.0
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        status: ${{ contains(steps.find_comment.outputs.comment-body, 'succeeded') }}
+        context: 'pr / E2E Status'

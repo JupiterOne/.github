@@ -31,15 +31,17 @@ concurrency:
 
 jobs:
   e2e_pending_status:
+    if: github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '/run-e2e-tests')
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
     steps:
       - uses: actions/checkout@v3
       - name: e2e_pending_status
-        uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_pending_status@v3
+        uses: ./.github/actions/frontend/runtime/e2e_pending_status 
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
   migration_number:
+    if: github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '/run-e2e-tests')
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
     outputs:
       migration: ${{ steps.migration_number.outputs.migration }}
@@ -47,9 +49,10 @@ jobs:
       - uses: actions/checkout@v3
       - id: migration_number
         name: migration_number
-        uses: jupiterone/.github/.github/actions/frontend/runtime/migration_number@v3
+        uses: ./.github/actions/frontend/runtime/migration_number 
 
   magic_url:
+    if: github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '/run-e2e-tests')
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
     needs: [migration_number]
     permissions:
@@ -61,13 +64,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: setup_env
-        uses: jupiterone/.github/.github/actions/setup_env@v3
+        uses: ./.github/actions/setup_env 
         with:
           use_dev: true
       - name: build
-        uses: jupiterone/.github/.github/actions/build@v3
+        uses: ./.github/actions/build 
       - name: magic_url
-        uses: jupiterone/.github/.github/actions/frontend/runtime/magic_url@v3
+        uses: ./.github/actions/frontend/runtime/magic_url 
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           migration_number: ${{ needs.migration_number.outputs.migration }}
@@ -75,6 +78,7 @@ jobs:
           magic_url_route: '/home'
 
   e2e_trigger_remote_tests:
+    if: github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '/run-e2e-tests')
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
     needs: [magic_url]
     strategy:
@@ -86,12 +90,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: setup_env
-        uses: jupiterone/.github/.github/actions/setup_env@v3
+        uses: ./.github/actions/setup_env 
         with:
           use_dev: true
       - id: e2e_trigger_remote_tests
         name: e2e_trigger_remote_tests
-        uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_trigger_remote_tests@v3
+        uses: ./.github/actions/frontend/runtime/e2e_trigger_remote_tests 
         with:
           e2e_pass_on_error: ${{ inputs.e2e_pass_on_error }}
           e2e_auto: ${{ secrets.E2E_AUTO }}
@@ -99,14 +103,23 @@ jobs:
           repo_spec: ${{ matrix.repos.repo.spec }}
 
   e2e_status:
+    if: github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '/run-e2e-tests')
     name: E2E Status
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
     needs: [e2e_pending_status, e2e_trigger_remote_tests]
     steps:
       - uses: actions/checkout@v3
       - name: e2e_status
-        uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_status@v3
+        uses: ./.github/actions/frontend/runtime/e2e_status 
         if: always()
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           e2e_pass_on_error: ${{ inputs.e2e_pass_on_error }}
+
+  e2e_reset_status:
+    if: github.event_name == 'pull_request'
+    runs-on: 'ubuntu-latest'
+    steps:
+      - uses: actions/checkout@v3
+      - name: e2e_status
+        uses: ./.github/actions/frontend/runtime/e2e_reset_status
