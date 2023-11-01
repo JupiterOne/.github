@@ -20,7 +20,6 @@ outputs:
   test_passed:
     value: ${{ steps.test_results.outputs.test_passed }}
 
-
 runs:
   using: "composite"
   steps:

@@ -23,7 +23,7 @@ runs:
         script: |
           const name = 'pr / E2E Status';
           const url = '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}';
-          const success = '${{ inputs.job_status }}' === 'success';
+          const success = '${{ job.status }}' === 'success';
           const body = `${name}: ${success ? 'succeeded ✅' : 'failed ❌'}\n${url}`;
 
           await github.rest.issues.createComment({
@@ -47,7 +47,6 @@ runs:
       uses: myrotvorets/set-commit-status-action@v2.0.0
       if: ${{ fromJSON(inputs.e2e_pass_on_error) }}
       with:
-        sha: ${{ inputs.branch_sha }}
         token: ${{ inputs.github_token }}
         status: success
         context: 'pr / E2E Status'
