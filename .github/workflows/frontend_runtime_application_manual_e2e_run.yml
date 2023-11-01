@@ -63,6 +63,8 @@ jobs:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: refs/pull/${{ github.event.issue.number }}/head
       - name: e2e_pending_status
         uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_pending_status@v3
         with:
@@ -74,6 +76,8 @@ jobs:
       migration: ${{ steps.migration_number.outputs.migration }}
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: refs/pull/${{ github.event.issue.number }}/head
       - id: migration_number
         name: migration_number
         uses: jupiterone/.github/.github/actions/frontend/runtime/migration_number@v3
@@ -89,6 +93,8 @@ jobs:
       pull-requests: read
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: refs/pull/${{ github.event.issue.number }}/head
       - name: setup_env
         uses: jupiterone/.github/.github/actions/setup_env@v3
         with:
@@ -114,6 +120,8 @@ jobs:
       artemis_users: ${{ steps.e2e_prepare.outputs.artemis_users }}
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: refs/pull/${{ github.event.issue.number }}/head
       - name: setup_env
         uses: jupiterone/.github/.github/actions/setup_env@v3
         with:
@@ -147,6 +155,8 @@ jobs:
         containers: ${{ fromJson(inputs.e2e_containers) }}
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: refs/pull/${{ github.event.issue.number }}/head
       - name: setup_env
         uses: jupiterone/.github/.github/actions/setup_env@v3
         with:
@@ -178,6 +188,8 @@ jobs:
     needs: [e2e_pending_status, e2e_run]
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: refs/pull/${{ github.event.issue.number }}/head
       - name: e2e_status
         uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_status@v3
         if: always()
