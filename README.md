@@ -32,6 +32,8 @@ The workflows above take advantage of the composite actions listed below, levera
 - [validate](.github/actions/validate/README.md)
 - [build](.github/actions/build/README.md)
 - [code_ql](.github/actions/code_ql/README.md)
+- [get_branch](.github/actions/get_branch/README.md)
+- [pr_comment](.github/actions/pr_comment/README.md)
 - [setup_env](.github/actions/setup_env/README.md)
 
 ### Frontend
