@@ -1,0 +1,12 @@
+name: Gets the ref of the branch
+
+outputs:
+  ref:
+    value: ${{ steps.comment_branch.outputs.head_ref }}
+
+runs:
+  using: "composite"
+  steps:
+    - id: comment_branch
+      name: comment_branch
+      uses: xt0rted/pull-request-comment-branch@v2

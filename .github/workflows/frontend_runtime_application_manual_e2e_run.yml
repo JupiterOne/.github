@@ -59,14 +59,22 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  get_branch:
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
+    outputs:
+      ref: ${{ steps.get_branch.outputs.head_ref }}
+    steps:
+      - id: get_branch
+        name: get_branch
+        uses: jupiterone/.github/.github/actions/get_branch@v3
+
   e2e_pending_status:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
+    needs: [get_branch]
     steps:
-      - id: comment_branch
-        uses: xt0rted/pull-request-comment-branch@v2
       - uses: actions/checkout@v3
         with:
-          ref: ${{ steps.comment_branch.outputs.head_ref }}
+          ref: ${{ needs.get_branch.outputs.ref }}
       - name: e2e_pending_status
         uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_pending_status@v3
         with:
@@ -74,21 +82,20 @@ jobs:
 
   migration_number:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
+    needs: [get_branch]
     outputs:
       migration: ${{ steps.migration_number.outputs.migration }}
     steps:
-      - id: comment_branch
-        uses: xt0rted/pull-request-comment-branch@v2
       - uses: actions/checkout@v3
         with:
-          ref: ${{ steps.comment_branch.outputs.head_ref }}
+          ref: ${{ needs.get_branch.outputs.ref }}
       - id: migration_number
         name: migration_number
         uses: jupiterone/.github/.github/actions/frontend/runtime/migration_number@v3
 
   magic_url:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
-    needs: [migration_number]
+    needs: [get_branch, migration_number]
     permissions:
       id-token: write
       statuses: write
@@ -96,11 +103,9 @@ jobs:
       issues: read
       pull-requests: read
     steps:
-      - id: comment_branch
-        uses: xt0rted/pull-request-comment-branch@v2
       - uses: actions/checkout@v3
         with:
-          ref: ${{ steps.comment_branch.outputs.head_ref }}
+          ref: ${{ needs.get_branch.outputs.ref }}
       - name: setup_env
         uses: jupiterone/.github/.github/actions/setup_env@v3
         with:
@@ -116,6 +121,7 @@ jobs:
 
   e2e_prepare:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
+    needs: [get_branch]
     permissions:
       id-token: write
       contents: read
@@ -127,11 +133,9 @@ jobs:
       artemis_account_subdomain: ${{ steps.e2e_prepare.outputs.artemis_account_subdomain }}
       artemis_users: ${{ steps.e2e_prepare.outputs.artemis_users }}
     steps:
-      - id: comment_branch
-        uses: xt0rted/pull-request-comment-branch@v2
       - uses: actions/checkout@v3
         with:
-          ref: ${{ steps.comment_branch.outputs.head_ref }}
+          ref: ${{ needs.get_branch.outputs.ref }}
       - name: setup_env
         uses: jupiterone/.github/.github/actions/setup_env@v3
         with:
@@ -155,7 +159,7 @@ jobs:
         password: ${{ secrets.DOCKER_HUB_SRE }}
     continue-on-error: ${{ inputs.e2e_pass_on_error }}
     permissions: write-all
-    needs: [e2e_prepare, migration_number, magic_url]
+    needs: [get_branch, e2e_prepare, migration_number, magic_url]
     strategy:
       # when one test fails, DO NOT cancel the other containers, because this will kill Cypress processes
       # leaving Cypress Cloud hanging: https://github.com/cypress-io/github-action/issues/48 
@@ -164,11 +168,9 @@ jobs:
         # run copies of the current job in parallel
         containers: ${{ fromJson(inputs.e2e_containers) }}
     steps:
-      - id: comment_branch
-        uses: xt0rted/pull-request-comment-branch@v2
       - uses: actions/checkout@v3
         with:
-          ref: ${{ steps.comment_branch.outputs.head_ref }}
+          ref: ${{ needs.get_branch.outputs.ref }}
       - name: setup_env
         uses: jupiterone/.github/.github/actions/setup_env@v3
         with:
@@ -198,13 +200,11 @@ jobs:
   e2e_status:
     name: E2E Status
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
-    needs: [e2e_pending_status, e2e_run]
+    needs: [get_branch, e2e_pending_status, e2e_run]
     steps:
-      - id: comment_branch
-        uses: xt0rted/pull-request-comment-branch@v2
       - uses: actions/checkout@v3
         with:
-          ref: ${{ steps.comment_branch.outputs.head_ref }}
+          ref: ${{ needs.get_branch.outputs.ref }}
       - name: e2e_status
         uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_status@v3
         if: always()
