@@ -49,6 +49,11 @@ test('validate inputs and secrets', async () => {
   const code_ql_inputs = getTestResult({ results, name: 'code_ql_inputs' });
   
   expect(code_ql_inputs.output).toContain(`language=javascript`);
+
+  // pr_comment
+  const pr_comment_inputs = getTestResult({ results, name: 'pr_comment_inputs' });
+
+  expect(pr_comment_inputs.output).toContain(`message=To run E2E tests leave a comment`);
 });
 
 test('default flow', async () => {
@@ -57,13 +62,14 @@ test('default flow', async () => {
   const results = await runWorkflow({ act, repoName, mockGithub });
 
   const jobs_found = getTestResults({ results, names: [
+    'pr_comment',
     'migration_number',
     'validate',
     'code_ql',
     'magic_url'
   ] });
 
-  expect(jobs_found.length).toEqual(4);
+  expect(jobs_found.length).toEqual(5);
 });
 
 test('when use_validate is false', async () => {

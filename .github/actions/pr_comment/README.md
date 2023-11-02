@@ -1,4 +1,4 @@
-# Get Branch
+# PR Comment
 
 This [composite action](./action.yml) is responsible for leaving a comment on a PR. By default it will only leave a comment once of the same message (i.e. no duplicates), however this can be overridden.
 
