@@ -45,11 +45,13 @@ graph LR;
     C[magic_url];
     D[validate];
     E[security];
+    F[pr_comment];
 
     A --> B;
     A --> D;
     A --> E;
     B --> C;
+    A --> F;
 ```
 
 ### With Chromatic

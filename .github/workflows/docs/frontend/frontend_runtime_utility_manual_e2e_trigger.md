@@ -75,16 +75,14 @@ jobs:
 ```mermaid
 graph LR;
     A[start flow via PR comment];
-    B[pr_comment];
-    C[get_branch];
-    D[e2e_pending_status];
-    E[migration_number];
-    F[magic_url];
-    G[e2e_trigger_remote_tests];
-    H[external_repo];
-    I[e2e_status];
+    B[get_branch];
+    C[e2e_pending_status];
+    D[migration_number];
+    E[magic_url];
+    F[e2e_trigger_remote_tests];
+    G[external_repo];
+    H[e2e_status];
 
-    A --> B;
-    A --> C --> D --> F --> G -->|trigger E2E tests and wait| H -->|report back status| G --> I;
-    C --> E --> F;
+    A --> B --> C --> E --> F --> G -->|trigger E2E tests and wait| H -->|report back status| G --> H;
+    B --> D --> E;
 ```
