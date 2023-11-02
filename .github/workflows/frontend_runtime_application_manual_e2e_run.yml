@@ -59,10 +59,23 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  e2e_pending_status:
+  get_branch:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
+    outputs:
+      name: ${{ steps.get_branch.outputs.name }}
     steps:
       - uses: actions/checkout@v3
+      - id: get_branch
+        name: get_branch
+        uses: jupiterone/.github/.github/actions/get_branch@v3
+
+  e2e_pending_status:
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
+    needs: [get_branch]
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ needs.get_branch.outputs.name }}
       - name: e2e_pending_status
         uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_pending_status@v3
         with:
@@ -70,17 +83,20 @@ jobs:
 
   migration_number:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
+    needs: [get_branch]
     outputs:
       migration: ${{ steps.migration_number.outputs.migration }}
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: ${{ needs.get_branch.outputs.name }}
       - id: migration_number
         name: migration_number
         uses: jupiterone/.github/.github/actions/frontend/runtime/migration_number@v3
 
   magic_url:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
-    needs: [migration_number]
+    needs: [get_branch, migration_number]
     permissions:
       id-token: write
       statuses: write
@@ -89,6 +105,8 @@ jobs:
       pull-requests: read
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: ${{ needs.get_branch.outputs.name }}
       - name: setup_env
         uses: jupiterone/.github/.github/actions/setup_env@v3
         with:
@@ -104,9 +122,12 @@ jobs:
 
   e2e_prepare:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
+    needs: [get_branch]
     permissions:
       id-token: write
       contents: read
+      issues: read
+      pull-requests: read
     outputs:
       artemis_account_name: ${{ steps.e2e_prepare.outputs.artemis_account_name }}
       artemis_account_id: ${{ steps.e2e_prepare.outputs.artemis_account_id }}
@@ -114,6 +135,8 @@ jobs:
       artemis_users: ${{ steps.e2e_prepare.outputs.artemis_users }}
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: ${{ needs.get_branch.outputs.name }}
       - name: setup_env
         uses: jupiterone/.github/.github/actions/setup_env@v3
         with:
@@ -130,14 +153,14 @@ jobs:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-amd64' }}
     container:
       # Available containers here: https://hub.docker.com/r/cypress/browsers/tags
-      image: cypress/browsers:latest
+      image: cypress/browsers:node-20.9.0-chrome-118.0.5993.88-1-ff-118.0.2-edge-118.0.2088.46-1
       options: --user 1001
       credentials:
         username: jupiteronesre
         password: ${{ secrets.DOCKER_HUB_SRE }}
     continue-on-error: ${{ inputs.e2e_pass_on_error }}
     permissions: write-all
-    needs: [e2e_prepare, migration_number, magic_url]
+    needs: [get_branch, e2e_prepare, migration_number, magic_url]
     strategy:
       # when one test fails, DO NOT cancel the other containers, because this will kill Cypress processes
       # leaving Cypress Cloud hanging: https://github.com/cypress-io/github-action/issues/48 
@@ -147,6 +170,8 @@ jobs:
         containers: ${{ fromJson(inputs.e2e_containers) }}
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: ${{ needs.get_branch.outputs.name }}
       - name: setup_env
         uses: jupiterone/.github/.github/actions/setup_env@v3
         with:
@@ -175,9 +200,11 @@ jobs:
   e2e_status:
     name: E2E Status
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
-    needs: [e2e_pending_status, e2e_run]
+    needs: [get_branch, e2e_pending_status, e2e_run]
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: ${{ needs.get_branch.outputs.name }}
       - name: e2e_status
         uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_status@v3
         if: always()
