@@ -108,6 +108,9 @@ runs:
         echo "github_token=${{ inputs.github_token }}"
         echo "migration_number=${{ inputs.migration_number }}"
         echo "spec_to_run=${{ inputs.spec_to_run }}"
+    - name: build_id
+      id: build_id
+      run: echo "::set-output name=id::$(date +%s)"
     - id: get_author_name
       name: get_author_name
       shell: bash
@@ -125,7 +128,7 @@ runs:
         parallel: true
         group: PR
         # Ensure this ID is unique using the date
-        ci-build-id: "${{ date +%s }}-${{ inputs.commit_info_sha || github.sha }}-${{ github.workflow }}-${{ github.event_name }}-${{ inputs.commit_info_pr_title || github.event.issue.title }}"
+        ci-build-id: "${{ steps.build_id.outputs.id }}-${{ inputs.commit_info_sha || github.sha }}-${{ github.workflow }}-${{ github.event_name }}-${{ inputs.commit_info_pr_title || github.event.issue.title }}"
         browser: chrome
         tag: ${{ inputs.commit_info_repo_name || github.event.repository.name }},${{ github.event_name }}
       env:

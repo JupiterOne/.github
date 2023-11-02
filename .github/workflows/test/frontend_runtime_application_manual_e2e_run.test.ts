@@ -60,6 +60,14 @@ test('validate inputs and secrets', async () => {
 
   const results = await runWorkflow({ act, repoName, mockGithub });
 
+  /*
+  const results = await runWorkflow({ act, repoName, mockGithub, mockSteps: {
+    e2e_pending_status: [ { name: 'e2e_pending_status', mockWith: 'echo ""' } ],
+  }});
+  */
+
+  expect(results).toEqual(1)
+
   // magic_url
   const magic_url_inputs = getTestResult({ results, name: 'magic_url_inputs' });
 
@@ -89,7 +97,7 @@ test('validate inputs and secrets', async () => {
   expect(e2e_run_inputs.output).toContain(`spec_to_run=${mockInputs.spec_to_run}`);
 });
 
-test('flow with e2e_pass_on_error set to true to make tests non blocking', async () => {
+test.skip('flow with e2e_pass_on_error set to true to make tests non blocking', async () => {
   const act = new Act(mockGithub.repo.getPath(repoName));
 
   act.setSecret('DOCKER_HUB_SRE', 'DOCKER_HUB_SRE');

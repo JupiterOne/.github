@@ -68,9 +68,12 @@ jobs:
       - id: get_branch
         name: get_branch
         uses: jupiterone/.github/.github/actions/get_branch@v3
-      - name: date
+      - name: build_id
+        id: build_id
+        run: echo "::set-output name=id::$(date +%s)"
+      - name: echo_id
         run: |
-          "echo $(date +%s)-${{ github.sha }}"
+          "echo ${{ steps.build_id.outputs.id }}"
 
   e2e_pending_status:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
