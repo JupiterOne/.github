@@ -23,6 +23,7 @@ on:
       external_pr_branch:
         description: 'Used by the e2e_trigger to give builds in Cypress the correct branch name'
         type: string
+        required: true
       external_pr_author:
         description: 'Used by the e2e_trigger to give builds in Cypress the correct author name associated with the owner of the PR'
         type: string
