@@ -109,7 +109,6 @@ runs:
         echo "github_token=${{ inputs.github_token }}"
         echo "migration_number=${{ inputs.migration_number }}"
         echo "spec_to_run=${{ inputs.spec_to_run }}"
-      shell: bash
     - name: cypress_run
       id: cypress_run
       continue-on-error: ${{ fromJSON(inputs.e2e_pass_on_error) }}
