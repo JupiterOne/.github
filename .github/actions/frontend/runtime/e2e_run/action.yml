@@ -110,7 +110,7 @@ runs:
         echo "spec_to_run=${{ inputs.spec_to_run }}"
     - name: build_id
       id: build_id
-      run: echo "::set-output name=id::$(date +%s)"
+      run: echo "id=$(date +%s)" >> $GITHUB_OUTPUT
     - id: get_author_name
       name: get_author_name
       shell: bash
