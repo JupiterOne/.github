@@ -124,15 +124,15 @@ runs:
         record: true
         parallel: true
         group: PR
-        ci-build-id: "${{ inputs.commit_info_sha || github.sha }}-${{ github.workflow }}-${{ github.event_name }}-${{ inputs.commit_info_pr_title || github.event.pull_request.title }}"
+        ci-build-id: "${{ inputs.commit_info_sha || github.sha }}-${{ github.workflow }}-${{ github.event_name }}-${{ inputs.commit_info_pr_title || github.event.issue.title }}"
         browser: chrome
         tag: ${{ inputs.commit_info_repo_name || github.event.repository.name }},${{ github.event_name }}
       env:
         # https://github.com/cypress-io/cypress/issues/25357#issuecomment-1426992422
         ELECTRON_EXTRA_LAUNCH_ARGS: '--disable-gpu'
         CYPRESS_BROWSER: chrome
-        COMMIT_INFO_MESSAGE: ${{ inputs.commit_info_pr_title || github.event.pull_request.title }}
-        COMMIT_INFO_BRANCH: ${{ inputs.commit_info_branch || github.event.pull_request.head.ref }}
+        COMMIT_INFO_MESSAGE: ${{ inputs.commit_info_pr_title || github.event.issue.title }}
+        COMMIT_INFO_BRANCH: ${{ inputs.commit_info_branch || github.event.issue.head.ref }}
         COMMIT_INFO_AUTHOR: ${{ inputs.commit_info_author || steps.get_author_name.outputs.commit_info_author }}
         COMMIT_INFO_SHA: ${{ inputs.commit_info_sha || github.sha }}
         CYPRESS_CONTAINER: ${{ inputs.cypress_container }}
@@ -143,7 +143,7 @@ runs:
         CYPRESS_ENVIRONMENT_NAME: jupiterone-dev
         GITHUB_TOKEN: ${{ inputs.github_token }}
         MIGRATION_NUMBER: ${{ inputs.migration_number }}
-        PR_NUMBER: ${{ inputs.commit_info_pr_number || github.event.pull_request.number }}
+        PR_NUMBER: ${{ inputs.commit_info_pr_number || github.event.issue.number }}
         REPO_NAME: ${{ inputs.commit_info_repo_name || github.event.repository.name }}
         SPEC: ${{ inputs.spec_to_run }}
         ACCOUNT: ${{ inputs.artemis_account_name }}
