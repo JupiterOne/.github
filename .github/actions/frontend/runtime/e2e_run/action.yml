@@ -132,7 +132,7 @@ runs:
         ELECTRON_EXTRA_LAUNCH_ARGS: '--disable-gpu'
         CYPRESS_BROWSER: chrome
         COMMIT_INFO_MESSAGE: ${{ inputs.commit_info_pr_title || github.event.issue.title }}
-        COMMIT_INFO_BRANCH: ${{ inputs.commit_info_branch || github.event.issue.head.ref }}
+        COMMIT_INFO_BRANCH: ${{ inputs.commit_info_branch || github.event.issue.title }}
         COMMIT_INFO_AUTHOR: ${{ inputs.commit_info_author || steps.get_author_name.outputs.commit_info_author }}
         COMMIT_INFO_SHA: ${{ inputs.commit_info_sha || github.sha }}
         CYPRESS_CONTAINER: ${{ inputs.cypress_container }}

@@ -78,7 +78,7 @@ jobs:
           echo "github.event.issue.number is ${{ github.event.issue.number }}"
       - id: branch
         run: |
-          echo "github.event.issue.head.ref is ${{ github.event.issue.head.ref }}"
+          echo "github.event.repository.name is ${{ github.event.repository.name }}"
 
   e2e_pending_status:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
