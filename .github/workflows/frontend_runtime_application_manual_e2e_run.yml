@@ -76,9 +76,15 @@ jobs:
       - id: pr_number
         run: |
           echo "github.event.issue.number is ${{ github.event.issue.number }}"
-      - id: branch
+      - id: repo_name
         run: |
           echo "github.event.repository.name is ${{ github.event.repository.name }}"
+      - id: issue_sha
+        run: |
+          echo "github.event.repository.name is ${{ github.event.issue.sha }}"
+      - id: message
+        run: |
+          echo "github.event.repository.name is ${{ github.event.issue.message }}"
 
   e2e_pending_status:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
