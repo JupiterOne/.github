@@ -124,7 +124,8 @@ runs:
         record: true
         parallel: true
         group: PR
-        ci-build-id: "${{ inputs.commit_info_sha || github.sha }}-${{ github.workflow }}-${{ github.event_name }}-${{ inputs.commit_info_pr_title || github.event.issue.title }}"
+        # Ensure this ID is unique using the date
+        ci-build-id: "${{ date +%s }}-${{ inputs.commit_info_sha || github.sha }}-${{ github.workflow }}-${{ github.event_name }}-${{ inputs.commit_info_pr_title || github.event.issue.title }}"
         browser: chrome
         tag: ${{ inputs.commit_info_repo_name || github.event.repository.name }},${{ github.event_name }}
       env:
