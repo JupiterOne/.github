@@ -134,7 +134,7 @@ export const updateWorkflowWithMocks = async ({
       }
 
       // Delete any the refs from any checkouts where we are targeting a branch
-      if (step?.with?.ref?.includes('needs.get_branch.outputs.ref')) {
+      if (step?.with?.ref?.includes('needs.get_branch.outputs.name')) {
         delete step.with.ref;
       }
     }
