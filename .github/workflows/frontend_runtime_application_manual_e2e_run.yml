@@ -176,11 +176,6 @@ jobs:
         uses: jupiterone/.github/.github/actions/setup_env@v3
         with:
           use_dev: true
-      - id: get_author_name
-        name: get_author_name
-        shell: bash
-        run:
-          echo "commit_info_author=$(git show -s --pretty=%an)" >> $GITHUB_OUTPUT
       - id: e2e_run
         name: e2e_run
         uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_run@v3
