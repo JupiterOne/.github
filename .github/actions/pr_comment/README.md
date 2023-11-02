@@ -21,5 +21,5 @@ No outputs provided.
 - name: pr_comment
   uses: jupiterone/.github/.github/actions/pr_comment
   with:
-    message: To run E2E tests leave a comment on the PR in the form of '/run-e2e-tests'
+    message: Custom message goes here
 ```
