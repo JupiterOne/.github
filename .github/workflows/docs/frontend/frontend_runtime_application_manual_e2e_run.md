@@ -73,23 +73,21 @@ jobs:
 ```mermaid
 graph TD;
     A[start flow via PR comment];
-    B[pr_comment]
-    C[get_branch]
-    D[e2e_pending_status]
-    E[migration_number];
-    G[e2e_prepare];
-    H[magic_url];
-    I[e2e_run];
-    J[e2e_status];
+    B[get_branch]
+    C[e2e_pending_status]
+    D[migration_number];
+    E[e2e_prepare];
+    F[magic_url];
+    G[e2e_run];
+    H[e2e_status];
 
     A --> B;
-    A --> C;
-    C --> E;
-    C --> G;
-    C --> D;
-    E --> H;
-    H --> I;
-    I --> J;
-    D --> J;
-    G --> I;
+    B --> D;
+    B --> E;
+    B --> C;
+    D --> F;
+    F --> G;
+    G --> H;
+    C --> H;
+    E --> G;
 ```
