@@ -62,8 +62,24 @@ jobs:
   version:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
     steps:
-      - id: echo_version
-        run: echo "version 2"
+      - id: comment_branch
+        uses: xt0rted/pull-request-comment-branch@v2
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ steps.comment_branch.outputs.head_ref }}
+      - id: sha
+        run: |
+          echo "github.sha is ${{ github.sha }}"
+          echo "head_sha is ${{ steps.comment_branch.outputs.head_sha }}"
+      - id: pr_title
+        run: |
+          echo "github.event.pull_request.title is ${{ github.event.pull_request.title }}"
+      - id: pr_number
+        run: |
+          echo "github.event.pull_request.number is ${{ github.event.pull_request.number }}"
+      - id: branch
+        run: |
+          echo "github.event.pull_request.head.ref is ${{ github.event.pull_request.head.ref }}"
 
   e2e_pending_status:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
@@ -125,7 +141,6 @@ jobs:
     permissions:
       id-token: write
       contents: read
-      # contents: read
       issues: read
       pull-requests: read
     outputs:
@@ -185,6 +200,7 @@ jobs:
         uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_run@v3
         timeout-minutes: 120
         with:
+          commit_info_sha: ${{ steps.comment_branch.outputs.head_sha }}
           artemis_account_name: ${{ needs.e2e_prepare.outputs.artemis_account_name }}
           artemis_account_id: ${{ needs.e2e_prepare.outputs.artemis_account_id }}
           artemis_account_subdomain: ${{ needs.e2e_prepare.outputs.artemis_account_subdomain }}
