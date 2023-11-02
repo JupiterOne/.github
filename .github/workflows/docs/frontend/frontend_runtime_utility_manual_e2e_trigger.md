@@ -2,6 +2,18 @@
 
 This is the [default workflow](../../frontend_runtime_utility_manual_e2e_trigger.yml) that is leveraged to trigger E2E tests for for a `utility runtime`. Specifically, when a PR is opened and a comment of `/run-e2e-tests` is left, it will trigger E2E tests in other repos.
 
+**Note:**
+
+You will notice that each job checks out the branch repo as shown here. 
+
+```yaml
+- uses: actions/checkout@v3
+  with:
+    ref: ${{ needs.get_branch.outputs.ref }}
+```
+
+Please read about why this is necessary in the [get_branch README](../../../actions/get_branch/README.md).
+
 ## Inputs
 
 This action takes the following inputs:
