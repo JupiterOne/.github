@@ -64,9 +64,13 @@ jobs:
     outputs:
       ref: ${{ steps.get_branch.outputs.ref }}
     steps:
+      - uses: actions/checkout@v3
       - id: get_branch
         name: get_branch
         uses: jupiterone/.github/.github/actions/get_branch@v3
+      - name: date
+        run: |
+          "echo $(date +%s)-${{ github.sha }}"
 
   e2e_pending_status:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
