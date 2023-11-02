@@ -75,11 +75,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          ref: "" # ${{ needs.get_branch.outputs.ref }}
+          ref: ${{ needs.get_branch.outputs.ref }}
       - name: e2e_pending_status
         uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_pending_status@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: echo_sha
+        run: echo "sha is ${{ github.sha }}"
 
   migration_number:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
@@ -202,7 +204,7 @@ jobs:
           spec_to_run: ${{ inputs.spec_to_run }}
           auto_cancel_after_failures: ${{ inputs.auto_cancel_after_failures }}
           # new
-          commit_info_sha: ${{ needs.get_branch.outputs.ref }}
+          commit_info_sha: ${{ github.sha }}
           commit_info_pr_number: ${{ github.event.issue.number }}
           commit_info_pr_title: ${{ github.event.issue.title }}
           commit_info_author: ${{ steps.get_author_name.outputs.commit_info_author }}

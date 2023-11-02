@@ -58,6 +58,14 @@ test('validate inputs and secrets', async () => {
   setSecrets({ act, mockSecrets });
   setInputs({ act, mockInputs });
 
+  act.setEvent({
+    pull_request: {
+      head: {
+        ref: "main",
+      },
+    },
+  })
+
   const results = await runWorkflow({ act, repoName, mockGithub });
 
   /*
