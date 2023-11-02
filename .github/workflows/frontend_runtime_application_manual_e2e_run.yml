@@ -59,6 +59,12 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  version:
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
+    steps:
+      - id: echo_version
+        run: echo "version 2"
+
   e2e_pending_status:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
     steps:
@@ -119,6 +125,9 @@ jobs:
     permissions:
       id-token: write
       contents: read
+      # contents: read
+      issues: read
+      pull-requests: read
     outputs:
       artemis_account_name: ${{ steps.e2e_prepare.outputs.artemis_account_name }}
       artemis_account_id: ${{ steps.e2e_prepare.outputs.artemis_account_id }}
