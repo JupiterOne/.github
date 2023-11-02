@@ -203,7 +203,6 @@ jobs:
           migration_number: ${{ needs.migration_number.outputs.migration }}
           spec_to_run: ${{ inputs.spec_to_run }}
           auto_cancel_after_failures: ${{ inputs.auto_cancel_after_failures }}
-          # new
           commit_info_sha: ${{ github.sha }}
           commit_info_pr_number: ${{ github.event.issue.number }}
           commit_info_pr_title: ${{ github.event.issue.title }}

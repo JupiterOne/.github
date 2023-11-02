@@ -8,7 +8,9 @@ type Step = {
   run: string;
   uses: string;
   name: string;
-  with: string;
+  with: {
+    ref: string;
+  };
 }
 
 type MockCompositeStep = {
@@ -129,6 +131,11 @@ export const updateWorkflowWithMocks = async ({
           key,
           step
         });
+      }
+
+      // Delete any the refs from any checkouts where we are targeting a branch
+      if (step?.with?.ref?.includes('needs.get_branch.outputs.ref')) {
+        delete step.with.ref;
       }
     }
   }
