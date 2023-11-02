@@ -62,7 +62,7 @@ jobs:
   get_branch:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
     outputs:
-      ref: ${{ steps.get_branch.outputs.ref }}
+      name: ${{ steps.get_branch.outputs.name }}
     steps:
       - uses: actions/checkout@v3
       - id: get_branch
@@ -75,7 +75,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          ref: ${{ needs.get_branch.outputs.ref }}
+          ref: ${{ needs.get_branch.outputs.name }}
       - name: e2e_pending_status
         uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_pending_status@v3
         with:
@@ -91,7 +91,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          ref: ${{ needs.get_branch.outputs.ref }}
+          ref: ${{ needs.get_branch.outputs.name }}
       - id: migration_number
         name: migration_number
         uses: jupiterone/.github/.github/actions/frontend/runtime/migration_number@v3
@@ -108,7 +108,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          ref: ${{ needs.get_branch.outputs.ref }}
+          ref: ${{ needs.get_branch.outputs.name }}
       - name: setup_env
         uses: jupiterone/.github/.github/actions/setup_env@v3
         with:
@@ -138,7 +138,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          ref: ${{ needs.get_branch.outputs.ref }}
+          ref: ${{ needs.get_branch.outputs.name }}
       - name: setup_env
         uses: jupiterone/.github/.github/actions/setup_env@v3
         with:
@@ -173,7 +173,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          ref: ${{ needs.get_branch.outputs.ref }}
+          ref: ${{ needs.get_branch.outputs.name }}
       - name: setup_env
         uses: jupiterone/.github/.github/actions/setup_env@v3
         with:
@@ -216,7 +216,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          ref: ${{ needs.get_branch.outputs.ref }}
+          ref: ${{ needs.get_branch.outputs.name }}
       - name: e2e_status
         uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_status@v3
         if: always()

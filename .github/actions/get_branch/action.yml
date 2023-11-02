@@ -1,7 +1,7 @@
-name: Gets the ref of the branch
+name: Gets the name of the pull request branch the comment belongs to.
 
 outputs:
-  ref:
+  name:
     value: ${{ steps.comment_branch.outputs.head_ref }}
 
 runs:

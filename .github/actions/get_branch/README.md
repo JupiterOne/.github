@@ -14,7 +14,7 @@ This action returns the following outputs:
 
 | Name                        | Type    | Description                                                   |
 | --------------------------- | ------- | ------------------------------------------------------------- |
-| `ref`                       | String  | The name of the pull request branch the comment belongs to.                                               
+| `name`                      | String  | The name of the pull request branch the comment belongs to.                                               
 
 ## Example Usage
 
@@ -23,7 +23,7 @@ jobs:
   get_branch:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
     outputs:
-      ref: ${{ steps.get_branch.outputs.ref }}
+      name: ${{ steps.get_branch.outputs.name }}
     steps:
       - id: get_branch
         name: get_branch
@@ -35,7 +35,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          ref: ${{ needs.get_branch.outputs.ref }}
+          ref: ${{ needs.get_branch.outputs.name }}
       - name: other_steps
         # This step will now be run in the context of your branch
 ```
