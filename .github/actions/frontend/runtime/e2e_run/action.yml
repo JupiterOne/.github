@@ -111,6 +111,7 @@ runs:
     - name: build_id
       id: build_id
       run: echo "id=$(date +%s)" >> $GITHUB_OUTPUT
+      shell: bash
     - id: get_author_name
       name: get_author_name
       shell: bash
