@@ -20,21 +20,23 @@ inputs:
   commit_info_sha:    
     description: 'The commit sha associated with the repo that triggered the e2e_run'
     type: string
+    required: true
   commit_info_pr_number:
     description: 'The PR number associated with the repo that triggered the e2e_run'
     type: string
+    required: true
   commit_info_pr_title:
     description: 'The PR title sha associated with the repo that triggered the e2e_run'
     type: string
-  commit_info_branch:
-    description: 'The branch associated with the repo that triggered the e2e_run'
-    type: string
+    required: true
   commit_info_author:
     description: 'The author associated with the repo that triggered the e2e_run'
     type: string
+    required: true
   commit_info_repo_name:
     description: 'The repo name associated with the repo that triggered the e2e_run'
     type: string
+    required: true
   cypress_container:
     description: 'The index of the Cypress container being used'
     type: string
@@ -95,7 +97,6 @@ runs:
         echo "commit_info_sha=${{ inputs.commit_info_sha }}"
         echo "commit_info_pr_number=${{ inputs.commit_info_pr_number }}"
         echo "commit_info_pr_title=${{ inputs.commit_info_pr_title }}"
-        echo "commit_info_branch=${{ inputs.commit_info_branch }}"
         echo "commit_info_author=${{ inputs.commit_info_author }}"
         echo "commit_info_repo_name=${{ inputs.commit_info_repo_name }}"
         echo "cypress_container=${{ inputs.cypress_container }}"
@@ -108,15 +109,7 @@ runs:
         echo "github_token=${{ inputs.github_token }}"
         echo "migration_number=${{ inputs.migration_number }}"
         echo "spec_to_run=${{ inputs.spec_to_run }}"
-    - name: build_id
-      id: build_id
-      run: echo "id=$(date +%s)" >> $GITHUB_OUTPUT
       shell: bash
-    - id: get_author_name
-      name: get_author_name
-      shell: bash
-      run:
-        echo "commit_info_author=$(git show -s --pretty=%an)" >> $GITHUB_OUTPUT
     - name: cypress_run
       id: cypress_run
       continue-on-error: ${{ fromJSON(inputs.e2e_pass_on_error) }}
@@ -129,17 +122,17 @@ runs:
         parallel: true
         group: PR
         # Ensure this ID is unique using the date
-        ci-build-id: "${{ steps.build_id.outputs.id }}-${{ inputs.commit_info_sha || github.sha }}-${{ github.workflow }}-${{ github.event_name }}-${{ inputs.commit_info_pr_title || github.event.issue.title }}"
+        ci-build-id: "${{ github.workflow }}-${{ github.event_name }}-${{ inputs.commit_info_pr_title }}-${{ inputs.commit_info_sha }}"
         browser: chrome
-        tag: ${{ inputs.commit_info_repo_name || github.event.repository.name }},${{ github.event_name }}
+        tag: ${{ inputs.commit_info_repo_name }},${{ github.event_name }}
       env:
         # https://github.com/cypress-io/cypress/issues/25357#issuecomment-1426992422
         ELECTRON_EXTRA_LAUNCH_ARGS: '--disable-gpu'
         CYPRESS_BROWSER: chrome
-        COMMIT_INFO_MESSAGE: ${{ inputs.commit_info_pr_title || github.event.issue.title }}
-        COMMIT_INFO_BRANCH: ${{ inputs.commit_info_branch || github.event.issue.title }}
-        COMMIT_INFO_AUTHOR: ${{ inputs.commit_info_author || steps.get_author_name.outputs.commit_info_author }}
-        COMMIT_INFO_SHA: ${{ inputs.commit_info_sha || github.sha }}
+        COMMIT_INFO_MESSAGE: ${{ inputs.commit_info_pr_title }}
+        COMMIT_INFO_BRANCH: ${{ inputs.commit_info_pr_title }}
+        COMMIT_INFO_AUTHOR: ${{ inputs.commit_info_author }}
+        COMMIT_INFO_SHA: ${{ inputs.commit_info_sha }}
         CYPRESS_CONTAINER: ${{ inputs.cypress_container }}
         CYPRESS_MAILINATOR_API_KEY: ${{ inputs.cypress_mailinator_api_key }}
         CYPRESS_RECORD_KEY: ${{ inputs.cypress_record_key }}
@@ -148,8 +141,8 @@ runs:
         CYPRESS_ENVIRONMENT_NAME: jupiterone-dev
         GITHUB_TOKEN: ${{ inputs.github_token }}
         MIGRATION_NUMBER: ${{ inputs.migration_number }}
-        PR_NUMBER: ${{ inputs.commit_info_pr_number || github.event.issue.number }}
-        REPO_NAME: ${{ inputs.commit_info_repo_name || github.event.repository.name }}
+        PR_NUMBER: ${{ inputs.commit_info_pr_number }}
+        REPO_NAME: ${{ inputs.commit_info_repo_name }}
         SPEC: ${{ inputs.spec_to_run }}
         ACCOUNT: ${{ inputs.artemis_account_name }}
         ACCOUNT_SUBDOMAIN: ${{ inputs.artemis_account_subdomain }}

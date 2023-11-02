@@ -20,10 +20,6 @@ on:
         description: 'Used by the e2e_trigger to give builds in Cypress the correct title associated with the PR that triggered the flow'
         type: string
         required: true
-      external_pr_branch:
-        description: 'Used by the e2e_trigger to give builds in Cypress the correct branch name'
-        type: string
-        required: true
       external_pr_author:
         description: 'Used by the e2e_trigger to give builds in Cypress the correct author name associated with the owner of the PR'
         type: string
@@ -35,7 +31,10 @@ on:
       external_pr_repo_name:
         description: 'Used by the e2e_trigger to tag builds in Cypress with the appropriate repo name associated with the repo that triggered the flow'
         type: string
-        required: true
+      # noop - Not used, leaving for backwards compatibility
+      external_pr_branch:
+        description: 'Used by the e2e_trigger to give builds in Cypress the correct branch name'
+        type: string
     secrets:
       NPM_TOKEN:
         description: "A J1 npm.com Publish token"
@@ -138,6 +137,5 @@ jobs:
           commit_info_sha: ${{ inputs.external_pr_sha }}
           commit_info_pr_number: ${{ inputs.external_pr_number }}
           commit_info_pr_title: ${{ inputs.external_pr_title }}
-          commit_info_branch: ${{ inputs.external_pr_branch }}
           commit_info_author: ${{ inputs.external_pr_author }}
           commit_info_repo_name: ${{ inputs.external_pr_repo_name }}

@@ -75,7 +75,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          ref: ${{ needs.get_branch.outputs.ref }}
+          ref: "" # ${{ needs.get_branch.outputs.ref }}
       - name: e2e_pending_status
         uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_pending_status@v3
         with:
@@ -176,12 +176,16 @@ jobs:
         uses: jupiterone/.github/.github/actions/setup_env@v3
         with:
           use_dev: true
+      - id: get_author_name
+        name: get_author_name
+        shell: bash
+        run:
+          echo "commit_info_author=$(git show -s --pretty=%an)" >> $GITHUB_OUTPUT
       - id: e2e_run
         name: e2e_run
         uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_run@v3
         timeout-minutes: 120
         with:
-          commit_info_sha: ${{ steps.comment_branch.outputs.head_ref }}
           artemis_account_name: ${{ needs.e2e_prepare.outputs.artemis_account_name }}
           artemis_account_id: ${{ needs.e2e_prepare.outputs.artemis_account_id }}
           artemis_account_subdomain: ${{ needs.e2e_prepare.outputs.artemis_account_subdomain }}
@@ -197,6 +201,12 @@ jobs:
           migration_number: ${{ needs.migration_number.outputs.migration }}
           spec_to_run: ${{ inputs.spec_to_run }}
           auto_cancel_after_failures: ${{ inputs.auto_cancel_after_failures }}
+          # new
+          commit_info_sha: ${{ needs.get_branch.outputs.ref }}
+          commit_info_pr_number: ${{ github.event.issue.number }}
+          commit_info_pr_title: ${{ github.event.issue.title }}
+          commit_info_author: ${{ steps.get_author_name.outputs.commit_info_author }}
+          commit_info_repo_name: ${{ github.event.repository.name }}
 
   e2e_status:
     name: E2E Status
