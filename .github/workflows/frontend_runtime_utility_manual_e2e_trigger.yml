@@ -33,7 +33,7 @@ jobs:
   get_branch:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
     outputs:
-      ref: ${{ steps.get_branch.outputs.head_ref }}
+      ref: ${{ steps.get_branch.outputs.ref }}
     steps:
       - id: get_branch
         name: get_branch
