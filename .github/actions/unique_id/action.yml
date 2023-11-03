@@ -1,0 +1,22 @@
+name: Returns a unique ID
+
+inputs:
+  sha:
+    type: string
+    required: true
+
+outputs:
+  unique_id:
+    value: ${{ steps.unique_id.outputs.value }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: unique_id
+      id: unique_id
+      shell: bash
+      run: echo "value=$(date +"%s")" >> $GITHUB_OUTPUT
+      # take the current commit + timestamp together
+      # the typical value would be something like
+      # "sha-5d3fe...35d3-time-1620841214"
+      run: echo "value=sha-${{ inputs.sha }}-time-$(date +"%s")" >> $GITHUB_OUTPUT
