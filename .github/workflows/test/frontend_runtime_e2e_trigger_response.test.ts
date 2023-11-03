@@ -90,8 +90,9 @@ test('default flow', async () => {
   const jobs_found = getTestResults({ results, names: [
     'migration_number',
     'e2e_prepare',
+    'unique_id',
     'e2e_run'
   ] });
 
-  expect(jobs_found.length).toEqual(3);
+  expect(jobs_found.length).toEqual(4);
 });

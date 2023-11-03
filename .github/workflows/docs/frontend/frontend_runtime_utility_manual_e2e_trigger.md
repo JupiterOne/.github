@@ -79,10 +79,12 @@ graph LR;
     C[e2e_pending_status];
     D[migration_number];
     E[magic_url];
-    F[e2e_trigger_remote_tests];
-    G[external_repo];
-    H[e2e_status];
+    F[unique_id];
+    G[e2e_trigger_remote_tests];
+    H[external_repo];
+    I[e2e_status];
 
-    A --> B --> C --> E --> F --> G -->|trigger E2E tests and wait| H -->|report back status| G --> H;
+    A --> B --> C --> E --> G --> H -->|trigger E2E tests and wait| I -->|report back status| H --> I;
     B --> D --> E;
+    F --> G;
 ```

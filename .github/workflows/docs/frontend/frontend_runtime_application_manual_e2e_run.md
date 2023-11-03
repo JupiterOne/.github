@@ -78,16 +78,18 @@ graph TD;
     D[migration_number];
     E[e2e_prepare];
     F[magic_url];
-    G[e2e_run];
-    H[e2e_status];
+    G[unique_id];
+    H[e2e_run];
+    I[e2e_status];
 
     A --> B;
     B --> D;
     B --> E;
     B --> C;
     D --> F;
-    F --> G;
+    F --> H;
     G --> H;
-    C --> H;
+    H --> I;
+    C --> I;
     E --> G;
 ```

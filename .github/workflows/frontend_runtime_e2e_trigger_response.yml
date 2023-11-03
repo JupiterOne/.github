@@ -96,6 +96,18 @@ jobs:
         name: e2e_prepare
         uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_prepare@v3
 
+  unique_id:
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
+    outputs:
+      unique_id: ${{ steps.unique_id.outputs.unique_id }}
+    steps:
+      - uses: actions/checkout@v3
+      - id: unique_id
+        name: unique_id
+        uses: jupiterone/.github/.github/actions/unique_id@v3
+        with:
+          sha: ${{ inputs.external_pr_sha }}
+
   e2e_run:
     # Note this is the only job that leverages amd64
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-amd64' }}
@@ -107,7 +119,7 @@ jobs:
         username: jupiteronesre
         password: ${{ secrets.DOCKER_HUB_SRE }}
     permissions: write-all
-    needs: [migration_number, e2e_prepare]
+    needs: [migration_number, e2e_prepare, unique_id]
     strategy:
       # when one test fails, DO NOT cancel the other containers, because this will kill Cypress processes
       # leaving Cypress Cloud hanging: https://github.com/cypress-io/github-action/issues/48 
@@ -125,6 +137,7 @@ jobs:
         uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_run@v3
         timeout-minutes: 120
         with:
+          ci_build_id: ${{ needs.unique_id.outputs.unique_id }}
           artemis_account_name: ${{ needs.e2e_prepare.outputs.artemis_account_name }}
           artemis_account_id: ${{ needs.e2e_prepare.outputs.artemis_account_id }}
           artemis_account_subdomain: ${{ needs.e2e_prepare.outputs.artemis_account_subdomain }}

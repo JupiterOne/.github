@@ -109,9 +109,10 @@ test('flow with e2e_pass_on_error set to true to make tests non blocking', async
     'migration_number',
     'magic_url',
     'e2e_prepare',
+    'unique_id',
     'e2e_run',
     'e2e_status'
   ] });
 
-  expect(jobs_found.length).toEqual(6);
+  expect(jobs_found.length).toEqual(7);
 });

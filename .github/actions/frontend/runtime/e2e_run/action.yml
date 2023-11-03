@@ -77,6 +77,9 @@ inputs:
     description: 'Cancel the tests after this many failures'
     default: 2
     type: number
+  ci_build_id:
+    description: 'Used to link separate machines running tests into a single parallel run'
+    required: true
 
 outputs:
   test_passed:
@@ -88,6 +91,7 @@ runs:
     - name: e2e_run_inputs
       shell: bash
       run: |
+        echo "ci_build_id=${{ inputs.ci_build_id }}"
         echo "artemis_account_name=${{ inputs.artemis_account_name }}"
         echo "artemis_account_id=${{ inputs.artemis_account_id }}"
         echo "artemis_account_subdomain=${{ inputs.artemis_account_subdomain }}"
@@ -124,7 +128,8 @@ runs:
         record: true
         parallel: true
         group: PR
-        ci-build-id: "${{ inputs.commit_info_sha || github.sha }}-${{ github.workflow }}-${{ github.event_name }}-${{ inputs.commit_info_pr_title || github.event.pull_request.title }}"
+        # It's important this is unique to the commit/repo this is running against
+        ci-build-id: ${{ inputs.ci_build_id }}
         browser: chrome
         tag: ${{ inputs.commit_info_repo_name || github.event.repository.name }},${{ github.event_name }}
       env:
