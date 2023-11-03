@@ -106,7 +106,7 @@ jobs:
         name: unique_id
         uses: jupiterone/.github/.github/actions/unique_id@v3
         with:
-          sha: ${{ github.sha }}
+          sha: ${{ inputs.external_pr_sha }}
 
   e2e_run:
     # Note this is the only job that leverages amd64
