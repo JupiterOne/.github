@@ -1,0 +1,51 @@
+name: Responsible for leaving a comment on a PR
+
+inputs:
+  message:
+    type: string
+    required: true
+  run_once:
+    type: boolean
+    default: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: pr_comment_inputs
+      shell: bash
+      run: |
+        echo "message=${{ inputs.message }}"
+        echo "run_once=${{ inputs.run_once }}"
+    - name: find_comment
+      id: find_comment
+      uses: peter-evans/find-comment@v2
+      with:
+        issue-number: ${{ github.event.number }}
+        body-includes: ${{ inputs.message }}
+        direction: last
+    - name: add_pr_comment_once
+      if: ${{ fromJSON(inputs.run_once) && !contains(steps.find_comment.outputs.comment-body, inputs.message) }}
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const body = `${{ inputs.message }}`;
+
+          await github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body
+          })
+    - name: add_pr_comment_always
+      if: ${{ !fromJSON(inputs.run_once) }}
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const body = `${{ inputs.message }}`;
+
+          await github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body
+          })

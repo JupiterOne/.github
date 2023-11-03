@@ -82,10 +82,12 @@ graph LR;
     D[validate];
     E[chromatic_upload];
     F[security];
+    G[pr_comment]
 
     A --> B;
     A --> D;
     A --> E;
     B --> C;
-    A --> F
+    A --> F;
+    A --> G;
 ```
