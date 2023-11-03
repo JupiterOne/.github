@@ -3,6 +3,7 @@ name: Returns a unique ID
 inputs:
   sha:
     type: string
+    description: 'The github.sha which is the SHA for a temporary commit created for validating the pull request'
     required: true
 
 outputs:
@@ -15,7 +16,6 @@ runs:
     - name: unique_id
       id: unique_id
       shell: bash
-      run: echo "value=$(date +"%s")" >> $GITHUB_OUTPUT
       # take the current commit + timestamp together
       # the typical value would be something like
       # "sha-5d3fe...35d3-time-1620841214"

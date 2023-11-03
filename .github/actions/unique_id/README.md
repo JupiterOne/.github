@@ -1,6 +1,6 @@
-# PR Comment
+# Unique ID
 
-This [composite action](./action.yml) is responsible for leaving a comment on a PR. By default it will only leave a comment once of the same message (i.e. no duplicates), however this can be overridden.
+This [composite action](./action.yml) is responsible for generating a unique ID using a timestamp and the current commit SHA.
 
 ## Inputs
 
@@ -8,18 +8,21 @@ This action takes the following inputs:
 
 | Name                        | Type    | Default                      | Required  | Description                                               |
 | --------------------------- | ------- | ---------------------------- | --------- | --------------------------------------------------------- |
-| `message`                   | String  |                              | True      | The message to leave in the PR comment
-| `run_once`                  | Boolean | True                         | False     | Determines whether to leave one comment or add one on each call
+| `sha`                       | String  |                              | True      | The github.sha which is the SHA for a temporary commit created for validating the pull request
                                                                            
 ## Outputs
 
-No outputs provided.                                                  
+This action returns the following outputs:
+
+| Name                        | Type    | Description                                               |
+| --------------------------- | ------- | --------------------------------------------------------- |
+| `unique_id`                 | String  | An ID that is unique to both the repo and commit                                          
 
 ## Example Usage
 
 ```yaml
 - name: pr_comment
-  uses: jupiterone/.github/.github/actions/pr_comment
+  uses: jupiterone/.github/.github/actions/unique_id
   with:
-    message: Custom message goes here
+    sha: Custom message goes here
 ```
