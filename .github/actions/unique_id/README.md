@@ -21,8 +21,12 @@ This action returns the following outputs:
 ## Example Usage
 
 ```yaml
-- name: pr_comment
-  uses: jupiterone/.github/.github/actions/unique_id
-  with:
-    sha: Custom message goes here
+steps:
+  - name: unique_id
+    uses: jupiterone/.github/.github/actions/unique_id
+    with:
+      sha: ${{ github.sha }}
+  - name: echo_unique_id
+    run: |
+      echo ${{ steps.unique_id.outputs.unique_id }}
 ```
