@@ -27,4 +27,4 @@ runs:
     - id: echo_new_version
       shell: bash
       run: |
-        echo "new_version is $new_version"
+        echo "new_version is ${{ env.new_version }}"
