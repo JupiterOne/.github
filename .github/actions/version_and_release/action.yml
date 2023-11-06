@@ -19,6 +19,12 @@ runs:
       run: |
         echo "new_version=${{ steps.semver_versions.outputs.patch }}" >> $GITHUB_ENV
     
+    - id: echo_labels
+      shell: bash
+      run: |
+        echo "labels are ${{ github.event.pull_request.labels }}"
+        echo "contains minor is ${{ contains(github.event.pull_request.labels.*.name, 'minor') }}"
+        
     - name: set_minor_version 
       if: ${{ contains(github.event.pull_request.labels.*.name, 'minor') }}
       shell: bash
