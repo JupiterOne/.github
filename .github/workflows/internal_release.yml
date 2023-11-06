@@ -1,0 +1,22 @@
+name: Release
+
+on:
+  pull_request:
+
+# on:
+  # push:
+    # branches:
+      # - main
+
+concurrency:
+  group: ${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  version_and_release:
+    runs-on: 'scaleset-jupiterone-infra-arm64'
+    steps:
+      - uses: actions/checkout@v3
+      - name: version_and_release
+        # uses: jupiterone/.github/.github/actions/version_and_release@v3
+        uses: ./.github/actions/version_and_release

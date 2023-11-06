@@ -1,0 +1,14 @@
+name: Version And Release
+
+runs:
+  using: "composite"
+  steps:
+    - id: get_package_version
+      name: get_package_version
+      shell: bash
+      run: |
+        echo "version=$(jq -r .version < package.json)" >> $GITHUB_OUTPUT
+    - id: echo_package_version
+      shell: bash
+      run: |
+        echo "get_package_version is ${{ steps.get_package_version.outputs.version }}"
