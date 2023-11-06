@@ -13,9 +13,3 @@ runs:
       uses: 'WyriHaximus/github-action-next-semvers@v1'
       with:
         version: ${{ steps.get_package_version.outputs.version }}
-
-    - name: set_patch_version
-      shell: bash
-      run: |
-        echo "new_version=${{ steps.semver_versions.outputs.patch }}" >> "$GITHUB_ENV
-    
