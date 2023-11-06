@@ -18,8 +18,8 @@ runs:
       shell: bash
       run: |
         echo "new_version=${{ steps.semver_versions.outputs.patch }}" >> "$GITHUB_ENV
-    - name: set_minor_version
-      if: contains(github.event.pull_request.labels.*.name, 'minor') 
+    - name: set_minor_version 
+      if: ${{ contains(github.event.pull_request.labels.*.name, 'minor') }}
       shell: bash
       run: |
         echo "new_version=${{ steps.semver_versions.outputs.minor }}" >> "$GITHUB_ENV
