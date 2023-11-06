@@ -12,13 +12,23 @@ runs:
       shell: bash
       run: |
         echo "get_package_version is ${{ steps.get_package_version.outputs.version }}"
-    - name: next_version
-      id: next_version
+    - name: get_next_version
+      id: get_next_version
       uses: 'WyriHaximus/github-action-next-semvers@v1'
       with:
         version: ${{ steps.get_package_version.outputs.version }}
+
+    - name: set_patch_version
+      shell: bash
+      run: |
+        echo "new_version=steps.get_next_version.outputs.patch" >> "$GITHUB_ENV
+    - name: set_minor_version
+      if: contains(github.event.pull_request.labels.*.name, 'minor') || 
+      shell: bash
+      run: |
+        echo "new_version=steps.get_next_version.outputs.minor" >> "$GITHUB_ENV
+    
     - id: echo_new_version
       shell: bash
       run: |
-        echo "get_package_version is ${{ steps.next_version.outputs.patch }}"
-    
+        echo "new_version is $new_version"
