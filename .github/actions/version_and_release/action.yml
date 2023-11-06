@@ -12,3 +12,13 @@ runs:
       shell: bash
       run: |
         echo "get_package_version is ${{ steps.get_package_version.outputs.version }}"
+    - name: next_version
+      id: next_version
+      uses: 'WyriHaximus/github-action-next-semvers@v1'
+      with:
+        version: ${{ steps.get_package_version.outputs.version }}
+    - id: echo_new_version
+      shell: bash
+      run: |
+        echo "get_package_version is ${{ steps.next_version.outputs.patch }}"
+    
