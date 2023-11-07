@@ -33,6 +33,7 @@ runs:
         echo "new_version will be ${{ env.new_version }}"
     - name: tag
       run: git tag v${{ env.new_version }}
+      shell: bash
     - name: create_release
       uses: "actions/github-script@v6"
       with:
