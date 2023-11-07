@@ -18,6 +18,10 @@ jobs:
     # runs-on: 'scaleset-jupiterone-infra-arm64'
     steps:
       - uses: actions/checkout@v3
+        # Temporarily needed for testing while on branch
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.ref }}
       - name: version_and_release
         # uses: jupiterone/.github/.github/actions/version_and_release@v3
         uses: ./.github/actions/version_and_release
