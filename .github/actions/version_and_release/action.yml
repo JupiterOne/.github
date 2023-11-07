@@ -41,4 +41,5 @@ runs:
       shell: bash
       run: echo "`jq '.version="${{ env.new_version }}"' package.json`" > package.json
     - name: read_package_json
+      shell: bash
       run: cat package.json
