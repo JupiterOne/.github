@@ -13,25 +13,40 @@ runs:
       uses: 'WyriHaximus/github-action-next-semvers@v1'
       with:
         version: ${{ steps.get_package_version.outputs.version }}
-
-    - name: set_patch_version
+    - name: set_patch_by_default
       shell: bash
       run: |
         echo "new_version=${{ steps.semver_versions.outputs.patch }}" >> $GITHUB_ENV
-    
-    - id: echo_labels
-      shell: bash
-      run: |
-        echo "labels are ${{ github.event.pull_request.labels }}"
-        echo "contains minor is ${{ contains(github.event.pull_request.labels.*.name, 'minor') }}"
-        
     - name: set_minor_version 
       if: ${{ contains(github.event.pull_request.labels.*.name, 'minor') }}
       shell: bash
       run: |
         echo "new_version=${{ steps.semver_versions.outputs.minor }}" >> $GITHUB_ENV
-    
-    - id: echo_new_version
+    - name: set_major 
+      if: ${{ contains(github.event.pull_request.labels.*.name, 'major') }}
       shell: bash
       run: |
-        echo "new_version is ${{ env.new_version }}"
+        echo "new_version=${{ steps.semver_versions.outputs.major }}" >> $GITHUB_ENV
+    - name: echo_new_version
+      shell: bash
+      run: |
+        echo "new_version will be ${{ env.new_version }}"
+    - name: tag
+      run: git tag v${{ env.new_version }}
+    - name: create_release
+      uses: "actions/github-script@v6"
+      with:
+        github-token: "${{ inputs.github-token }}"
+        script: |
+          const response = await github.rest.repos.createRelease({
+            draft: false,
+            generate_release_notes: true,
+            name: process.env.new_version,
+            owner: context.repo.owner,
+            prerelease: false,
+            repo: context.repo.repo,
+            tag_name: process.env.new_version,
+          });
+
+          core.exportVariable('RELEASE_ID', response.data.id);
+          core.exportVariable('RELEASE_UPLOAD_URL', response.data.upload_url);
