@@ -1,5 +1,11 @@
 name: Version And Release
 
+inputs:
+  github_token:
+    description: 'Github access token'
+    required: true
+    type: string
+
 runs:
   using: "composite"
   steps:
@@ -32,12 +38,14 @@ runs:
       run: |
         echo "new_version will be ${{ env.new_version }}"
     - name: tag
-      run: git tag v${{ env.new_version }}
       shell: bash
+      run: |
+        git tag v${{ env.new_version }}
+        git push origin v${{ env.new_version }}
     - name: create_release
       uses: "actions/github-script@v6"
       with:
-        github-token: "${{ inputs.github-token }}"
+        github-token: "${{ inputs.github_token }}"
         script: |
           const response = await github.rest.repos.createRelease({
             draft: false,

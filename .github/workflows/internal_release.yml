@@ -21,3 +21,5 @@ jobs:
       - name: version_and_release
         # uses: jupiterone/.github/.github/actions/version_and_release@v3
         uses: ./.github/actions/version_and_release
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
