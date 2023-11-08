@@ -12,12 +12,12 @@ This action takes the following inputs:
 | `artemis_account_subdomain` | String  |                                    | True      | The account subdomain extracted from the artemis-run.json file
 | `artemis_account_id`        | String  |                                    | True      | The id extracted from the artemis-run.json file
 | `artemis_users`             | String  |                                    | True      | The users extracted from the artemis-run.json file
-| `commit_info_sha`           | String  | github.sha                         | False     | The sha associated with the PR that triggered the e2e_run
-| `commit_info_pr_number`     | String  | github.event.pull_request.number   | False     | The PR number associated with the PR that triggered the e2e_run
-| `commit_info_pr_title`      | String  | github.event.pull_request.title    | False     | The PR title associated with the PR that triggered the e2e_run
-| `commit_info_branch`        | String  | github.event.pull_request.head.ref | False     | The branch name associated with the PR that triggered the e2e_run
+| `commit_info_sha`           | String  | github.sha                         | True      | The sha associated with the PR that triggered the e2e_run
+| `commit_info_pr_number`     | String  | github.event.pull_request.number   | True      | The PR number associated with the PR that triggered the e2e_run
+| `commit_info_pr_title`      | String  | github.event.pull_request.title    | True      | The PR title associated with the PR that triggered the e2e_run
+| `commit_info_branch`        | String  | github.event.pull_request.head.ref | True      | The branch name associated with the PR that triggered the e2e_run
 | `commit_info_author`        | String  | $(git show -s --pretty=%an)        | False     | The author name associated with the PR that triggered the e2e_run
-| `commit_info_repo_name`     | String  | github.event.repository.name       | False     | The repo name associated with the PR that triggered the e2e_run
+| `commit_info_repo_name`     | String  | github.event.repository.name       | True      | The repo name associated with the PR that triggered the e2e_run
 | `cypress_container`         | String  |                                    | True      | The index of the Cypress container being used (see the [docs](https://github.com/cypress-io/github-action#parallel) on running tests in parallel)
 | `cypress_mailinator_api_key`| String  |                                    | False     | The [mailinator api key](https://www.mailinator.com/api/) needed when going through the default login flow
 | `cypress_record_key`        | String  |                                    | True      | The [record key](https://docs.cypress.io/guides/cloud/account-management/projects) associated with the project in Cypress
