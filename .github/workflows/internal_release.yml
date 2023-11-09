@@ -19,7 +19,12 @@ jobs:
         run: |
           curl -vkL -o - https://github.com/intuit/auto/releases/download/v10.46.0/auto-linux.gz | gunzip > /usr/local/bin/auto && \
           chmod +x /usr/local/bin/auto; \
-      - name: version_docker
-        uses: ./.github/actions/version_docker
-        with:
-          github_token: ${{ secrets.AUTO_GITHUB_PAT_TOKEN }}
+      - name: update_composite_tags
+        run: |
+          VERSION=`auto version`
+          echo "version will be $VERSION"
+          npm run update-composite-tags $VERSION
+      # - name: version_docker
+        # uses: ./.github/actions/version_docker
+        # with:
+          # github_token: ${{ secrets.AUTO_GITHUB_PAT_TOKEN }}
