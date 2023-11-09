@@ -1,37 +1,25 @@
 name: Release
 
 on:
-  pull_request:
-
-# on:
-  # push:
-    # branches:
-      # - main
+  push:
+    branches:
+      - main
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 
 jobs:
-  version_and_release:
+  release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-        # Temporarily needed for ftesting while on branch
-        with:
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
-          ref: ${{ github.event.pull_request.head.ref }}
-      - name: setup_env
-        uses: ./.github/actions/setup_env
-        with:
-          use_dev: true
-          uses_private_npm_packages: false
       # Until we can leverage our self hosted runners, we have to install
       - name: download_auto
         run: |
           curl -vkL -o - https://github.com/intuit/auto/releases/download/v10.46.0/auto-linux.gz | gunzip > /usr/local/bin/auto && \
           chmod +x /usr/local/bin/auto; \
-      - name: version_and_release
+      - name: version_docker
         uses: ./.github/actions/version_docker
         with:
           github_token: ${{ secrets.AUTO_GITHUB_PAT_TOKEN }}
