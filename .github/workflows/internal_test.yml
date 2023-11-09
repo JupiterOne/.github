@@ -1,9 +1,7 @@
 name: Internal Test
 
 on:
-  push:
-    branches:
-      - main
+  pull_request:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -29,7 +27,6 @@ jobs:
           chmod +x /usr/local/bin/auto; \
       - name: auto_version
         run: |
-          auto info
-          auto version
-          VERSION=`auto version`
+          VERSION=`npm version`
           echo "version will be $VERSION"
+          npm run update-composite-tags $VERSION
