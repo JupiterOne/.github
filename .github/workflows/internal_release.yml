@@ -24,14 +24,10 @@ jobs:
           chmod +x /usr/local/bin/auto; \
       - name: update_composite_tags
         run: |
-          VERSION=`auto -vv version`
+          VERSION=`auto version`
           echo "version will be $VERSION"
           npm run update-composite-tags $VERSION
-      - name: auto_again
-        run: |
-          VERSION=`auto -vv version`
-          echo "version again is $VERSION"
-      # - name: version_docker
-        # uses: ./.github/actions/version_docker
-        # with:
-          # github_token: ${{ secrets.AUTO_GITHUB_PAT_TOKEN }}
+      - name: version_docker
+        uses: ./.github/actions/version_docker
+        with:
+          github_token: ${{ secrets.AUTO_GITHUB_PAT_TOKEN }}
