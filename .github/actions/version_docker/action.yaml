@@ -1,7 +1,7 @@
 name: Version and Release Docker Project
 
 inputs:
-  github-token:
+  github_token:
     type: string
     required: true
 
@@ -14,7 +14,7 @@ runs:
       with:
         persist-credentials: true
         fetch-depth: 0
-        token: ${{ inputs.github-token }}
+        token: ${{ inputs.github_token }}
     # curl the auto binary and instead of installing it with npm to avoid installing node
     # TODO: use a docker image with auto pre-installed
     - name: download_auto
@@ -28,7 +28,7 @@ runs:
     - name: run_auto_versioning_and_release
       shell: bash
       env:
-        GITHUB_TOKEN: ${{ inputs.github-token }}
+        GITHUB_TOKEN: ${{ inputs.github_token }}
       run: |
         VERSION=`~/auto version`
         if [ ! -z "$VERSION" ]; then
