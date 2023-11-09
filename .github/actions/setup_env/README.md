@@ -1,10 +1,14 @@
-# Frontend Runtime - Setup Environment
+# Setup Environment
 
 This [composite action](./action.yml) is responsible for setting up node and installing production dependencies. 
 
 ## Inputs
 
-No inputs necessary.                                                       
+This action takes the following inputs:
+
+| Name                        | Type    | Default                      | Required  | Description                                               |
+| --------------------------- | ------- | ---------------------------- | --------- | --------------------------------------------------------- |
+| `use_dev`                   | Boolean | False                        | False     | If true, will install dev dependencies.                                     
 
 ## Outputs
 

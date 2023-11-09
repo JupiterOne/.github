@@ -1,11 +1,11 @@
-# Micro Repo - Version Docker
+# Version Docker
 
 This [composite action](./action.yml) is responsible for versioning docker, as
 in non-npm, packages. This action will create a new commit with the updated
 version and push it back to the main branch. It will also create a new tag,
 release, and update the changelog.
 
-Monorepos are not supported and NPM packages should use Auto Shipit instead.
+**Note:** Monorepos are not supported and NPM packages should use Auto Shipit instead.
 
 ## Inputs
 
@@ -13,7 +13,7 @@ This action takes the following inputs:
 
 | Name           | Type   | Default | Required | Description                       |
 | -------------- | ------ | ------- | -------- | --------------------------------- |
-| `github-token` | String |         | True     | Used to push commits back to main |
+| `github_-_token` | String |         | True     | Used to push commits back to main |
 
 ## Outputs
 
@@ -24,6 +24,8 @@ No outputs.
 ```yaml
 steps:
   # Checkout not required
-  - name: Release
-    uses: jupiterone/.github/.github/actions/microrepo/version-docker
+  - name: version_and_release
+    uses: jupiterone/.github/.github/actions/version_docker
+    with:
+      github_token: ${{ secrets.GITHUB_TOKEN }}
 ```
