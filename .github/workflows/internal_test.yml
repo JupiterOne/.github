@@ -1,11 +1,9 @@
 name: Internal Test
 
 on:
-  pull_request:
-# on:
-  # push:
-    # branches:
-      # - main
+  push:
+    branches:
+      - main
       
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -33,4 +31,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.AUTO_GITHUB_PAT_TOKEN }}
         run: |
-          auto shipit --dry-run
+          auto info
+          auto version
+          VERSION=`auto version`
+          echo "version will be $VERSION"
