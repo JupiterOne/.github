@@ -23,6 +23,6 @@ jobs:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           ref: ${{ github.event.pull_request.head.ref }}
       - name: version_and_release
-        uses: jupiterone/.github/.github/actions/version_docker
+        uses: ./.github/.github/actions/version_docker
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
