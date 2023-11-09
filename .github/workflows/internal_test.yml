@@ -34,6 +34,3 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.AUTO_GITHUB_PAT_TOKEN }}
         run: |
           auto info
-          auto version
-          VERSION=`auto version`
-          echo "version will be $VERSION"
