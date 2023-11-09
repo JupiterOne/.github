@@ -25,6 +25,9 @@ jobs:
         run: |
           curl -vkL -o - https://github.com/intuit/auto/releases/download/v10.46.0/auto-linux.gz | gunzip > /usr/local/bin/auto && \
           chmod +x /usr/local/bin/auto; \
-      - name: update_composite_tags
+      - name: auto_version
         run: |
-          npm run update-composite-tags 4
+          auto info
+          auto version
+          VERSION=`auto version`
+          echo "version will be $VERSION"
