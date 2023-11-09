@@ -1,0 +1,35 @@
+name: Internal Test
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18.15.0
+          cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - run: npm ci
+      # Until we can leverage our self hosted runners, we have to install
+      - name: download_auto
+        run: |
+          curl -vkL -o - https://github.com/intuit/auto/releases/download/v10.46.0/auto-linux.gz | gunzip > /usr/local/bin/auto && \
+          chmod +x /usr/local/bin/auto; \
+      - name: auto_version
+        run: |
+          auto info
+          auto version
+          VERSION=`auto version`
+          echo "version will be $VERSION"
