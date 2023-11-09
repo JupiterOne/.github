@@ -14,13 +14,19 @@ concurrency:
 
 jobs:
   version_and_release:
-    runs-on: scaleset-jupiterone-infra-amd64
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         # Temporarily needed for ftesting while on branch
         with:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           ref: ${{ github.event.pull_request.head.ref }}
+      # curl the auto binary and instead of installing it with npm to avoid installing node
+      # TODO: use a docker image with auto pre-installed
+      - name: download_auto
+        run: |
+          curl -vkL -o - https://github.com/intuit/auto/releases/download/v10.28.0/auto-linux.gz | gunzip > ~/auto
+          chmod +x ~/auto
       - name: version_and_release
         uses: ./.github/actions/version_docker
         with:

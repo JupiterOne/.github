@@ -9,7 +9,7 @@ concurrency:
 
 jobs:
   pr:
-    runs-on: scaleset-jupiterone-infra-amd64
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v3
