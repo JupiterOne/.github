@@ -30,4 +30,4 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.AUTO_GITHUB_PAT_TOKEN }}
         run: |
-          ~/auto version
+          ~/auto info
