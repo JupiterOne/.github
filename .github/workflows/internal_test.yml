@@ -33,4 +33,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.AUTO_GITHUB_PAT_TOKEN }}
         run: |
-          auto info
+          auto shipit --dry-run
