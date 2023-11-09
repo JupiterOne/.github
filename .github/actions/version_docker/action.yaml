@@ -4,6 +4,9 @@ inputs:
   github_token:
     type: string
     required: true
+  install_auto:
+    type: boolean
+    default: false
 
 runs:
   using: 'composite'
@@ -15,6 +18,13 @@ runs:
         persist-credentials: true
         fetch-depth: 0
         token: ${{ inputs.github_token }}
+    # curl the auto binary and instead of installing it with npm to avoid installing node
+    # TODO: use a docker image with auto pre-installed
+    - name: download_auto
+      if: ${{ inputs.install_auto }}
+      run: |
+        curl -vkL -o - https://github.com/intuit/auto/releases/download/v10.28.0/auto-linux.gz | gunzip > ~/auto
+        chmod +x ~/auto
     # Instead of calling shipit, manually call each command
     # This lets us control the tag names and avoids the plugins flow.
     # This also lets us avoid having to commit an .autorc file into every repo
