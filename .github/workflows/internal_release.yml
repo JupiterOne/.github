@@ -28,6 +28,7 @@ jobs:
           chmod a+x ~/auto
       - name: update_composite_tags
         env:
-          GH_TOKEN: ${{ secrets.AUTO_GITHUB_PAT_TOKEN }}
+          # GH_TOKEN: ${{ secrets.AUTO_GITHUB_PAT_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.AUTO_GITHUB_PAT_TOKEN }}
         run: |
           ~/auto info
