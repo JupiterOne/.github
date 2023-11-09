@@ -1,9 +1,7 @@
 name: Internal Test
 
 on:
-  push:
-    branches:
-      - main
+  pull_request:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -28,6 +26,8 @@ jobs:
           curl -vkL -o - https://github.com/intuit/auto/releases/download/v10.46.0/auto-linux.gz | gunzip > /usr/local/bin/auto && \
           chmod +x /usr/local/bin/auto; \
       - name: auto_version
+        env:
+          GITHUB_TOKEN: ${{ secrets.AUTO_GITHUB_PAT_TOKEN }}
         run: |
           auto info
           auto version
