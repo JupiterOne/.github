@@ -25,4 +25,4 @@ jobs:
       - name: version_and_release
         uses: ./.github/actions/version_docker
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.AUTO_GITHUB_PAT_TOKEN }}
