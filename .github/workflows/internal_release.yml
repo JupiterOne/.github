@@ -25,6 +25,7 @@ jobs:
         uses: ./.github/actions/setup_env
         with:
           use_dev: true
+          uses_private_npm_packages: false
       # Until we can leverage our self hosted runners, we have to install
       - name: download_auto
         run: |

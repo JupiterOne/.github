@@ -21,5 +21,6 @@ jobs:
         uses: ./.github/actions/setup_env
         with:
           use_dev: true
+          uses_private_npm_packages: false
       - name: validate
         uses: ./.github/actions/validate
