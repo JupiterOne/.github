@@ -8,8 +8,7 @@ This action takes the following inputs:
 
 | Name                        | Type    | Default                      | Required  | Description                                               |
 | --------------------------- | ------- | ---------------------------- | --------- | --------------------------------------------------------- |
-| `use_dev`                   | Boolean | False                        | False     | If true, will install dev dependencies.
-| `uses_private_npm_packages` | Boolean | True                         | False     | Set to false if your repo only consumes public packages and does not have the NODE_AUTH_TOKEN set.                                        
+| `use_dev`                   | Boolean | False                        | False     | If true, will install dev dependencies.                                     
 
 ## Outputs
 
