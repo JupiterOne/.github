@@ -27,7 +27,7 @@ jobs:
           curl -vkL -o - https://github.com/intuit/auto/releases/download/v10.28.0/auto-linux.gz | gunzip > ~/auto
           chmod a+x ~/auto
       - name: update_composite_tags
-        env:
-          GITHUB_TOKEN: ${{ secrets.AUTO_GITHUB_PAT_TOKEN }}
+        # env:
+          # GITHUB_TOKEN: ${{ secrets.AUTO_GITHUB_PAT_TOKEN }}
         run: |
           ~/auto info
