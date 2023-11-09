@@ -1,12 +1,9 @@
 name: Release
 
 on:
-  pull_request:
-
-# on:
-  # push:
-    # branches:
-      # - main
+  push:
+    branches:
+      - main
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
