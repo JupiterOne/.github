@@ -22,6 +22,7 @@ runs:
     # TODO: use a docker image with auto pre-installed
     - name: download_auto
       if: ${{ inputs.install_auto }}
+      shell: bash
       run: |
         curl -vkL -o - https://github.com/intuit/auto/releases/download/v10.28.0/auto-linux.gz | gunzip > ~/auto
         chmod +x ~/auto
