@@ -21,8 +21,11 @@ jobs:
         with:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           ref: ${{ github.event.pull_request.head.ref }}
-      # curl the auto binary and instead of installing it with npm to avoid installing node
-      # TODO: use a docker image with auto pre-installed
+      - name: setup_env
+        uses: ./.github/actions/setup_env
+        with:
+          use_dev: true
+      # Until we can leverage our self hosted runners, we have to install
       - name: download_auto
         run: |
           curl -vkL -o - https://github.com/intuit/auto/releases/download/v10.46.0/auto-linux.gz | gunzip > /usr/local/bin/auto && \
