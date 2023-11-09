@@ -21,7 +21,7 @@ jobs:
       - name: download_auto
         run: |
           curl -vkL -o - https://github.com/intuit/auto/releases/download/v10.28.0/auto-linux.gz | gunzip > ~/auto
-          chmod +x ~/auto
+          chmod a+x ~/auto
       - name: update_composite_tags
         run: |
           VERSION=`~/auto version`
