@@ -25,8 +25,8 @@ jobs:
       # TODO: use a docker image with auto pre-installed
       - name: download_auto
         run: |
-          curl -vkL -o - https://github.com/intuit/auto/releases/download/v10.28.0/auto-linux.gz | gunzip > auto
-          chmod +x auto
+          curl -vkL -o - https://github.com/intuit/auto/releases/download/v10.46.0/auto-linux.gz | gunzip > /usr/local/bin/auto && \
+          chmod +x /usr/local/bin/auto; \
       - name: version_and_release
         uses: ./.github/actions/version_docker
         with:
