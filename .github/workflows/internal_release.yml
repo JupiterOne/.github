@@ -24,5 +24,4 @@ jobs:
           chmod a+x ~/auto
       - name: update_composite_tags
         run: |
-          VERSION=`~/auto version`
-          echo "version will be $VERSION"
+          ~/auto version
