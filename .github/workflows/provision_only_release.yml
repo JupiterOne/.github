@@ -53,6 +53,7 @@ jobs:
 
   version_artifact:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-amd64' }}
+    needs: validate
     steps:
       - uses: actions/checkout@v3
       - name: version_artifact

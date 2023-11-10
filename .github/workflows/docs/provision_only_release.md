@@ -41,8 +41,10 @@ graph LR;
     A[start flow];
     B[validate];
     C[security];
-    C[version_artifact];
+    D[version_artifact];
 
-    A --> B --> C;
+    A --> B;
+    A --> C;
+    B --> D;
 ```
 

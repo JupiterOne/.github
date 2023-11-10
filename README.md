@@ -4,6 +4,11 @@
 
 The following workflows are for the entire JupiterOne organization.
 
+### General Workflows
+
+- [provision_only_pr](.github/workflows/docs/provision_only_pr.md)
+- [provision_only_release](.github/workflows/docs/provision_only_release.md)
+
 ### Frontend Workflows
 
 #### Runtime
@@ -35,7 +40,7 @@ The workflows above take advantage of the composite actions listed below, levera
 - [get_branch](.github/actions/get_branch/README.md)
 - [pr_comment](.github/actions/pr_comment/README.md)
 - [setup_env](.github/actions/setup_env/README.md)
-- [version_artifact](.github/actions/version-docker/README.md)
+- [version_artifact](.github/actions/version_artifact/README.md)
 
 ### Frontend
 

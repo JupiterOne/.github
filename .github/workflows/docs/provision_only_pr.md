@@ -41,6 +41,7 @@ graph LR;
     B[validate];
     C[security];
 
-    A --> B --> C;
+    A --> B;
+    A --> C;
 ```
 
