@@ -65,7 +65,7 @@ test('default flow', async () => {
     'pr_comment',
     'migration_number',
     'validate',
-    'code_ql',
+    'security',
     'magic_url'
   ] });
 

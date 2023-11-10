@@ -1,4 +1,4 @@
-name: Default flow for an NPM package when a PR is opened
+name: Default workflow for a provision only repo when a PR is merged to main triggering the release flow
 
 on:
   workflow_call:
@@ -7,21 +7,13 @@ on:
         description: "If true will leverage ubuntu-latest, otherwise will fall back to the J1 in-house runner"
         default: false
         type: boolean
-      use_validate:
-        description: "Run validation, in most case we want this"
-        default: true
-        type: boolean
-      use_chromatic:
-        description: "Run VRT Storybook tests with chromatic"
-        default: false
-        type: boolean
     secrets:
       NPM_TOKEN:
-        description: 'A J1 npm.com Publish token'
+        description: "A J1 npm.com Publish token"
         required: true
-      CHROMATIC_PROJECT_TOKEN:
-        description: 'The Chromatic API token'
-        required: false
+      AUTO_GITHUB_PAT_TOKEN:
+        description: "This is a GitHuh PAT that let's auto write back to main after npm versioning"
+        required: true
 
 env:
   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -35,18 +27,17 @@ jobs:
     # Name targeted by branch protections, do not change
     name: Validate
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
-    if: ${{ inputs.use_validate }}
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
       - name: setup_env
         uses: jupiterone/.github/.github/actions/setup_env@v3
         with:
           use_dev: true
       - name: validate
         uses: jupiterone/.github/.github/actions/validate@v3
-      - name: build
-        uses: jupiterone/.github/.github/actions/build@v3
-
+  
   security:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-amd64' }}
     permissions:
@@ -60,21 +51,15 @@ jobs:
         with:
           language: 'javascript'
 
-  chromatic_upload:
-    # Name targeted by branch protections, do not change
-    name: Visual Regression
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
-    if: ${{ inputs.use_chromatic }}
+  version_artifact:
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-amd64' }}
+    permissions:
+      actions: read
+      security-events: write
+      contents: read
     steps:
       - uses: actions/checkout@v3
+      - name: version_artifact
+        uses: jupiterone/.github/.github/actions/version_artifact@v3
         with:
-          fetch-depth: 0
-      - name: setup_env
-        uses: jupiterone/.github/.github/actions/setup_env@v3
-        with:
-          use_dev: true
-      - name: chromatic_upload
-        uses: jupiterone/.github/.github/actions/frontend/chromatic@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          chromatic_project_token: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          github_token: ${{ secrets.AUTO_GITHUB_PAT_TOKEN }}

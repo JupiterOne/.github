@@ -1,4 +1,4 @@
-name: Version and Release Docker Project
+name: Version and Release Artifacts
 
 inputs:
   github_token:
@@ -8,6 +8,10 @@ inputs:
 runs:
   using: 'composite'
   steps:
+    - name: version_artifact_inputs
+      shell: bash
+      run: |
+        echo "github_token=${{ inputs.github_token }}"
     # Even if we already have the code checked out, we need to check it out again with the PAT
     - name: checkout_with_automation_pat
       uses: actions/checkout@v3

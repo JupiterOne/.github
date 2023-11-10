@@ -51,7 +51,7 @@ test('default flow', async () => {
 
   const jobs_found = getTestResults({ results, names: [
     'validate',
-    'code_ql',
+    'security',
     'cortex'
   ] });
 
@@ -67,7 +67,7 @@ test('flow with chromatic turned on', async () => {
 
   const jobs_found = getTestResults({ results, names: [
     'validate',
-    'code_ql',
+    'security',
     'cortex',
     'chromatic_publish'
   ] });
