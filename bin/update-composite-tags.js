@@ -9,7 +9,8 @@ const TAG_VERSION = process.argv.slice(2)[0];
 const updateFlow = async (fileName) => {
   const pathToPrFlow = `${pathToWorkflows}/${fileName}`;
   const workflow = await readFile(pathToPrFlow, 'utf8');
-  const newWorkflow = workflow.replace(/(jupiterone\/.github\/.github\/actions.*@).*/g, `$1v${TAG_VERSION}`);
+  const tagVersion = TAG_VERSION.replace('v', '');
+  const newWorkflow = workflow.replace(/(jupiterone\/.github\/.github\/actions.*@).*/g, `$1v${tagVersion}`);
 
   await writeFile(pathToPrFlow, newWorkflow);
 };

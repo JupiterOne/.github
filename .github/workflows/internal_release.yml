@@ -27,12 +27,28 @@ jobs:
         run: |
           curl -vkL -o - https://github.com/intuit/auto/releases/download/v10.46.0/auto-linux.gz | gunzip > /usr/local/bin/auto && \
           chmod +x /usr/local/bin/auto; \
-      - name: update_composite_tags
+      - name: get_version
+        id: get_version
+        env:
+          GITHUB_TOKEN: ${{ secrets.AUTO_GITHUB_PAT_TOKEN }}
         run: |
           VERSION=`auto version`
           echo "version will be $VERSION"
-          npm run update-composite-tags $VERSION
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "major_version=$(echo $VERSION | cut -d '.' -f 1)" >> $GITHUB_OUTPUT
+      - name: update_composite_tags
+        run: |
+          echo "update-composite-tags with ${{ steps.get_version.outputs.version }}"
+          npm run update-composite-tags ${{ steps.get_version.outputs.version }}
       - name: version_docker
         uses: ./.github/actions/version_docker
         with:
           github_token: ${{ secrets.AUTO_GITHUB_PAT_TOKEN }}
+      # We reset the major tag so workflow consumers automatically receive these changes 
+      - name: update_major_tag
+        # If the versions are equal, then we know this is a new major version
+        if: ${{ steps.get_version.outputs.version != steps.get_version.outputs.major_version }}
+        run: |
+          echo "update_major_tag with ${{ steps.get_version.outputs.major_version }}"
+          git tag -f ${{ steps.get_version.outputs.major_version }}
+          git push origin ${{ steps.get_version.outputs.major_version }} --force
