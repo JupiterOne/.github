@@ -47,7 +47,8 @@ jobs:
       - name: get_major_tag
         id: get_major_tag
         run: |
-          echo "tag=${{ steps.get_version.outputs.version }} | cut -d '.' -f 1" >> $GITHUB_OUTPUT
+          MAJOR_TAG=`${{ steps.get_version.outputs.version }} | cut -d '.' -f 1`
+          echo "tag=$MAJOR_TAG" >> $GITHUB_OUTPUT
       - name: update_major_tag
         run: |
           echo "update_major_tag with ${{ steps.get_major_tag.outputs.tag }}"
