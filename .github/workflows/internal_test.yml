@@ -39,7 +39,8 @@ jobs:
           VERSION='v3.0.1'
           echo "version will be $VERSION"
           echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "major_version=$VERSION | cut -d '.' -f 1" >> $GITHUB_OUTPUT
+          echo $VERSION | cut -d '.' -f 1
+          echo "major_version=$(echo $VERSION | cut -d '.' -f 1)" >> $GITHUB_OUTPUT
       - name: update_composite_tags
         run: |
           echo "update-composite-tags with ${{ steps.get_version.outputs.version }}"
