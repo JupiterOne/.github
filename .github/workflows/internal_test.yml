@@ -1,10 +1,13 @@
 name: Internal Test
 
-on:
-  push:
-    branches:
-      - main
+# on:
+  # push:
+    # branches:
+      # - main
       
+on:
+  pull_request:
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
@@ -27,11 +30,25 @@ jobs:
         run: |
           curl -vkL -o - https://github.com/intuit/auto/releases/download/v10.46.0/auto-linux.gz | gunzip > /usr/local/bin/auto && \
           chmod +x /usr/local/bin/auto; \
-      - name: auto_version
+      - name: get_version
+        id: get_version
         env:
           GITHUB_TOKEN: ${{ secrets.AUTO_GITHUB_PAT_TOKEN }}
+        # VERSION=`auto version`
         run: |
-          auto info
-          auto version
-          VERSION=`auto version`
+          VERSION='v3.0.1'
           echo "version will be $VERSION"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+      - name: update_composite_tags
+        run: |
+          echo "update-composite-tags with ${{ steps.get_version.outputs.version }}"
+          npm run update-composite-tags ${{ steps.get_version.outputs.version }}
+      # - name: version_docker
+      - name: get_major_tag
+        id: get_major_tag
+        run: |
+          echo "tag=(echo ${{ steps.get_version.outputs.version }} | cut -d '.' -f 1)" >> $GITHUB_OUTPUT
+      - name: update_major_tag
+        run: |
+          echo "update_major_tag with ${{ steps.get_major_tag.outputs.tag }}"
+          
