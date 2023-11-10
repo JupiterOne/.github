@@ -32,7 +32,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.AUTO_GITHUB_PAT_TOKEN }}
         run: |
-          VERSION=`auto version`
+          VERSION=auto version
           echo "version will be $VERSION"
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "major_version=$(echo $VERSION | cut -d '.' -f 1)" >> $GITHUB_OUTPUT
