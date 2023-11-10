@@ -117,6 +117,7 @@ jobs:
           e2e_auto: ${{ secrets.E2E_AUTO }}
           repo_name: ${{ matrix.repos.repo.name }}
           repo_spec: ${{ matrix.repos.repo.spec }}
+          pr_branch: ${{ needs.get_branch.outputs.name }}
 
   e2e_status:
     name: E2E Status
