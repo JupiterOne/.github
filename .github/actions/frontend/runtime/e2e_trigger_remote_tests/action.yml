@@ -15,6 +15,9 @@ inputs:
   repo_spec:
     description: "The name of the spec(s) to target"
     required: true
+  pr_branch:
+    description: "The name of the branch associated with this trigger"
+    required: true
 
 outputs:
   test_passed:
@@ -30,6 +33,11 @@ runs:
         echo "e2e_auto=${{ inputs.e2e_auto }}"
         echo "repo_name=${{ inputs.repo_name }}"
         echo "repo_spec=${{ inputs.repo_spec }}"
+    - id: get_author_name
+      name: get_author_name
+      shell: bash
+      run:
+        echo "commit_info_author=$(git show -s --pretty=%an)" >> $GITHUB_OUTPUT
     - name: cypress_run
       id: cypress_run
       continue-on-error: ${{ fromJSON(inputs.e2e_pass_on_error) }}
@@ -41,7 +49,7 @@ runs:
         # This is the name of the file in the external repo that we're kicking the tests off in, do not change this!
         workflow_file_name: e2e_trigger.yml
         propagate_failure: ${{ !fromJSON(inputs.e2e_pass_on_error) }}
-        client_payload: '{"spec_to_run":"${{ inputs.repo_spec }}","external_pr_number":"${{ github.event.pull_request.number }}","external_pr_title":"${{ github.event.pull_request.title }}","external_pr_repo_name":"${{ github.event.repository.name }}","external_pr_branch":"${{ github.event.pull_request.head.ref }}","external_pr_author":"${{ env.COMMIT_INFO_AUTHOR }}","external_pr_sha":"${{ github.event.pull_request.base.sha }}"}'
+        client_payload: '{"spec_to_run":"${{ inputs.repo_spec }}","external_pr_number":"${{ github.event.issue.number }}","external_pr_title":"${{ github.event.issue.title }}","external_pr_repo_name":"${{ github.event.repository.name }}","external_pr_branch":"${{ inputs.pr_branch }}","external_pr_author":"${{ steps.get_author_name.outputs.commit_info_author }}","external_pr_sha":"${{ github.sha }}"}'
     # We have to manually output an exit code of 0 to ensure the action passes if e2e_pass_on_error is true
     - name: pass_with_failures
       shell: bash
