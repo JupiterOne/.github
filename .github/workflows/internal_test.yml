@@ -39,17 +39,13 @@ jobs:
           VERSION='v3.0.1'
           echo "version will be $VERSION"
           echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "major_version=$VERSION | cut -d '.' -f 1" >> $GITHUB_OUTPUT
       - name: update_composite_tags
         run: |
           echo "update-composite-tags with ${{ steps.get_version.outputs.version }}"
           npm run update-composite-tags ${{ steps.get_version.outputs.version }}
       # - name: version_docker
-      - name: get_major_tag
-        id: get_major_tag
-        run: |
-          MAJOR_TAG=`${{ steps.get_version.outputs.version }} | cut -d '.' -f 1`
-          echo "tag=$MAJOR_TAG" >> $GITHUB_OUTPUT
       - name: update_major_tag
         run: |
-          echo "update_major_tag with ${{ steps.get_major_tag.outputs.tag }}"
+          echo "update_major_tag with ${{ steps.get_version.outputs.major_version }}"
           
