@@ -1,0 +1,49 @@
+name: Default workflow for a provision only repo when a PR is opened
+
+on:
+  workflow_call:
+    inputs:
+      fallback_runner:
+        description: "If true will leverage ubuntu-latest, otherwise will fall back to the J1 in-house runner"
+        default: false
+        type: boolean
+    secrets:
+      NPM_TOKEN:
+        description: "A J1 npm.com Publish token"
+        required: true
+
+env:
+  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    # Name targeted by branch protections, do not change
+    name: Validate
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+      - name: setup_env
+        uses: jupiterone/.github/.github/actions/setup_env@v3
+        with:
+          use_dev: true
+      - name: validate
+        uses: jupiterone/.github/.github/actions/validate@v3
+  
+  security:
+    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-amd64' }}
+    permissions:
+      actions: read
+      security-events: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v3
+      - name: security
+        uses: jupiterone/.github/.github/actions/code_ql@v3
+        with:
+          language: 'javascript'
