@@ -27,7 +27,7 @@ This action takes the following secrets:
 
 ```yaml
 jobs:
-  pr:
+  release:
     uses: jupiterone/.github/.github/workflows/provision_only_release.yml@v#
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
