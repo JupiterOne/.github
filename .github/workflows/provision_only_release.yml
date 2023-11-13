@@ -35,6 +35,7 @@ jobs:
         uses: jupiterone/.github/.github/actions/setup_env@v3
         with:
           use_dev: true
+      - uses: hashicorp/setup-terraform@v2
       - name: validate
         uses: jupiterone/.github/.github/actions/validate@v3
   
