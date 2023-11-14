@@ -60,6 +60,10 @@ jobs:
       - name: update_package_json_version
         run: |
           echo "`jq '.version="${{ env.NEW_VERSION }}"' package.json`" > conpackagefig.json
-      - name: echo_package_json_version
+      - name: package_json_final
+        id: package_json_final
         run: |
           echo "version=$(jq -r .version < package.json)" >> $GITHUB_OUTPUT
+      - name: echo_version_again
+        run: |
+          echo "package json version is ${{ steps.package_json_final.outputs.version }}"
