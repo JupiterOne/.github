@@ -1,0 +1,59 @@
+name: Test
+
+on:
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions: write-all
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          persist-credentials: true
+          fetch-depth: 0
+          token: ${{ secrets.AUTO_GITHUB_PAT_TOKEN }}
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18.15.0
+          cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+      - name: pr_labels
+        id: pr_labels
+        uses: joerick/pr-labels-action@v1.0.8
+      - name: version
+        id: version
+        run: |
+          echo "version=$(jq -r .version < package.json)" >> $GITHUB_OUTPUT
+      - name: echo_version
+        run: |
+          echo "patch version is ${{ steps.version.outputs.version }}"
+      - name: semver_versions
+        id: semver_versions
+        uses: "WyriHaximus/github-action-next-semvers@v1"
+        with:
+          version: ${{ steps.version.outputs.version }}
+      - name: echo_patch_version
+        run: |
+          echo "current version is ${{ steps.semver_versions.outputs.patch }}"
+          echo "NEW_VERSION=${{ steps.semver_versions.outputs.patch }}" >> $GITHUB_ENV
+      - name: echo_minor_version
+        if: contains(steps.pr_labels.outputs.labels, 'minor')
+        run: |
+          echo "minor version is ${{ steps.semver_versions.outputs.minor }}"
+          echo "NEW_VERSION=${{ steps.semver_versions.outputs.minor }}" >> $GITHUB_ENV
+      - name: echo_major_version
+        if: contains(steps.pr_labels.outputs.labels, 'major')
+        run: |
+          echo "major version is ${{ steps.semver_versions.outputs.major }}"
+          echo "NEW_VERSION=${{ steps.semver_versions.outputs.major }}" >> $GITHUB_ENV
+      - name: update_composite_tags
+        run: |
+          echo "update-composite-tags with ${{ env.NEW_VERSION }}"
+          npm run update-composite-tags ${{ env.NEW_VERSION }}
