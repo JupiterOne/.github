@@ -67,11 +67,15 @@ jobs:
           git add .
           git commit -m "Updating composite tags and package.json version for v${{ env.NEW_VERSION }}"
       - name: new_tags
+        env:
+          GITHUB_TOKEN: ${{ secrets.AUTO_GITHUB_PAT_TOKEN }}
         run: |
           git tag v${{ env.NEW_VERSION }}
           git push --follow-tags --set-upstream origin main
       # We reset the major tag so workflow consumers automatically receive these changes 
       - name: reset_major_tag
+        env:
+          GITHUB_TOKEN: ${{ secrets.AUTO_GITHUB_PAT_TOKEN }}
         if: ${{ env.NEW_VERSION != steps.semver_versions.outputs.major }}
         run: |
           git tag -f v${{ steps.semver_versions.outputs.major }}
