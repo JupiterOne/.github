@@ -59,7 +59,7 @@ jobs:
           npm run update-composite-tags ${{ env.NEW_VERSION }}
       - name: update_package_json_version
         run: |
-          echo "`jq '.version="${{ env.NEW_VERSION }}"' package.json`" > conpackagefig.json
+          echo "`jq '.version="${{ env.NEW_VERSION }}"' package.json`" > package.json
       - name: package_json_final
         id: package_json_final
         run: |
@@ -67,3 +67,4 @@ jobs:
       - name: echo_version_again
         run: |
           echo "package json version is ${{ steps.package_json_final.outputs.version }}"
+      
