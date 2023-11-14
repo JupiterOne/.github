@@ -61,12 +61,14 @@ jobs:
           echo "`jq '.version="${{ env.NEW_VERSION }}"' package.json`" > package.json
       - name: new_tags
         run: |
+          git add .
+          git commit -m "Updating composite tags and package.json version for v${{ env.NEW_VERSION }}"
           git tag v${{ env.NEW_VERSION }}
           git push --follow-tags --set-upstream origin main
       # We reset the major tag so workflow consumers automatically receive these changes 
       - name: reset_major_tag
         if: ${{ env.NEW_VERSION != steps.semver_versions.outputs.major }}
         run: |
-          git tag -f v${{ env.NEW_VERSION }}
-          git push origin v${{ env.NEW_VERSION }} --force
+          git tag -f v${{ steps.semver_versions.outputs.major }}
+          git push origin v${{ steps.semver_versions.outputs.major }} --force
       
