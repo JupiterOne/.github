@@ -59,10 +59,14 @@ jobs:
       - name: update_package_json_version
         run: |
           echo "`jq '.version="${{ env.NEW_VERSION }}"' package.json`" > package.json
-      - name: new_tags
+      - name: commit_updates
         run: |
+          git config --global user.email "automation@jupiterone.com"
+          git config --global user.name "Automation"
           git add .
           git commit -m "Updating composite tags and package.json version for v${{ env.NEW_VERSION }}"
+      - name: new_tags
+        run: |
           git tag v${{ env.NEW_VERSION }}
           git push --follow-tags --set-upstream origin main
       # We reset the major tag so workflow consumers automatically receive these changes 
