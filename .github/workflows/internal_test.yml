@@ -27,18 +27,18 @@ jobs:
       - name: pr_labels
         id: pr_labels
         uses: joerick/pr-labels-action@v1.0.8
-      - name: version
-        id: version
+      - name: package_json
+        id: package_json
         run: |
           echo "version=$(jq -r .version < package.json)" >> $GITHUB_OUTPUT
       - name: echo_version
         run: |
-          echo "patch version is ${{ steps.version.outputs.version }}"
+          echo "package json version is ${{ steps.package_json.outputs.version }}"
       - name: semver_versions
         id: semver_versions
         uses: "WyriHaximus/github-action-next-semvers@v1"
         with:
-          version: ${{ steps.version.outputs.version }}
+          version: ${{ steps.package_json.outputs.version }}
       - name: echo_patch_version
         run: |
           echo "current version is ${{ steps.semver_versions.outputs.patch }}"
@@ -57,3 +57,9 @@ jobs:
         run: |
           echo "update-composite-tags with ${{ env.NEW_VERSION }}"
           npm run update-composite-tags ${{ env.NEW_VERSION }}
+      - name: update_package_json_version
+        run: |
+          echo "`jq '.version="${{ env.NEW_VERSION }}"' package.json`" > conpackagefig.json
+      - name: echo_package_json_version
+        run: |
+          echo "version=$(jq -r .version < package.json)" >> $GITHUB_OUTPUT
