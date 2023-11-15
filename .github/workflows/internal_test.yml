@@ -57,8 +57,10 @@ jobs:
         run: |
           npm run update-composite-tags ${{ env.NEW_VERSION }}
       - name: update_package_json_version
+        # Remove description once reset
         run: |
           echo "`jq '.version="${{ env.NEW_VERSION }}"' package.json`" > package.json
+          echo "`jq '.description="Automatically generated package.json, please edit manually."' package.json`" > package.json
       - name: commit_updates
         run: |
           git config --global user.email "automation@jupiterone.com"
