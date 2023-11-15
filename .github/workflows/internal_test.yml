@@ -67,16 +67,16 @@ jobs:
       - name: update_package_json_version
         run: |
           echo "`jq '.version="${{ env.NEW_VERSION }}"' package.json`" > package.json
-      - name: commit_updates
-        run: |
-          git config --global user.email "automation@jupiterone.com"
-          git config --global user.name "Automation"
-          git add .
-          git commit -m "Updating composite tags and package.json version for v${{ env.NEW_VERSION }}"
-      - name: new_tags
-        run: |
-          git tag v${{ env.NEW_VERSION }}
-          git push --follow-tags --set-upstream origin main
+      # - name: commit_updates
+        # run: |
+          # git config --global user.email "automation@jupiterone.com"
+          # git config --global user.name "Automation"
+          # git add .
+          # git commit -m "Updating composite tags and package.json version for v${{ env.NEW_VERSION }}"
+      # - name: new_tags
+        # run: |
+          # git tag v${{ env.NEW_VERSION }}
+          # git push --follow-tags --set-upstream origin main
       # Parse the current version so we can extract only the major part of the semver (1 from 1.0.0)
       - name: current_semver_parser
         id: current_semver_parser 
@@ -89,4 +89,4 @@ jobs:
         run: |
           echo "new major tag of ${{ steps.current_semver_parser.outputs.major }} is being reset to the latest"
           git tag -f v${{ steps.current_semver_parser.outputs.major }}
-          git push origin v${{ steps.current_semver_parser.outputs.major }} --force
+        # git push origin v${{ steps.current_semver_parser.outputs.major }} --force
