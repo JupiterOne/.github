@@ -60,6 +60,7 @@ jobs:
         run: |
           echo "current version is ${{ steps.package_json.outputs.version }}"
           echo "new version will be ${{ env.NEW_VERSION }}"
+          echo "current major version is ${{ steps.current_semver_parser.outputs.major }}"
       - name: update_composite_tags
         run: |
           npm run update-composite-tags ${{ env.NEW_VERSION }}
