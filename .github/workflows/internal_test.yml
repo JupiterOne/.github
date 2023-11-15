@@ -52,9 +52,9 @@ jobs:
       - name: new_major
         id: new_major
         run: |
-          echo "version=[\"${steps.package_json.outputs.version//', '/\".\"}\"]" >> $GITHUB_OUTPUT
+          echo "::set-output name=fragment::${steps.package_json.outputs.version*/}"
       - name: echo_version_info
         run: |
           echo "current version is ${{ steps.package_json.outputs.version }}"
           echo "new version will be ${{ env.NEW_VERSION }}"
-          echo "major version will be ${{ steps.new_major.outputs.version }}"
+          echo "major version will be ${{ steps.new_major.outputs.fragment }}"
