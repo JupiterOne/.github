@@ -1,0 +1,38 @@
+name: Test
+
+on:
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          persist-credentials: true
+          fetch-depth: 0
+          token: ${{ secrets.AUTO_GITHUB_PAT_TOKEN }}
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18.15.0
+          cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+      - name: update_package_json_version
+        run: |
+          echo "`jq '.description="Automatically generated package.json, please edit manually. Test update."' package.json`" > package.json
+      - name: commit_updates
+        run: |
+          git config --global user.email "automation@jupiterone.com"
+          git config --global user.name "Automation"
+          git add .
+          git commit -m "test update"
+          git push --follow-tags --set-upstream origin main
+      
