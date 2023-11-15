@@ -33,11 +33,6 @@ jobs:
         id: package_json
         run: |
           echo "version=$(jq -r .version < package.json)" >> $GITHUB_OUTPUT
-      - name: current_semver_parser
-        id: current_semver_parser 
-        uses: booxmedialtd/ws-action-parse-semver@v1
-        with:
-          input_string: ${{ steps.package_json.outputs.version }}
       - name: semver_versions
         id: semver_versions
         uses: "WyriHaximus/github-action-next-semvers@v1"
@@ -50,7 +45,7 @@ jobs:
         if: contains(steps.pr_labels.outputs.labels, 'minor')
         run: |
           echo "NEW_VERSION=${{ steps.semver_versions.outputs.minor }}" >> $GITHUB_ENV
-      # Convert major versions from 1.0.0 to 1 for ease of use
+      # Parse the major version so we can extract only the major part of the semver (1 from 1.0.0)
       - name: new_semver_parser
         id: new_semver_parser
         if: contains(steps.pr_labels.outputs.labels, 'major')
@@ -65,6 +60,31 @@ jobs:
         run: |
           echo "current version is ${{ steps.package_json.outputs.version }}"
           echo "new version will be ${{ env.NEW_VERSION }}"
-          echo "current major version will be ${{ steps.current_semver_parser.outputs.major }}"
-      
-          
+      - name: update_composite_tags
+        run: |
+          npm run update-composite-tags ${{ env.NEW_VERSION }}
+      - name: update_package_json_version
+        run: |
+          echo "`jq '.version="${{ env.NEW_VERSION }}"' package.json`" > package.json
+      - name: commit_updates
+        run: |
+          git config --global user.email "automation@jupiterone.com"
+          git config --global user.name "Automation"
+          git add .
+          git commit -m "Updating composite tags and package.json version for v${{ env.NEW_VERSION }}"
+      - name: new_tags
+        run: |
+          git tag v${{ env.NEW_VERSION }}
+          git push --follow-tags --set-upstream origin main
+      # Parse the current version so we can extract only the major part of the semver (1 from 1.0.0)
+      - name: current_semver_parser
+        id: current_semver_parser 
+        uses: booxmedialtd/ws-action-parse-semver@v1
+        with:
+          input_string: ${{ steps.package_json.outputs.version }}
+      # We reset the major tag so workflow consumers automatically receive these changes 
+      - name: reset_major_tag
+        if: ${{ env.NEW_VERSION != steps.current_semver_parser.outputs.major }}
+        run: |
+          git tag -f v${{ steps.current_semver_parser.outputs.major }}
+          git push origin v${{ steps.current_semver_parser.outputs.major }} --force
