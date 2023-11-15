@@ -18,7 +18,7 @@ jobs:
           ref: main
           persist-credentials: true
           fetch-depth: 0
-          token: ${{ secrets.AUTO_GITHUB_PAT_TOKEN }}
+          token: ${{ secrets.J1_SRE_GITHUB_AUTOMATION_APP_ID }}
       - uses: actions/setup-node@v3
         with:
           node-version: 18.15.0
