@@ -74,7 +74,7 @@ jobs:
           git commit -m "Updating composite tags and package.json version for v${{ env.NEW_VERSION }}"
       - name: new_tags
         run: |
-          git tag -a v${{ env.NEW_VERSION }}
+          git tag -a v${{ env.NEW_VERSION }} -m "New tag for ${{ env.NEW_VERSION }}"
           git push --follow-tags --set-upstream origin main
       # Parse the current version so we can extract only the major part of the semver (1 from 1.0.0)
       - name: current_semver_parser
