@@ -68,12 +68,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: setup_env
-        uses: jupiterone/.github/.github/actions/setup_env@v3.0.27
+        uses: jupiterone/.github/.github/actions/setup_env@v3.0.28
         with:
           use_dev: true
       - id: migration_number
         name: migration_number
-        uses: jupiterone/.github/.github/actions/frontend/runtime/migration_number@v3.0.27
+        uses: jupiterone/.github/.github/actions/frontend/runtime/migration_number@v3.0.28
 
   e2e_prepare:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
@@ -89,12 +89,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: setup_env
-        uses: jupiterone/.github/.github/actions/setup_env@v3.0.27
+        uses: jupiterone/.github/.github/actions/setup_env@v3.0.28
         with:
           use_dev: true
       - id: e2e_prepare
         name: e2e_prepare
-        uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_prepare@v3.0.27
+        uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_prepare@v3.0.28
 
   unique_id:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
@@ -104,7 +104,7 @@ jobs:
       - uses: actions/checkout@v3
       - id: unique_id
         name: unique_id
-        uses: jupiterone/.github/.github/actions/unique_id@v3.0.27
+        uses: jupiterone/.github/.github/actions/unique_id@v3.0.28
         with:
           sha: ${{ inputs.external_pr_sha }}
 
@@ -129,12 +129,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: setup_env
-        uses: jupiterone/.github/.github/actions/setup_env@v3.0.27
+        uses: jupiterone/.github/.github/actions/setup_env@v3.0.28
         with:
           use_dev: true
       - id: e2e_run
         name: e2e_run
-        uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_run@v3.0.27
+        uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_run@v3.0.28
         timeout-minutes: 120
         with:
           ci_build_id: ${{ needs.unique_id.outputs.unique_id }}
