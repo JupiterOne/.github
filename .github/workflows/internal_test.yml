@@ -86,5 +86,6 @@ jobs:
       - name: reset_major_tag
         if: ${{ env.NEW_VERSION != steps.current_semver_parser.outputs.major }}
         run: |
+          echo "new major tag of ${{ steps.current_semver_parser.outputs.major }} is being reset to the latest"
           git tag -f v${{ steps.current_semver_parser.outputs.major }}
           git push origin v${{ steps.current_semver_parser.outputs.major }} --force
