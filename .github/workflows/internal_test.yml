@@ -53,8 +53,13 @@ jobs:
         id: new_major
         run: |
           echo "::set-output name=fragment::${steps.package_json.outputs.version*/}"
+      - name: semver_parser
+        id: semver_parser 
+        uses: booxmedialtd/ws-action-parse-semver@v1
+        with:
+          input_string: ${{ steps.package_json.outputs.version }}
       - name: echo_version_info
         run: |
           echo "current version is ${{ steps.package_json.outputs.version }}"
           echo "new version will be ${{ env.NEW_VERSION }}"
-          echo "major version will be ${{ steps.new_major.outputs.fragment }}"
+          echo "current major version will be ${{ steps.semver_parser.outputs.major }}"
