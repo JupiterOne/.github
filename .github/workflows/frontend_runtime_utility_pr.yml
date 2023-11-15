@@ -126,3 +126,4 @@ jobs:
           migration_number: ${{ needs.migration_number.outputs.migration }}
           # runtime utilities do not have a route of there own, so we default to home
           magic_url_route: '/home'
+          pr_number: ${{ github.event.pull_request.number }}
