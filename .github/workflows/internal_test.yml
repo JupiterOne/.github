@@ -67,3 +67,4 @@ jobs:
           echo "new version will be ${{ env.NEW_VERSION }}"
           echo "current major version will be ${{ steps.current_semver_parser.outputs.major }}"
       
+          
