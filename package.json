@@ -1,7 +1,7 @@
 {
   "name": ".github",
   "version": "3.0.0",
-  "description": "Automatically generated package.json, please edit manually",
+  "description": "Automatically generated package.json, please edit manually. Test update.",
   "repository": {
     "type": "git",
     "url": "https://github.com/JupiterOne/.github"
