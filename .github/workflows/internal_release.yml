@@ -86,6 +86,7 @@ jobs:
         if: ${{ env.NEW_VERSION != steps.current_semver_parser.outputs.major }}
         run: |
           echo "Major tag v${{ steps.current_semver_parser.outputs.major }} is being reset to the latest"
+          git tag -d v${{ steps.current_semver_parser.outputs.major }}
           git tag -af v${{ steps.current_semver_parser.outputs.major }} -m "Resetting v${{ steps.current_semver_parser.outputs.major }} tag"
       - name: push_changes
         run: |
