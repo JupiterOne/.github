@@ -29,12 +29,12 @@ jobs:
         with:
           fetch-depth: 2
       - name: setup_env
-        uses: jupiterone/.github/.github/actions/setup_env@v3.0.25
+        uses: jupiterone/.github/.github/actions/setup_env@v3.0.26
         with:
           use_dev: true
       - uses: hashicorp/setup-terraform@v2
       - name: validate
-        uses: jupiterone/.github/.github/actions/validate@v3.0.25
+        uses: jupiterone/.github/.github/actions/validate@v3.0.26
   
   security:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-amd64' }}
@@ -45,6 +45,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: security
-        uses: jupiterone/.github/.github/actions/code_ql@v3.0.25
+        uses: jupiterone/.github/.github/actions/code_ql@v3.0.26
         with:
           language: 'javascript'

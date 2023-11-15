@@ -45,13 +45,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: setup_env
-        uses: jupiterone/.github/.github/actions/setup_env@v3.0.25
+        uses: jupiterone/.github/.github/actions/setup_env@v3.0.26
         with:
           use_dev: true
       - name: validate
-        uses: jupiterone/.github/.github/actions/validate@v3.0.25
+        uses: jupiterone/.github/.github/actions/validate@v3.0.26
       - name: build
-        uses: jupiterone/.github/.github/actions/build@v3.0.25
+        uses: jupiterone/.github/.github/actions/build@v3.0.26
 
   security:
     runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-amd64' }}
@@ -62,7 +62,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: security
-        uses: jupiterone/.github/.github/actions/code_ql@v3.0.25
+        uses: jupiterone/.github/.github/actions/code_ql@v3.0.26
         with:
           language: 'javascript'
 
@@ -75,11 +75,11 @@ jobs:
         with:
           fetch-depth: 0
       - name: setup_env
-        uses: jupiterone/.github/.github/actions/setup_env@v3.0.25
+        uses: jupiterone/.github/.github/actions/setup_env@v3.0.26
         with:
           use_dev: true
       - name: chromatic_publish
-        uses: jupiterone/.github/.github/actions/frontend/chromatic@v3.0.25
+        uses: jupiterone/.github/.github/actions/frontend/chromatic@v3.0.26
         with:
           publish_chromatic: true
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -94,11 +94,11 @@ jobs:
           token: ${{ secrets.AUTO_GITHUB_PAT_TOKEN }}
           fetch-depth: 0
       - name: setup_env
-        uses: jupiterone/.github/.github/actions/setup_env@v3.0.25
+        uses: jupiterone/.github/.github/actions/setup_env@v3.0.26
       - name: build
-        uses: jupiterone/.github/.github/actions/build@v3.0.25
+        uses: jupiterone/.github/.github/actions/build@v3.0.26
       - name: publish
-        uses: jupiterone/.github/.github/actions/frontend/npm/publish@v3.0.25
+        uses: jupiterone/.github/.github/actions/frontend/npm/publish@v3.0.26
         with:
           auto_token: ${{ secrets.AUTO_GITHUB_PAT_TOKEN }}
 
@@ -109,10 +109,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: setup_env
-        uses: jupiterone/.github/.github/actions/setup_env@v3.0.25
+        uses: jupiterone/.github/.github/actions/setup_env@v3.0.26
         with:
           use_dev: true
       - name: cortex
-        uses: jupiterone/.github/.github/actions/frontend/cortex@v3.0.25
+        uses: jupiterone/.github/.github/actions/frontend/cortex@v3.0.26
         with:
           cortex_api_key: ${{ secrets.CORTEX_API_KEY }}
