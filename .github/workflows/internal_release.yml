@@ -83,9 +83,9 @@ jobs:
         with:
           input_string: ${{ steps.package_json.outputs.version }}
       # We reset the major tag so workflow consumers automatically receive these changes 
-      - name: reset_major_tag
-        if: ${{ env.NEW_VERSION != steps.current_semver_parser.outputs.major }}
-        run: |
-          echo "Major tag v${{ steps.current_semver_parser.outputs.major }} is being reset to the latest"
-          git tag -f v${{ steps.current_semver_parser.outputs.major }}
-          git push origin v${{ steps.current_semver_parser.outputs.major }} --force
+      # - name: reset_major_tag
+        # if: ${{ env.NEW_VERSION != steps.current_semver_parser.outputs.major }}
+        # run: |
+          # echo "Major tag v${{ steps.current_semver_parser.outputs.major }} is being reset to the latest"
+          # git tag -f v${{ steps.current_semver_parser.outputs.major }}
+          # git push origin v${{ steps.current_semver_parser.outputs.major }} --force
