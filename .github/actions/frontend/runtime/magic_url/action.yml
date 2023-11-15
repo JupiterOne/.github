@@ -13,6 +13,10 @@ inputs:
     description: 'The relative route the magic url should go to'
     type: string
     default: '/'
+  pr_number: 
+    description: 'The number associated with the PR that is triggering this action'
+    type: string
+    required: true
 
 runs:
   using: "composite"
@@ -35,7 +39,7 @@ runs:
       shell: bash
       # This bucket file location is static and editing it will break the Magic URL. This pushes the entire directory which includes the bundle and remote types if applicable
       run: |
-        aws s3 sync deploy/dist s3://apps.dev.jupiterone.io/static/manual-deploy/${{ github.event.repository.name }}@${{ inputs.migration_number }}/PR-${{ github.event.issue.number }}/
+        aws s3 sync deploy/dist s3://apps.dev.jupiterone.io/static/manual-deploy/${{ github.event.repository.name }}@${{ inputs.migration_number }}/PR-${{ inputs.pr_number }}/
     - name: get_branch_of_pr
       id: get_branch_of_pr
       uses: xt0rted/pull-request-comment-branch@v2
@@ -46,4 +50,4 @@ runs:
         token: ${{ inputs.github_token }}
         status: success
         context: 'Magic URL'
-        targetUrl: https://apps.dev.jupiterone.io${{ inputs.magic_url_route }}?magic2=%7B%22${{ github.event.repository.name }}%40${{ inputs.migration_number }}%22:%22PR-${{ github.event.issue.number }}%22%7D
+        targetUrl: https://apps.dev.jupiterone.io${{ inputs.magic_url_route }}?magic2=%7B%22${{ github.event.repository.name }}%40${{ inputs.migration_number }}%22:%22PR-${{ inputs.pr_number }}%22%7D
