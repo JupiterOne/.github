@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    tags-ignore:
+      - '**'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -75,6 +77,7 @@ jobs:
       - name: new_tags
         run: |
           git tag -a v${{ env.NEW_VERSION }} -m "New tag for ${{ env.NEW_VERSION }}"
+          git push --follow-tags --set-upstream origin main
       # Parse the current version so we can extract only the major part of the semver (1 from 1.0.0)
       - name: current_semver_parser
         id: current_semver_parser 
@@ -86,8 +89,6 @@ jobs:
         if: ${{ env.NEW_VERSION != steps.current_semver_parser.outputs.major }}
         run: |
           echo "Major tag v${{ steps.current_semver_parser.outputs.major }} is being reset to the latest"
-          git reset --hard v${{ steps.current_semver_parser.outputs.major }}
-          git tag -a v${{ steps.current_semver_parser.outputs.major }} -m "Resetting v${{ steps.current_semver_parser.outputs.major }} tag"
-      - name: push_changes
-        run: |
-          git push --follow-tags --set-upstream origin main --force
+          git tag -af v${{ steps.current_semver_parser.outputs.major }} -m "Resetting v${{ steps.current_semver_parser.outputs.major }} tag"
+          git push origin v${{ steps.current_semver_parser.outputs.major }} --force
+
