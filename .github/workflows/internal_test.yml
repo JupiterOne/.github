@@ -49,10 +49,6 @@ jobs:
         if: contains(steps.pr_labels.outputs.labels, 'major')
         run: |
           echo "NEW_VERSION=${{ steps.semver_versions.outputs.major }}" >> $GITHUB_ENV
-      - name: new_major
-        id: new_major
-        run: |
-          echo "::set-output name=fragment::${steps.package_json.outputs.version*/}"
       - name: semver_parser
         id: semver_parser 
         uses: booxmedialtd/ws-action-parse-semver@v1
