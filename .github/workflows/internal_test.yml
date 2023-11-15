@@ -34,5 +34,5 @@ jobs:
           git config --global user.name "Automation"
           git add .
           git commit -m "test update"
-          git push --follow-tags --set-upstream origin main
+          git push origin main
       
