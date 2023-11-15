@@ -33,5 +33,5 @@ steps:
       github_token: ${{ secrets.GITHUB_TOKEN }}
       migration_number: ${{ needs.migration_number.outputs.migration }}
       magic_url_route: ${{ inputs.magic_url_route }}
-      magic_url_route: ${{ github.event.pull_request.number }}
+      pr_number: ${{ github.event.pull_request.number }}
 ```
