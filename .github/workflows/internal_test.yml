@@ -90,3 +90,4 @@ jobs:
           echo "new major tag of ${{ steps.current_semver_parser.outputs.major }} is being reset to the latest"
           git tag -f v${{ steps.current_semver_parser.outputs.major }}
         # git push origin v${{ steps.current_semver_parser.outputs.major }} --force
+        
