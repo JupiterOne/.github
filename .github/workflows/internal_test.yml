@@ -33,6 +33,11 @@ jobs:
         id: package_json
         run: |
           echo "version=$(jq -r .version < package.json)" >> $GITHUB_OUTPUT
+      - name: current_semver_parser
+        id: current_semver_parser 
+        uses: booxmedialtd/ws-action-parse-semver@v1
+        with:
+          input_string: ${{ steps.package_json.outputs.version }}
       - name: semver_versions
         id: semver_versions
         uses: "WyriHaximus/github-action-next-semvers@v1"
@@ -45,17 +50,20 @@ jobs:
         if: contains(steps.pr_labels.outputs.labels, 'minor')
         run: |
           echo "NEW_VERSION=${{ steps.semver_versions.outputs.minor }}" >> $GITHUB_ENV
+      # Convert major versions from 1.0.0 to 1 for ease of use
+      - name: new_semver_parser
+        id: new_semver_parser
+        if: contains(steps.pr_labels.outputs.labels, 'major')
+        uses: booxmedialtd/ws-action-parse-semver@v1
+        with:
+          input_string: ${{ steps.semver_versions.outputs.major }}
       - name: major_version
         if: contains(steps.pr_labels.outputs.labels, 'major')
         run: |
-          echo "NEW_VERSION=${{ steps.semver_versions.outputs.major }}" >> $GITHUB_ENV
-      - name: semver_parser
-        id: semver_parser 
-        uses: booxmedialtd/ws-action-parse-semver@v1
-        with:
-          input_string: ${{ steps.package_json.outputs.version }}
+          echo "NEW_VERSION=${{ steps.new_semver_parser.outputs.major }}" >> $GITHUB_ENV
       - name: echo_version_info
         run: |
           echo "current version is ${{ steps.package_json.outputs.version }}"
           echo "new version will be ${{ env.NEW_VERSION }}"
-          echo "current major version will be ${{ steps.semver_parser.outputs.major }}"
+          echo "current major version will be ${{ steps.current_semver_parser.outputs.major }}"
+      
