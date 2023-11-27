@@ -20,7 +20,7 @@ No outputs provided.
 ```yaml
 steps:
   - name: slack_notifier
-    uses: ./.github/actions/slack_notifier
+    uses: jupiterone/.github/.github/actions/slack_notifier
     # The below condition is required to ensure the action delivers notifications for failed builds (as well as successful ones).
     if: always()
     with:
