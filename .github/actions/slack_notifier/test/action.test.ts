@@ -8,24 +8,23 @@ const repoName = 'slack_notifier';
 
 let mockGithub: MockGithub;
 
+beforeEach(async () => {
+  mockGithub = new MockGithub(getCompositeActionConfig({ directory: __dirname, repoName }));
+  
+  await mockGithub.setup();
+});
+
 afterEach(async () => {
   await mockGithub.teardown();
 });
 
 const token = "mytoken";
 
-test('Inputs are set correctly', async () => {
-  mockGithub = new MockGithub(getCompositeActionConfig({
-    directory: __dirname,
-    repoName,
-  }));
-
-  await mockGithub.setup();
-
+test('output of test_passed is true when cypress_run is successful', async () => {
   const results = await runCompositeAction({
     act: new Act(mockGithub.repo.getPath(repoName)),
     repoName,
-    originDirectory: __dirname,
+    originDirectory: __dirname
   });
 
   const result = getTestResult({
