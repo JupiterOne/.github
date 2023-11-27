@@ -32,7 +32,6 @@ test('Inputs are set correctly', async () => {
     name: 'prepare_inputs'
   });
 
-  // console.log(JSON.stringify(result.output));
   const expectedOutput = `slack-bot-token=${slackBotToken}\nslack-channel-id=${slackChannelId}`;
   expect(result.output).toEqual(expectedOutput)
 });
