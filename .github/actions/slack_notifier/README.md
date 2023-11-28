@@ -8,8 +8,8 @@ This action takes the following inputs:
 
 | Name                        | Type    | Default                      | Required  | Description                                               |
 | --------------------------- | ------- | ---------------------------- | --------- | --------------------------------------------------------- |
-| `slack-bot-token`                  | String  |                              | True      | The Oauth token for the Github Slack Send Slack app.
-| `slack-channel-id`                 | String  |                              | True      | The ID of the Slack channel to send notifications to.
+| `slack_bot_token`                  | String  |                              | True      | The Oauth token for the Github Slack Send Slack app.
+| `slack_channel_id`                 | String  |                              | True      | The ID of the Slack channel to send notifications to.
 
 ## Outputs
 
@@ -24,6 +24,6 @@ steps:
     # The below condition is required to ensure the action delivers notifications for failed builds (as well as successful ones).
     if: always()
     with:
-      slack-bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
-      slack-channel-id: 'C05447SKNH3'
+      slack_bot_token: ${{ secrets.SLACK_BOT_TOKEN }}
+      slack_channel_id: 'C05447SKNH3'
 ```

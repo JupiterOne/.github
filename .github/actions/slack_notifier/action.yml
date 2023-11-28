@@ -2,11 +2,11 @@ name: Slack Notifier
 description: Send Slack updates to the provided channel upon workflow completion.
 
 inputs:
-  slack-bot-token:
+  slack_bot_token:
     type: string
     required: true
   # This could be refactored to accept a comma-delimited list of IDs if needed.
-  slack-channel-id:
+  slack_channel_id:
     type: string
     required: true
 
@@ -28,13 +28,13 @@ runs:
     - name: prepare_inputs
       shell: bash
       run: |
-        echo "slack-bot-token=${{ inputs.slack-bot-token }}"
-        echo "slack-channel-id=${{ inputs.slack-channel-id }}"
+        echo "slack_bot_token=${{ inputs.slack_bot_token }}"
+        echo "slack_channel_id=${{ inputs.slack_channel_id }}"
     - name: send_workflow_result_to_slack
       id: pr
       uses: slackapi/slack-github-action@v1.24.0
       with:
-        channel-id: ${{ inputs.slack-channel-id }}
+        channel-id: ${{ inputs.slack_channel_id }}
         payload: |
           {
             "blocks": [
@@ -49,4 +49,4 @@ runs:
             ]
           }
       env:
-        SLACK_BOT_TOKEN: ${{ inputs.slack-bot-token }}
+        SLACK_BOT_TOKEN: ${{ inputs.slack_bot_token }}

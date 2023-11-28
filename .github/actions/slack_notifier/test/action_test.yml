@@ -10,5 +10,5 @@ jobs:
           path: slack_notifier
       - uses: ./slack_notifier
         with:
-          slack-bot-token: 'mytoken'
-          slack-channel-id: 'mychannelid'
+          slack_bot_token: 'mytoken'
+          slack_channel_id: 'mychannelid'
