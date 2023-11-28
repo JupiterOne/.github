@@ -1,0 +1,37 @@
+name: Promotes built Docker images to target environment registries for consumption
+
+inputs:
+  image-name:
+    type: string
+    required: true
+  image-tag:
+    type: string
+    required: true
+  source-registry:
+    type: string
+    required: false
+    default: 081157560428.dkr.ecr.us-east-1.amazonaws.com
+  destination-registry:
+    type: string
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: configurate-aws-credentials
+      uses: aws-actions/configure-aws-credentials@v3
+      with:
+        role-to-assume: arn:aws:iam::081157560428:role/github-main-role
+        role-session-name: main-role-session-${{ inputs.image-name }}
+        aws-region: us-east-1
+    - name: ecr-login
+      uses: aws-actions/amazon-ecr-login@v2
+    - name: pull_and_tag
+      shell: bash
+      run: |
+        docker pull ${{ inputs.registry }}/${{ inputs.image-name }}:${{ inputs.image-tag }}
+        docker tag ${{ inputs.destination-registry }}/${{ inputs.image-name }}:${{ inputs.image-tag }}
+    - name: push
+      shell: bash
+      run: |
+        docker push ${{ inputs.destination-registry }}/${{ inputs.image-name }}:${{ inputs.image-tag }}

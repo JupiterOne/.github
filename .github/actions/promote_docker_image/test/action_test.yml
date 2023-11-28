@@ -1,0 +1,14 @@
+on: [push]
+
+jobs:
+  slack_notifier:
+    runs-on: ubuntu-latest
+    steps:
+      # https://github.com/nektos/act#module_not_found
+      - uses: actions/checkout@v3
+        with:
+          path: slack_notifier
+      - uses: ./slack_notifier
+        with:
+          slack_bot_token: 'mytoken'
+          slack_channel_id: 'mychannelid'
