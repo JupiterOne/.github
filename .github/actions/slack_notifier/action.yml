@@ -1,0 +1,52 @@
+name: Slack Notifier
+description: Send Slack updates to the provided channel upon workflow completion.
+
+inputs:
+  slack_bot_token:
+    type: string
+    required: true
+  # This could be refactored to accept a comma-delimited list of IDs if needed.
+  slack_channel_id:
+    type: string
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: set_status_emoji
+      id: setEmoji
+      shell: bash
+      run: |
+        echo "Job status: ${{ job.status }}"
+        if [ "${{ job.status }}" == 'success' ]; then
+          echo "status_emoji=:white_check_mark:" >> $GITHUB_OUTPUT
+        elif [ "${{ job.status }}" == 'failure' ]; then
+          echo "status_emoji=:x:" >> $GITHUB_OUTPUT
+        else
+          echo "status_emoji=:black_square_for_stop:" >> $GITHUB_OUTPUT
+        fi
+    - name: prepare_inputs
+      shell: bash
+      run: |
+        echo "slack_bot_token=${{ inputs.slack_bot_token }}"
+        echo "slack_channel_id=${{ inputs.slack_channel_id }}"
+    - name: send_workflow_result_to_slack
+      id: pr
+      uses: slackapi/slack-github-action@v1.24.0
+      with:
+        channel-id: ${{ inputs.slack_channel_id }}
+        payload: |
+          {
+            "blocks": [
+              {
+                "type": "section",
+                "block_id": "sectionBlockOnlyPlainText",
+                "text": {
+                  "type": "mrkdwn",
+                  "text": "Github build result for *${{ github.repository }}*: ${{ job.status }} ${{ steps.setEmoji.outputs.status_emoji }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+                }
+              }
+            ]
+          }
+      env:
+        SLACK_BOT_TOKEN: ${{ inputs.slack_bot_token }}
