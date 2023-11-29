@@ -2,36 +2,53 @@ name: Promotes built Docker images to target environment registries for consumpt
 
 inputs:
   image-name:
-    type: string
     required: true
-  image-tag:
-    type: string
+  image-tags:
     required: true
+    description: "A comma separated list of image tags to promote."
   source-registry:
-    type: string
     required: false
-    default: 081157560428.dkr.ecr.us-east-1.amazonaws.com
+    default: "081157560428.dkr.ecr.us-east-1.amazonaws.com"
   destination-registry:
-    type: string
+    required: true
+  origin-account-id:
+    required: true
+    default: "081157560428"
+  destination-account-id:
     required: true
 
 runs:
   using: "composite"
   steps:
-    - name: configurate-aws-credentials
+    - name: configurate-source-account-aws-credentials
       uses: aws-actions/configure-aws-credentials@v3
       with:
-        role-to-assume: arn:aws:iam::081157560428:role/github-main-role
+        role-to-assume: arn:aws:iam::${{ inputs.origin-account-id }}:role/github-main-role
         role-session-name: main-role-session-${{ inputs.image-name }}
         aws-region: us-east-1
     - name: ecr-login
       uses: aws-actions/amazon-ecr-login@v2
-    - name: pull_and_tag
+    - name: pull_source_images
       shell: bash
       run: |
+        docker pull 081157560428.dkr.ecr.us-east-1.amazonaws.com/terraform-deploy
         docker pull ${{ inputs.registry }}/${{ inputs.image-name }}:${{ inputs.image-tag }}
-        docker tag ${{ inputs.destination-registry }}/${{ inputs.image-name }}:${{ inputs.image-tag }}
-    - name: push
+    - name: configurate-destination-account-aws-credentials
+      uses: aws-actions/configure-aws-credentials@v3
+      with:
+        role-to-assume: arn:aws:iam::${{ inputs.destination-account-id }}:role/github-main-role
+        role-session-name: main-role-session-${{ inputs.image-name }}
+        aws-region: us-east-1
+    - name: bootstrap_target_ecr_registry
+      shell: bash
+      run: docker run 081157560428.dkr.ecr.us-east-1.amazonaws.com/terraform-deploy bootstrap-ecr -a plan
+      env:
+        TF_VAR_repository_name: ${{ needs.configuration.outputs.repository-name }}
+        TF_VAR_image_names: ${{ needs.configuration.outputs.image-names }}
+    - name: copy_to_destination_registry
       shell: bash
       run: |
-        docker push ${{ inputs.destination-registry }}/${{ inputs.image-name }}:${{ inputs.image-tag }}
+        docker buildx imagetools create \
+          --tag ${{ inputs.destination-registry }}/${{ inputs.image-name }}:${{ inputs.image-tag }} \
+          --tag ${{ inputs.destination-registry }}/${{ inputs.image-name }}:${{ inputs.image-tag }} \
+          ${{ inputs.source-registry }}/${{ inputs.image-name }}:${{ inputs.image-tag }}

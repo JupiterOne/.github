@@ -1,14 +1,15 @@
 on: [push]
 
 jobs:
-  slack_notifier:
+  promote_docker_image:
     runs-on: ubuntu-latest
     steps:
       # https://github.com/nektos/act#module_not_found
       - uses: actions/checkout@v3
         with:
-          path: slack_notifier
-      - uses: ./slack_notifier
+          path: promote_docker_image
+      - uses: ./promote_docker_image
         with:
-          slack_bot_token: 'mytoken'
-          slack_channel_id: 'mychannelid'
+          image-name: my-image
+          image-tag: latest
+          destination-registry: 564077667165.dkr.ecr.us-east-1.amazonaws.com

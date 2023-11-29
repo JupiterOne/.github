@@ -3,7 +3,7 @@ import { Act } from '@kie/act-js';
 import { getCompositeActionConfig, runCompositeAction } from 'tests/utils/setup';
 import { getTestResult } from 'tests/utils/helpers';
 
-const repoName = 'slack_notifier';
+const repoName = 'promote_docker_image';
 
 let mockGithub: MockGithub;
 
@@ -16,9 +16,6 @@ beforeEach(async () => {
 afterEach(async () => {
   await mockGithub.teardown();
 });
-
-const slackBotToken = "mytoken";
-const slackChannelId = "mychannelid";
 
 test('Inputs are set correctly', async () => {
   const results = await runCompositeAction({
