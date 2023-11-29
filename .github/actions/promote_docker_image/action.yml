@@ -5,15 +5,15 @@ inputs:
     required: true
   image-tags:
     required: true
-    description: "A comma separated list of image tags to promote."
+    description: A comma separated list of image tags to promote.
   source-registry:
     required: false
-    default: "081157560428.dkr.ecr.us-east-1.amazonaws.com"
+    default: 081157560428.dkr.ecr.us-east-1.amazonaws.com
   destination-registry:
     required: true
   origin-account-id:
     required: true
-    default: "081157560428"
+    default: 081157560428
   destination-account-id:
     required: true
 
@@ -48,7 +48,8 @@ runs:
     - name: copy_to_destination_registry
       shell: bash
       run: |
-        docker buildx imagetools create \
-          --tag ${{ inputs.destination-registry }}/${{ inputs.image-name }}:${{ inputs.image-tag }} \
-          --tag ${{ inputs.destination-registry }}/${{ inputs.image-name }}:${{ inputs.image-tag }} \
-          ${{ inputs.source-registry }}/${{ inputs.image-name }}:${{ inputs.image-tag }}
+        for tag in $(echo ${{ inputs.image-tags }} | sed "s/,/ /g"); do
+          docker buildx imagetools create \
+            --tag ${{ inputs.destination-registry }}/${{ inputs.image-name }}:$tag \
+            ${{ inputs.source-registry }}/${{ inputs.image-name }}:$tag
+        done

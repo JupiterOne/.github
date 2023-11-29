@@ -11,5 +11,5 @@ jobs:
       - uses: ./promote_docker_image
         with:
           image-name: my-image
-          image-tag: latest
+          image-tags: 1.0.0, latest
           destination-registry: 564077667165.dkr.ecr.us-east-1.amazonaws.com
