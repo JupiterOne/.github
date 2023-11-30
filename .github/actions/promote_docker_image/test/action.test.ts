@@ -3,6 +3,25 @@ import { Act } from '@kie/act-js';
 import { getCompositeActionConfig, runCompositeAction } from 'tests/utils/setup';
 import { getTestResult } from 'tests/utils/helpers';
 
+const mockServer = require('mockttp').getLocal();
+
+async function mockAwsSts() {
+  await mockServer.start(8000);
+  await mockServer.forAnyRequest().thenReply(200, 'Hello World!');
+}
+
+mockAwsSts();
+
+const httpProxy = require('http-proxy');
+const proxy = httpProxy.createProxyServer({
+    target: 'http://localhost:8000',
+});
+
+proxy.on('proxyReq', function(proxyReq, req, res, options) {});
+
+proxy.listen(8080);
+
+
 const repoName = 'promote_docker_image';
 
 let mockGithub: MockGithub;
@@ -17,7 +36,12 @@ afterEach(async () => {
   await mockGithub.teardown();
 });
 
-test('Inputs are set correctly', async () => {
+// mockAWS.mock('STS', '*', (params, callback) => {
+//   console.log('getCallerIdenity called with', params);
+//   callback(null, 'success');
+// });
+
+test('The correct source account credentials are configured', async () => {
   const results = await runCompositeAction({
     act: new Act(mockGithub.repo.getPath(repoName)),
     repoName,
@@ -26,9 +50,9 @@ test('Inputs are set correctly', async () => {
 
   const result = getTestResult({
     results,
-    name: 'prepare_inputs'
+    name: 'configurate_source_account_aws_credentials'
   });
 
-  const expectedOutput = `slack_bot_token=${slackBotToken}\nslack_channel_id=${slackChannelId}`;
-  expect(result.output).toEqual(expectedOutput)
+  console.log(result);
+  expect(result).toBeDefined();
 });

@@ -13,3 +13,14 @@ jobs:
           image-name: my-image
           image-tags: 1.0.0, latest
           destination-registry: 564077667165.dkr.ecr.us-east-1.amazonaws.com
+          destination-account-id: 564077667165
+        env:
+          AWS_ACCESS_KEY_ID: 'GITHUB_RUNNER_AWS_ACCESS_KEY_ID'
+          AWS_SECRET_ACCESS_KEY: 'GITHUB_RUNNER_AWS_SECRET_KEY'
+          AWS_REGION: 'us-east-1'
+          AWS_ENDPOINT_URL: https://host.docker.internal:8080
+          # AWS_ENDPOINT: host.docker.internal:8000
+          HTTPS_PROXY: https://host.docker.internal:8080
+          HTTP_PROXY: http://host.docker.internal:8080
+          # AWS_STS_ENDPOINT: http://localhost:8000
+          # AWS_STS_ENDPOINT: http://host.docker.internal:8000
