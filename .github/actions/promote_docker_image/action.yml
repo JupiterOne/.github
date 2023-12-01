@@ -31,7 +31,7 @@ runs:
     - name: pull_source_images
       shell: bash
       run: |
-        docker pull 081157560428.dkr.ecr.us-east-1.amazonaws.com/terraform-deploy
+        docker pull 081157560428.dkr.ecr.us-east-1.amazonaws.com/terraform-deploy-slim-lts-0
         for tag in $(echo ${{ inputs.image-tags }} | sed "s/,/ /g"); do
           docker pull ${{ inputs.source-account-id }}.dkr.ecr.us.${{ inputs.source-region }}/${{ inputs.image-name }}:$tag
         done
@@ -41,12 +41,13 @@ runs:
         role-to-assume: arn:aws:iam::${{ inputs.destination-account-id }}:role/github-main-role
         role-session-name: main-role-session-${{ inputs.image-name }}
         aws-region: us-east-1
-    - name: bootstrap_target_ecr_registry
-      shell: bash
-      run: docker run 081157560428.dkr.ecr.us-east-1.amazonaws.com/terraform-deploy bootstrap-ecr -a plan
-      env:
-        TF_VAR_repository_name: ${{ needs.configuration.outputs.repository-name }}
-        TF_VAR_image_names: ${{ needs.configuration.outputs.image-names }}
+    - name: bootstrap_destination_ecr_registry
+      uses: jupiterone/provision-cortex/.github/actions/create_ecr_repo@SRE-1479
+      with:
+        codeowner: SRE
+        image-names: ${{ inputs.image-name }}
+        project-name: provision-cortex
+        target-environment: dev
     - name: copy_to_destination_registry
       shell: bash
       run: |
