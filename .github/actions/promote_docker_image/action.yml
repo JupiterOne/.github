@@ -31,7 +31,7 @@ runs:
     - name: pull_source_images
       shell: bash
       run: |
-        docker pull 081157560428.dkr.ecr.us-east-1.amazonaws.com/terraform-deploy-slim-lts-0
+        docker pull 081157560428.dkr.ecr.us-east-1.amazonaws.com/terraform-deploy-slim:lts-0
         for tag in $(echo ${{ inputs.image-tags }} | sed "s/,/ /g"); do
           docker pull ${{ inputs.source-account-id }}.dkr.ecr.us.${{ inputs.source-region }}/${{ inputs.image-name }}:$tag
         done
