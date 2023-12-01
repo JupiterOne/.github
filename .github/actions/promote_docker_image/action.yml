@@ -42,6 +42,12 @@ runs:
     #     image-names: ${{ inputs.image-name }}
     #     project-name: provision-cortex
     #     target-environment: dev
+    - name: configurate_destination_account_aws_credentials
+      uses: aws-actions/configure-aws-credentials@v3
+      with:
+        role-to-assume: arn:aws:iam::${{ inputs.destination-account-id }}:role/github-pull-request-role
+        role-session-name: main-role-session-${{ inputs.image-name }}
+        aws-region: us-east-1
     - name: copy_to_destination_registry
       shell: bash
       run: |
