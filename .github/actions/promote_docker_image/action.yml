@@ -35,19 +35,13 @@ runs:
         for tag in $(echo ${{ inputs.image-tags }} | sed "s/,/ /g"); do
           docker pull ${{ inputs.source-account-id }}.dkr.ecr.${{ inputs.source-region }}.amazonaws.com/${{ inputs.image-name }}:$tag
         done
-    # - name: configurate_destination_account_aws_credentials
-    #   uses: aws-actions/configure-aws-credentials@v3
+    # - name: bootstrap_destination_ecr_registry
+    #   uses: jupiterone/provision-cortex/.github/actions/create_ecr_repo@SRE-1479
     #   with:
-    #     role-to-assume: arn:aws:iam::${{ inputs.destination-account-id }}:role/github-pull-request-role
-    #     role-session-name: main-role-session-${{ inputs.image-name }}
-    #     aws-region: us-east-1
-    - name: bootstrap_destination_ecr_registry
-      uses: jupiterone/provision-cortex/.github/actions/create_ecr_repo@SRE-1479
-      with:
-        codeowner: SRE
-        image-names: ${{ inputs.image-name }}
-        project-name: provision-cortex
-        target-environment: dev
+    #     codeowner: SRE
+    #     image-names: ${{ inputs.image-name }}
+    #     project-name: provision-cortex
+    #     target-environment: dev
     - name: copy_to_destination_registry
       shell: bash
       run: |
