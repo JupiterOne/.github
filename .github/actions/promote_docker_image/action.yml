@@ -23,7 +23,7 @@ runs:
     - name: configurate_source_account_aws_credentials
       uses: aws-actions/configure-aws-credentials@v3
       with:
-        role-to-assume: arn:aws:iam::${{ inputs.source-account-id }}:role/github-main-role
+        role-to-assume: arn:aws:iam::${{ inputs.source-account-id }}:role/github-pull-request-role
         role-session-name: main-role-session-${{ inputs.image-name }}
         aws-region: us-east-1
     - name: ecr_login
@@ -38,7 +38,7 @@ runs:
     - name: configurate_destination_account_aws_credentials
       uses: aws-actions/configure-aws-credentials@v3
       with:
-        role-to-assume: arn:aws:iam::${{ inputs.destination-account-id }}:role/github-main-role
+        role-to-assume: arn:aws:iam::${{ inputs.destination-account-id }}:role/github-pull-request-role
         role-session-name: main-role-session-${{ inputs.image-name }}
         aws-region: us-east-1
     - name: bootstrap_destination_ecr_registry
