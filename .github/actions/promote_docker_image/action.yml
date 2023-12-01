@@ -8,7 +8,7 @@ inputs:
     description: A comma separated list of image tags to promote.
   source-account-id:
     required: false
-    default: 081157560428
+    default: "081157560428"
   source-region:
     required: false
     default: us-east-1
