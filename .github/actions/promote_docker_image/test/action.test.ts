@@ -29,6 +29,20 @@ test('The correct source account credentials are configured', async () => {
     name: 'configurate_source_account_aws_credentials'
   });
 
-  console.log(result);
+  expect(result).toBeDefined();
+});
+
+test('Source account credentials are configured', async () => {
+  const results = await runCompositeAction({
+    act: new Act(mockGithub.repo.getPath(repoName)),
+    repoName,
+    originDirectory: __dirname
+  });
+
+  const result = getTestResult({
+    results,
+    name: 'configurate_source_account_aws_credentials'
+  });
+
   expect(result).toBeDefined();
 });
