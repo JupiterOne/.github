@@ -1,6 +1,10 @@
 name: Promotes built Docker images to target environment registries for consumption
 
 inputs:
+  project-name:
+    required: true
+  codeowner:
+    required: true
   image-name:
     required: true
   image-tags:
@@ -12,10 +16,13 @@ inputs:
   source-region:
     required: false
     default: us-east-1
-  destination-account-id:
+  target-account-id:
     required: true
-  destination-region:
+  target-region:
     required: true
+  target-environment:
+    required: true
+    default: dev
 
 runs:
   using: "composite"
@@ -23,7 +30,7 @@ runs:
     - name: configurate_source_account_aws_credentials
       uses: aws-actions/configure-aws-credentials@v3
       with:
-        role-to-assume: arn:aws:iam::${{ inputs.source-account-id }}:role/github-pull-request-role
+        role-to-assume: arn:aws:iam::${{ inputs.source-account-id }}:role/github-main-role
         role-session-name: main-role-session-${{ inputs.image-name }}
         aws-region: us-east-1
     - name: ecr_login
@@ -35,24 +42,24 @@ runs:
         for tag in $(echo ${{ inputs.image-tags }} | sed "s/,/ /g"); do
           docker pull ${{ inputs.source-account-id }}.dkr.ecr.${{ inputs.source-region }}.amazonaws.com/${{ inputs.image-name }}:$tag
         done
-    # - name: bootstrap_destination_ecr_registry
-    #   uses: jupiterone/provision-cortex/.github/actions/create_ecr_repo@SRE-1479
-    #   with:
-    #     codeowner: SRE
-    #     image-names: ${{ inputs.image-name }}
-    #     project-name: provision-cortex
-    #     target-environment: dev
-    - name: configurate_destination_account_aws_credentials
+    - name: bootstrap_target_ecr_registry
+      uses: jupiterone/provision-cortex/.github/actions/create_ecr_repo@SRE-1479
+      with:
+        codeowner: ${{ inputs.codeowner }}
+        image-names: ${{ inputs.image-name }}
+        project-name: ${{ inputs.project-name }}
+        target-environment: ${{ inputs.target-environment }}
+    - name: configurate_target_account_aws_credentials
       uses: aws-actions/configure-aws-credentials@v3
       with:
-        role-to-assume: arn:aws:iam::${{ inputs.destination-account-id }}:role/github-pull-request-role
+        role-to-assume: arn:aws:iam::${{ inputs.target-account-id }}:role/github-main-role
         role-session-name: main-role-session-${{ inputs.image-name }}
         aws-region: us-east-1
-    - name: copy_to_destination_registry
+    - name: copy_to_target_registry
       shell: bash
       run: |
         for tag in $(echo ${{ inputs.image-tags }} | sed "s/,/ /g"); do
           docker buildx imagetools create \
-            --tag ${{ inputs.destination-account-id }}.dkr.ecr.${{ inputs.destination-region }}.amazonaws.com/${{ inputs.image-name }}:$tag \
+            --tag ${{ inputs.target-account-id }}.dkr.ecr.${{ inputs.target-region }}.amazonaws.com/${{ inputs.image-name }}:$tag \
             ${{ inputs.source-account-id }}.dkr.ecr.${{ inputs.source-region }}.amazonaws.com/${{ inputs.image-name }}:$tag
         done
