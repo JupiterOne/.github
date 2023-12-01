@@ -1,26 +1,26 @@
 name: Promotes built Docker images to target environment registries for consumption
 
 inputs:
-  project-name:
+  project_name:
     required: true
   codeowner:
     required: true
-  image-name:
+  image_name:
     required: true
-  image-tags:
+  image_tags:
     required: true
     description: A comma separated list of image tags to promote.
-  source-account-id:
+  source_account_id:
     required: false
     default: "081157560428"
-  source-region:
+  source_region:
     required: false
     default: us-east-1
-  target-account-id:
+  target_account_id:
     required: true
-  target-region:
+  target_region:
     required: true
-  target-environment:
+  target_environment:
     required: true
     default: dev
 
@@ -30,8 +30,8 @@ runs:
     - name: configurate_source_account_aws_credentials
       uses: aws-actions/configure-aws-credentials@v3
       with:
-        role-to-assume: arn:aws:iam::${{ inputs.source-account-id }}:role/github-main-role
-        role-session-name: main-role-session-${{ inputs.image-name }}
+        role-to-assume: arn:aws:iam::${{ inputs.source_account_id }}:role/github-main-role
+        role-session-name: main-role-session-${{ inputs.image_name }}
         aws-region: us-east-1
     - name: ecr_login
       uses: aws-actions/amazon-ecr-login@v2
@@ -39,27 +39,27 @@ runs:
       shell: bash
       run: |
         docker pull 081157560428.dkr.ecr.us-east-1.amazonaws.com/terraform-deploy-slim:lts-0
-        for tag in $(echo ${{ inputs.image-tags }} | sed "s/,/ /g"); do
-          docker pull ${{ inputs.source-account-id }}.dkr.ecr.${{ inputs.source-region }}.amazonaws.com/${{ inputs.image-name }}:$tag
+        for tag in $(echo ${{ inputs.image_tags }} | sed "s/,/ /g"); do
+          docker pull ${{ inputs.source_account_id }}.dkr.ecr.${{ inputs.source_region }}.amazonaws.com/${{ inputs.image_name }}:$tag
         done
     - name: bootstrap_target_ecr_registry
       uses: jupiterone/provision-cortex/.github/actions/create_ecr_repo@SRE-1479
       with:
         codeowner: ${{ inputs.codeowner }}
-        image-names: ${{ inputs.image-name }}
-        project-name: ${{ inputs.project-name }}
-        target-environment: ${{ inputs.target-environment }}
+        image_names: ${{ inputs.image_name }}
+        project_name: ${{ inputs.project_name }}
+        target_environment: ${{ inputs.target_environment }}
     - name: configurate_target_account_aws_credentials
       uses: aws-actions/configure-aws-credentials@v3
       with:
-        role-to-assume: arn:aws:iam::${{ inputs.target-account-id }}:role/github-main-role
-        role-session-name: main-role-session-${{ inputs.image-name }}
+        role-to-assume: arn:aws:iam::${{ inputs.target_account_id }}:role/github-main-role
+        role-session-name: main-role-session-${{ inputs.image_name }}
         aws-region: us-east-1
     - name: copy_to_target_registry
       shell: bash
       run: |
-        for tag in $(echo ${{ inputs.image-tags }} | sed "s/,/ /g"); do
+        for tag in $(echo ${{ inputs.image_tags }} | sed "s/,/ /g"); do
           docker buildx imagetools create \
-            --tag ${{ inputs.target-account-id }}.dkr.ecr.${{ inputs.target-region }}.amazonaws.com/${{ inputs.image-name }}:$tag \
-            ${{ inputs.source-account-id }}.dkr.ecr.${{ inputs.source-region }}.amazonaws.com/${{ inputs.image-name }}:$tag
+            --tag ${{ inputs.target_account_id }}.dkr.ecr.${{ inputs.target_region }}.amazonaws.com/${{ inputs.image_name }}:$tag \
+            ${{ inputs.source_account_id }}.dkr.ecr.${{ inputs.source_region }}.amazonaws.com/${{ inputs.image_name }}:$tag
         done
