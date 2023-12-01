@@ -6,15 +6,15 @@ inputs:
   image-tags:
     required: true
     description: A comma separated list of image tags to promote.
-  source-registry:
-    required: false
-    default: 081157560428.dkr.ecr.us-east-1.amazonaws.com
-  destination-registry:
-    required: true
-  origin-account-id:
+  source-account-id:
     required: false
     default: 081157560428
+  source-region:
+    required: false
+    default: us-east-1
   destination-account-id:
+    required: true
+  destination-region:
     required: true
 
 runs:
@@ -23,7 +23,7 @@ runs:
     - name: configurate_source_account_aws_credentials
       uses: aws-actions/configure-aws-credentials@v3
       with:
-        role-to-assume: arn:aws:iam::${{ inputs.origin-account-id }}:role/github-main-role
+        role-to-assume: arn:aws:iam::${{ inputs.source-account-id }}:role/github-main-role
         role-session-name: main-role-session-${{ inputs.image-name }}
         aws-region: us-east-1
     - name: ecr_login
@@ -33,7 +33,7 @@ runs:
       run: |
         docker pull 081157560428.dkr.ecr.us-east-1.amazonaws.com/terraform-deploy
         for tag in $(echo ${{ inputs.image-tags }} | sed "s/,/ /g"); do
-          docker pull ${{ inputs.source-registry }}/${{ inputs.image-name }}:$tag
+          docker pull ${{ inputs.source-account-id }}.dkr.ecr.us.${{ inputs.source-region }}/${{ inputs.image-name }}:$tag
         done
     - name: configurate_destination_account_aws_credentials
       uses: aws-actions/configure-aws-credentials@v3
@@ -52,6 +52,6 @@ runs:
       run: |
         for tag in $(echo ${{ inputs.image-tags }} | sed "s/,/ /g"); do
           docker buildx imagetools create \
-            --tag ${{ inputs.destination-registry }}/${{ inputs.image-name }}:$tag \
-            ${{ inputs.source-registry }}/${{ inputs.image-name }}:$tag
+            --tag ${{ inputs.destination-account-id }}.dkr.ecr.us.${{ inputs.destination-region }}/${{ inputs.image-name }}:$tag \
+            ${{ inputs.source-account-id }}.dkr.ecr.us.${{ inputs.source-region }}/${{ inputs.image-name }}:$tag
         done
