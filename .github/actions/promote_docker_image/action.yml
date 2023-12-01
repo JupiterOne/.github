@@ -48,5 +48,5 @@ runs:
         for tag in $(echo ${{ inputs.image-tags }} | sed "s/,/ /g"); do
           docker buildx imagetools create \
             --tag ${{ inputs.destination-account-id }}.dkr.ecr.${{ inputs.destination-region }}/${{ inputs.image-name }}:$tag \
-            ${{ inputs.source-account-id }}.dkr.ecr.us.${{ inputs.source-region }}.amazonaws.com/${{ inputs.image-name }}:$tag
+            ${{ inputs.source-account-id }}.dkr.ecr.${{ inputs.source-region }}.amazonaws.com/${{ inputs.image-name }}:$tag
         done
