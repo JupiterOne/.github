@@ -1,0 +1,65 @@
+name: Promotes built Docker images to target environment registries for consumption
+
+inputs:
+  project_name:
+    required: true
+  codeowner:
+    required: true
+  image_name:
+    required: true
+  image_tags:
+    required: true
+    description: A comma separated list of image tags to promote.
+  source_account_id:
+    required: false
+    default: "081157560428"
+  source_region:
+    required: false
+    default: us-east-1
+  target_account_id:
+    required: true
+  target_region:
+    required: true
+  target_environment:
+    required: true
+    default: dev
+
+runs:
+  using: "composite"
+  steps:
+    - name: configure_source_account_aws_credentials
+      uses: aws-actions/configure-aws-credentials@v3
+      with:
+        role-to-assume: arn:aws:iam::${{ inputs.source_account_id }}:role/github-main-role
+        role-session-name: main-role-session-${{ inputs.image_name }}
+        aws-region: us-east-1
+    - name: ecr_login
+      uses: aws-actions/amazon-ecr-login@v2
+    - name: pull_source_images
+      shell: bash
+      run: |
+        docker pull 081157560428.dkr.ecr.us-east-1.amazonaws.com/terraform-deploy-slim:lts-0
+        for tag in $(echo ${{ inputs.image_tags }} | sed "s/,/ /g"); do
+          docker pull ${{ inputs.source_account_id }}.dkr.ecr.${{ inputs.source_region }}.amazonaws.com/${{ inputs.image_name }}:$tag
+        done
+    - name: bootstrap_target_ecr_registry
+      uses: jupiterone/.github/.github/actions/create_ecr_repo@v3
+      with:
+        codeowner: ${{ inputs.codeowner }}
+        image_names: ${{ inputs.image_name }}
+        project_name: ${{ inputs.project_name }}
+        target_environment: ${{ inputs.target_environment }}
+    - name: configure_target_account_aws_credentials
+      uses: aws-actions/configure-aws-credentials@v3
+      with:
+        role-to-assume: arn:aws:iam::${{ inputs.target_account_id }}:role/github-main-role
+        role-session-name: main-role-session-${{ inputs.image_name }}
+        aws-region: us-east-1
+    - name: copy_to_target_registry
+      shell: bash
+      run: |
+        for tag in $(echo ${{ inputs.image_tags }} | sed "s/,/ /g"); do
+          docker buildx imagetools create \
+            --tag ${{ inputs.target_account_id }}.dkr.ecr.${{ inputs.target_region }}.amazonaws.com/${{ inputs.image_name }}:$tag \
+            ${{ inputs.source_account_id }}.dkr.ecr.${{ inputs.source_region }}.amazonaws.com/${{ inputs.image_name }}:$tag
+        done
