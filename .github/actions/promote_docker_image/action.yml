@@ -27,7 +27,7 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: configurate_source_account_aws_credentials
+    - name: configure_source_account_aws_credentials
       uses: aws-actions/configure-aws-credentials@v3
       with:
         role-to-assume: arn:aws:iam::${{ inputs.source_account_id }}:role/github-main-role
@@ -49,7 +49,7 @@ runs:
         image_names: ${{ inputs.image_name }}
         project_name: ${{ inputs.project_name }}
         target_environment: ${{ inputs.target_environment }}
-    - name: configurate_target_account_aws_credentials
+    - name: configure_target_account_aws_credentials
       uses: aws-actions/configure-aws-credentials@v3
       with:
         role-to-assume: arn:aws:iam::${{ inputs.target_account_id }}:role/github-main-role
