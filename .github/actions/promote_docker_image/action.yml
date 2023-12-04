@@ -43,7 +43,7 @@ runs:
           docker pull ${{ inputs.source_account_id }}.dkr.ecr.${{ inputs.source_region }}.amazonaws.com/${{ inputs.image_name }}:$tag
         done
     - name: bootstrap_target_ecr_registry
-      uses: jupiterone/provision-cortex/.github/actions/create_ecr_repo@SRE-1479
+      uses: jupiterone/.github/.github/actions/create_ecr_repo@v3
       with:
         codeowner: ${{ inputs.codeowner }}
         image_names: ${{ inputs.image_name }}
