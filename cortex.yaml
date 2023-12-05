@@ -8,5 +8,6 @@ info:
   x-cortex-owners:
     - type: group
       name: JupiterOne/sre
-  x-cortex-service-groups: tier-4
   x-cortex-tag: github workflows
+  x-cortex-service-groups:
+    - tier-4
