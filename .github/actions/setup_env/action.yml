@@ -1,35 +1,49 @@
-name: This action is responsible for setting up the environment, configuring node and installing the necessary dependencies
+name: Setup node, npm, and install npm dependencies
+description: |
+  This action is responsible for setting up the environment, configuring node
+  and installing the necessary dependencies
 
 inputs:
   use_dev:
     description: 'If true, will install dev dependencies.'
     required: false
-    type: boolean
-    default: false
+    default: 'false'
+  npm-install:
+    description: 'If true, will run npm install.'
+    required: false
+    default: 'true'
+  NODE_AUTH_TOKEN:
+    description: 'The auth token to use for npm.'
+    required: false
 
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
     - name: check_for_auth_token
-      if: ${{ env.NODE_AUTH_TOKEN == '' }}
+      if: ${{ env.NODE_AUTH_TOKEN == '' && inputs.NODE_AUTH_TOKEN == '' }}
       shell: bash
       run: |
-        echo "the secret \"NODE_AUTH_TOKEN\" has not been set"
-        exit 1
+        echo "the secret \"NODE_AUTH_TOKEN\" has not been set, this may cause issues with npm installs"
     - name: setup_node
       uses: actions/setup-node@v4
       with:
         cache: 'npm'
         registry-url: 'https://registry.npmjs.org'
     - name: npm_install_prod_deps
-      if: ${{ fromJSON(inputs.use_dev) }}
+      if: ${{ fromJSON(inputs.use_dev) && fromJSON(inputs.npm-install) }}
       run: npm ci --ignore-scripts
       shell: bash
+      env:
+        NODE_AUTH_TOKEN: ${{ env.NODE_AUTH_TOKEN || inputs.NODE_AUTH_TOKEN }}
     - name: npm_install_prod_and_dev_deps
-      if: ${{ !fromJSON(inputs.use_dev)}}
+      if: ${{ !fromJSON(inputs.use_dev) && fromJSON(inputs.npm-install) }}
       run: npm ci --ignore-scripts --omit=dev
       shell: bash
+      env:
+        NODE_AUTH_TOKEN: ${{ env.NODE_AUTH_TOKEN || inputs.NODE_AUTH_TOKEN }}
     - name: npm_rebuild
+      if: ${{ fromJSON(inputs.npm-install) }}
       run: npm rebuild && npm run prepare --if-present
       shell: bash
-
+      env:
+        NODE_AUTH_TOKEN: ${{ env.NODE_AUTH_TOKEN || inputs.NODE_AUTH_TOKEN }}
