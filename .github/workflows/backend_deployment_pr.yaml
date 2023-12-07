@@ -1,0 +1,62 @@
+name: 'Backend Deployment Workflow'
+
+on:
+  workflow_call:
+    inputs:
+      use-npm:
+        description: 'Run `npm ci`'
+        default: true
+        type: boolean
+      use-build:
+        description: 'Run `npm run build`'
+        default: true
+        type: boolean
+      setup-terraform:
+        description: 'Install terraform binaries'
+        default: false
+        type: boolean
+      language:
+        description: 'The language to use for code scanning'
+        default: 'javascript'
+        type: string
+    secrets:
+      NODE_AUTH_TOKEN:
+        description: 'A J1 npm.com Publish token'
+        required: false
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Validate
+    runs-on: scaleset-jupiterone-infra-arm64
+    steps:
+      - uses: actions/checkout@v3
+      - uses: Jupiterone/.github/.github/actions/setup_env@v3.0.38
+        with:
+          use_dev: true
+          npm-install: ${{ inputs.use-npm }}
+          NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
+      # Some validations require terraform
+      - if: ${{ inputs.setup-terraform }}
+        uses: hashicorp/setup-terraform@v2
+      # Validation is required for all deployments
+      - run: npm run validate:ci
+      # Not all deployments build code
+      - if: ${{ inputs.use-build }}
+        run: npm run build
+  security:
+    name: Security
+    runs-on: scaleset-jupiterone-infra-amd64
+    permissions:
+      actions: read
+      security-events: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v3
+      - name: security
+        uses: jupiterone/.github/.github/actions/code_ql@v3.0.38
+        with:
+          language: ${{ inputs.language }}
