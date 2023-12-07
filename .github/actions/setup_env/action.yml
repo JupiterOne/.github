@@ -12,7 +12,7 @@ inputs:
     description: 'If true, will run npm install.'
     required: false
     default: 'true'
-  NODE_AUTH_TOKEN:
+  node-auth-token:
     description: 'The auth token to use for npm.'
     required: false
 
@@ -34,16 +34,16 @@ runs:
       run: npm ci --ignore-scripts
       shell: bash
       env:
-        NODE_AUTH_TOKEN: ${{ env.NODE_AUTH_TOKEN || inputs.NODE_AUTH_TOKEN }}
+        NODE_AUTH_TOKEN: ${{ env.NODE_AUTH_TOKEN || inputs.node-auth-token }}
     - name: npm_install_prod_and_dev_deps
       if: ${{ !fromJSON(inputs.use_dev) && fromJSON(inputs.npm-install) }}
       run: npm ci --ignore-scripts --omit=dev
       shell: bash
       env:
-        NODE_AUTH_TOKEN: ${{ env.NODE_AUTH_TOKEN || inputs.NODE_AUTH_TOKEN }}
+        NODE_AUTH_TOKEN: ${{ env.NODE_AUTH_TOKEN || inputs.node-auth-token }}
     - name: npm_rebuild
       if: ${{ fromJSON(inputs.npm-install) }}
       run: npm rebuild && npm run prepare --if-present
       shell: bash
       env:
-        NODE_AUTH_TOKEN: ${{ env.NODE_AUTH_TOKEN || inputs.NODE_AUTH_TOKEN }}
+        NODE_AUTH_TOKEN: ${{ env.NODE_AUTH_TOKEN || inputs.node-auth-token }}
