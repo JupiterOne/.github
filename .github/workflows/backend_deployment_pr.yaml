@@ -57,6 +57,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: security
-        uses: jupiterone/.github/.github/actions/code_ql@v3.0.39
+        uses: jupiterone/.github/.github/actions/code_ql@v3.0.40
         with:
           language: ${{ inputs.language }}
