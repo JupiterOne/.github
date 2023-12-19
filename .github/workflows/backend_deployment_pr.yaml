@@ -38,7 +38,7 @@ jobs:
         with:
           use_dev: true
           npm-install: ${{ inputs.use-npm }}
-          NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
       # Some validations require terraform
       - if: ${{ inputs.setup-terraform }}
         uses: hashicorp/setup-terraform@v2
