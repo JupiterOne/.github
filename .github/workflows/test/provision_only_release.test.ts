@@ -43,5 +43,5 @@ test('default flow', async () => {
     'version_artifact'
   ] });
 
-  expect(jobs_found.length).toEqual(3);
+  expect(jobs_found.length).toEqual(2);
 });

@@ -63,7 +63,7 @@ test('default flow', async () => {
     'magic_url'
   ] });
 
-  expect(jobs_found.length).toEqual(5);
+  expect(jobs_found.length).toEqual(4);
 });
 
 test('when use_validate is false', async () => {

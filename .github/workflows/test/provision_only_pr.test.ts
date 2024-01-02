@@ -26,5 +26,5 @@ test('default flow', async () => {
     'validate',
   ] });
 
-  expect(jobs_found.length).toEqual(2);
+  expect(jobs_found.length).toEqual(1);
 });

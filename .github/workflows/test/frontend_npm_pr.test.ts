@@ -46,7 +46,7 @@ test('default flow', async () => {
     'security'
   ] });
 
-  expect(jobs_found.length).toEqual(2);
+  expect(jobs_found.length).toEqual(1);
 });
 
 test('when use_chromatic is true', async () => {

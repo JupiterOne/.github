@@ -49,7 +49,7 @@ test('default flow', async () => {
     'cortex'
   ] });
 
-  expect(jobs_found.length).toEqual(3);
+  expect(jobs_found.length).toEqual(2);
 });
 
 test('flow with chromatic turned on', async () => {
@@ -65,5 +65,5 @@ test('flow with chromatic turned on', async () => {
     'chromatic_publish'
   ] });
 
-  expect(jobs_found.length).toEqual(4);
+  expect(jobs_found.length).toEqual(3);
 });

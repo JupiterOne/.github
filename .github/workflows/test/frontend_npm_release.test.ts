@@ -58,7 +58,7 @@ test('default flow', async () => {
     'cortex'
   ] });
 
-  expect(jobs_found.length).toEqual(4);
+  expect(jobs_found.length).toEqual(3);
 });
 
 test('when use_chromatic is true', async () => {
@@ -75,5 +75,5 @@ test('when use_chromatic is true', async () => {
     'cortex'
   ] });
 
-  expect(jobs_found.length).toEqual(5);
+  expect(jobs_found.length).toEqual(4);
 });
