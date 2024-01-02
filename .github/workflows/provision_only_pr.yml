@@ -35,16 +35,3 @@ jobs:
       - uses: hashicorp/setup-terraform@v2
       - name: validate
         uses: jupiterone/.github/.github/actions/validate@v3.0.41
-  
-  security:
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-amd64' }}
-    permissions:
-      actions: read
-      security-events: write
-      contents: read
-    steps:
-      - uses: actions/checkout@v3
-      - name: security
-        uses: jupiterone/.github/.github/actions/code_ql@v3.0.41
-        with:
-          language: 'javascript'

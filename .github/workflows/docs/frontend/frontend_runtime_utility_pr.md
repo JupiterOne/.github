@@ -44,12 +44,10 @@ graph LR;
     B[migration_number];
     C[magic_url];
     D[validate];
-    E[security];
     F[pr_comment];
 
     A --> B;
     A --> D;
-    A --> E;
     B --> C;
     A --> F;
 ```
@@ -78,12 +76,10 @@ graph LR;
     C[magic_url];
     D[validate];
     E[chromatic_upload];
-    F[security];
 
     A --> B;
     A --> D;
     A --> E;
-    A --> F;
     B --> C;
 ```
 

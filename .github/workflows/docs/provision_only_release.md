@@ -40,11 +40,9 @@ jobs:
 graph LR;
     A[start flow];
     B[validate];
-    C[security];
     D[version_artifact];
 
     A --> B;
-    A --> C;
     B --> D;
 ```
 

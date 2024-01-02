@@ -46,12 +46,10 @@ graph LR;
     B[validate];
     C[release];
     D[cortex];
-    E[security];
 
     A --> B;
     B --> C;
     B --> D;
-    A --> E;
 ```
 
 ### With Chromatic
@@ -79,11 +77,9 @@ graph LR;
     C[chromatic_publish]
     D[release];
     E[cortex];
-    F[security];
 
     A --> B;
     B --> C;
     B --> D;
     B --> E;
-    A --> F;
 ```

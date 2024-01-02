@@ -24,7 +24,6 @@ test('default flow', async () => {
 
   const jobs_found = getTestResults({ results, names: [
     'validate',
-    'security'
   ] });
 
   expect(jobs_found.length).toEqual(2);

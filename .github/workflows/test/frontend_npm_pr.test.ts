@@ -34,11 +34,6 @@ test('validate inputs and secrets', async () => {
   const chromatic_inputs = getTestResult({ results, name: 'chromatic_inputs' });
   
   expect(chromatic_inputs.output).toContain(`chromatic_project_token=***`);
-
-  // code_ql
-  const code_ql_inputs = getTestResult({ results, name: 'code_ql_inputs' });
-  
-  expect(code_ql_inputs.output).toContain(`language=javascript`);
 });
 
 test('default flow', async () => {
