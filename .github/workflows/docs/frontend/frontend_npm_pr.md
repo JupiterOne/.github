@@ -41,10 +41,8 @@ jobs:
 graph LR;
     A[start flow];
     B[validate];
-    C[security];
 
     A --> B;
-    A --> C;
 ```
 
 ### With Chromatic
@@ -69,10 +67,8 @@ graph LR;
     A[start flow];
     B[validate];
     C[chromatic_upload];
-    D[security];
 
     A --> B;
     A --> C;
-    A --> D;
 ```
 

@@ -39,9 +39,7 @@ jobs:
 graph LR;
     A[start flow];
     B[validate];
-    C[security];
 
     A --> B;
-    A --> C;
 ```
 

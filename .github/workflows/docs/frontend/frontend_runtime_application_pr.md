@@ -48,11 +48,9 @@ graph LR;
     B[migration_number];
     C[magic_url];
     D[validate];
-    E[security];
 
     A --> B;
     A --> D;
-    A --> E;
     B --> C;
 ```
 
@@ -81,13 +79,11 @@ graph LR;
     C[magic_url];
     D[validate];
     E[chromatic_upload];
-    F[security];
     G[pr_comment]
 
     A --> B;
     A --> D;
     A --> E;
     B --> C;
-    A --> F;
     A --> G;
 ```

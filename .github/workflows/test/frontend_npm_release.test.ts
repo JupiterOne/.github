@@ -45,11 +45,6 @@ test('validate inputs and secrets', async () => {
   const cortex_inputs = getTestResult({ results, name: 'cortex_inputs' });
 
   expect(cortex_inputs.output).toContain(`cortex_api_key=***`);
-
-  // code_ql
-  const code_ql_inputs = getTestResult({ results, name: 'code_ql_inputs' });
-  
-  expect(code_ql_inputs.output).toContain(`language=javascript`);
 });
 
 test('default flow', async () => {
@@ -59,12 +54,11 @@ test('default flow', async () => {
 
   const jobs_found = getTestResults({ results, names: [
     'validate',
-    'security',
     'publish',
     'cortex'
   ] });
 
-  expect(jobs_found.length).toEqual(4);
+  expect(jobs_found.length).toEqual(3);
 });
 
 test('when use_chromatic is true', async () => {
@@ -76,11 +70,10 @@ test('when use_chromatic is true', async () => {
 
   const jobs_found = getTestResults({ results, names: [
     'validate',
-    'security',
     'chromatic_publish',
     'publish',
     'cortex'
   ] });
 
-  expect(jobs_found.length).toEqual(5);
+  expect(jobs_found.length).toEqual(4);
 });

@@ -47,16 +47,3 @@ jobs:
       # Not all deployments build code
       - if: ${{ inputs.use-build }}
         run: npm run build
-  security:
-    name: Security
-    runs-on: scaleset-jupiterone-infra-amd64
-    permissions:
-      actions: read
-      security-events: write
-      contents: read
-    steps:
-      - uses: actions/checkout@v3
-      - name: security
-        uses: jupiterone/.github/.github/actions/code_ql@v3.0.41
-        with:
-          language: ${{ inputs.language }}

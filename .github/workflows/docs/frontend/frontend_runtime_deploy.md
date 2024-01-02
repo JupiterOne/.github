@@ -44,11 +44,10 @@ jobs:
 ```mermaid
 graph LR;
     A[start flow];
-    B[security];
     C[validate];
     D[cortex];
 
-    A --> B;
+    A;
     A --> C --> D;
 ```
 
@@ -73,12 +72,10 @@ jobs:
 ```mermaid
 graph LR;
     A[start flow];
-    B[security];
     C[validate];
     D[cortex];
     E[chromatic_publish];
 
-    A --> B;
     A --> C;
     C --> D;
     C --> E;

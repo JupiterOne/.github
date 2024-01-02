@@ -43,11 +43,6 @@ test('validate inputs and secrets', async () => {
 
   expect(magic_url_inputs.output).toContain(`migration=${mockPackageJson.config.migration}`);
 
-  // code_ql
-  const code_ql_inputs = getTestResult({ results, name: 'code_ql_inputs' });
-  
-  expect(code_ql_inputs.output).toContain(`language=javascript`);
-
   // pr_comment
   const pr_comment_inputs = getTestResult({ results, name: 'pr_comment_inputs' });
 
@@ -62,11 +57,10 @@ test('default flow', async () => {
     'pr_comment',
     'migration_number',
     'validate',
-    'security',
     'magic_url'
   ] });
 
-  expect(jobs_found.length).toEqual(5);
+  expect(jobs_found.length).toEqual(4);
 });
 
 test('when use_validate is false', async () => {
