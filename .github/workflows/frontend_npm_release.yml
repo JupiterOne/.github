@@ -4,16 +4,24 @@ on:
   workflow_call:
     inputs:
       fallback_runner:
-        description: "If true will leverage ubuntu-latest, otherwise will fall back to the J1 in-house runner"
+        description:
+          'If true will leverage ubuntu-latest, otherwise will fall back to the
+          J1 in-house runner'
         default: false
         type: boolean
       use_chromatic:
-        description: "Run VRT Storybook tests with chromatic"
+        description: 'Run VRT Storybook tests with chromatic'
         default: false
         type: boolean
       use_cortex:
-        description: "Runs the Cortex job. We eventually want to make this required but we need to make sure we don't break the pipeline."
+        description:
+          "Runs the Cortex job. We eventually want to make this required but we
+          need to make sure we don't break the pipeline."
         default: true
+        type: boolean
+      use_dev_deps_for_publish:
+        description: 'If true will leverage the npm dev deps for publishing'
+        default: false
         type: boolean
     secrets:
       NPM_TOKEN:
@@ -23,7 +31,9 @@ on:
         description: 'The Chromatic API token'
         required: false
       AUTO_GITHUB_PAT_TOKEN:
-        description: "This is a GitHuh PAT that let's auto write back to main after npm versioning"
+        description:
+          "This is a GitHuh PAT that let's auto write back to main after npm
+          versioning"
         required: true
       CORTEX_API_KEY:
         description: 'A key that allows us to push data to Cortex'
@@ -41,7 +51,9 @@ jobs:
   validate:
     # Name targeted by branch protections, do not change
     name: Validate
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
+    runs-on:
+      ${{ (inputs.fallback_runner && 'ubuntu-latest') ||
+      'scaleset-jupiterone-infra-arm64' }}
     steps:
       - uses: actions/checkout@v3
       - name: setup_env
@@ -54,7 +66,9 @@ jobs:
         uses: jupiterone/.github/.github/actions/build@v3.0.42
 
   chromatic_publish:
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
+    runs-on:
+      ${{ (inputs.fallback_runner && 'ubuntu-latest') ||
+      'scaleset-jupiterone-infra-arm64' }}
     needs: validate
     if: ${{ inputs.use_chromatic }}
     steps:
@@ -73,7 +87,9 @@ jobs:
           chromatic_project_token: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
 
   publish:
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
+    runs-on:
+      ${{ (inputs.fallback_runner && 'ubuntu-latest') ||
+      'scaleset-jupiterone-infra-arm64' }}
     needs: validate
     steps:
       - uses: actions/checkout@v3
@@ -82,6 +98,8 @@ jobs:
           fetch-depth: 0
       - name: setup_env
         uses: jupiterone/.github/.github/actions/setup_env@v3.0.42
+        with:
+          use_dev: ${{ inputs.use_dev_deps_for_publish }}
       - name: build
         uses: jupiterone/.github/.github/actions/build@v3.0.42
       - name: publish
@@ -90,7 +108,9 @@ jobs:
           auto_token: ${{ secrets.AUTO_GITHUB_PAT_TOKEN }}
 
   cortex:
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
+    runs-on:
+      ${{ (inputs.fallback_runner && 'ubuntu-latest') ||
+      'scaleset-jupiterone-infra-arm64' }}
     needs: validate
     if: ${{ inputs.use_cortex }}
     steps:

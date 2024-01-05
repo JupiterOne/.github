@@ -9,7 +9,7 @@ const repoName = 'frontend_npm_release';
 
 beforeEach(async () => {
   mockGithub = new MockGithub(getWorkflowConfig({ repoName }));
-  
+
   await mockGithub.setup();
 });
 
@@ -22,7 +22,7 @@ test('validate inputs and secrets', async () => {
   const mockSecrets = [
     'CHROMATIC_PROJECT_TOKEN',
     'AUTO_GITHUB_PAT_TOKEN',
-    'CORTEX_API_KEY'
+    'CORTEX_API_KEY',
   ];
 
   setSecrets({ act, mockSecrets });
@@ -33,12 +33,15 @@ test('validate inputs and secrets', async () => {
 
   // chromatic_upload
   const chromatic_inputs = getTestResult({ results, name: 'chromatic_inputs' });
-  
+
   expect(chromatic_inputs.output).toContain(`chromatic_project_token=***`);
 
   // npm_publish
-  const npm_publish_inputs = getTestResult({ results, name: 'npm_publish_inputs' });
-  
+  const npm_publish_inputs = getTestResult({
+    results,
+    name: 'npm_publish_inputs',
+  });
+
   expect(npm_publish_inputs.output).toContain(`auto_token=***`);
 
   // cortex
@@ -52,11 +55,10 @@ test('default flow', async () => {
 
   const results = await runWorkflow({ act, repoName, mockGithub });
 
-  const jobs_found = getTestResults({ results, names: [
-    'validate',
-    'publish',
-    'cortex'
-  ] });
+  const jobs_found = getTestResults({
+    results,
+    names: ['validate', 'publish', 'cortex'],
+  });
 
   expect(jobs_found.length).toEqual(3);
 });
@@ -68,12 +70,10 @@ test('when use_chromatic is true', async () => {
 
   const results = await runWorkflow({ act, repoName, mockGithub });
 
-  const jobs_found = getTestResults({ results, names: [
-    'validate',
-    'chromatic_publish',
-    'publish',
-    'cortex'
-  ] });
+  const jobs_found = getTestResults({
+    results,
+    names: ['validate', 'chromatic_publish', 'publish', 'cortex'],
+  });
 
   expect(jobs_found.length).toEqual(4);
 });

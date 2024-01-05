@@ -1,5 +1,6 @@
 name: Slack Notifier
-description: Send Slack updates to the provided channel upon workflow completion.
+description:
+  Send Slack updates to the provided channel upon workflow completion.
 
 inputs:
   slack_bot_token:
@@ -11,7 +12,7 @@ inputs:
     required: true
 
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
     - name: set_status_emoji
       id: setEmoji

@@ -1,18 +1,24 @@
-name: Default workflow for a provision only repo when a PR is merged to main triggering the release flow
+name:
+  Default workflow for a provision only repo when a PR is merged to main
+  triggering the release flow
 
 on:
   workflow_call:
     inputs:
       fallback_runner:
-        description: "If true will leverage ubuntu-latest, otherwise will fall back to the J1 in-house runner"
+        description:
+          'If true will leverage ubuntu-latest, otherwise will fall back to the
+          J1 in-house runner'
         default: false
         type: boolean
     secrets:
       NPM_TOKEN:
-        description: "A J1 npm.com Publish token"
+        description: 'A J1 npm.com Publish token'
         required: true
       AUTO_GITHUB_PAT_TOKEN:
-        description: "This is a GitHuh PAT that let's auto write back to main after npm versioning"
+        description:
+          "This is a GitHuh PAT that let's auto write back to main after npm
+          versioning"
         required: true
 
 env:
@@ -26,7 +32,9 @@ jobs:
   validate:
     # Name targeted by branch protections, do not change
     name: Validate
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
+    runs-on:
+      ${{ (inputs.fallback_runner && 'ubuntu-latest') ||
+      'scaleset-jupiterone-infra-arm64' }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -40,7 +48,9 @@ jobs:
         uses: jupiterone/.github/.github/actions/validate@v3.0.42
 
   version_artifact:
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-amd64' }}
+    runs-on:
+      ${{ (inputs.fallback_runner && 'ubuntu-latest') ||
+      'scaleset-jupiterone-infra-amd64' }}
     needs: validate
     steps:
       - uses: actions/checkout@v3

@@ -19,7 +19,7 @@ outputs:
     value: ${{ steps.artemis_info.outputs.artemis_users }}
 
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
     - name: e2e_prepare_inputs
       shell: bash

@@ -1,7 +1,9 @@
-name: Run the remote-types test to look for breaking changes made. Will skip the test if "skip remote-type-check" is found.
+name:
+  Run the remote-types test to look for breaking changes made. Will skip the
+  test if "skip remote-type-check" is found.
 
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
     # Check if we should skip validating runtime types
     - name: remote_type_check_skip
@@ -20,4 +22,3 @@ runs:
       run: |
         npx -p @jupiterone/web-tools-remote-types@latest remote-types test
         echo "No breaking changes found";
-

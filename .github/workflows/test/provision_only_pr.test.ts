@@ -9,7 +9,7 @@ const repoName = 'provision_only_pr';
 
 beforeEach(async () => {
   mockGithub = new MockGithub(getWorkflowConfig({ repoName }));
-  
+
   await mockGithub.setup();
 });
 
@@ -22,9 +22,7 @@ test('default flow', async () => {
 
   const results = await runWorkflow({ act, repoName, mockGithub });
 
-  const jobs_found = getTestResults({ results, names: [
-    'validate',
-  ] });
+  const jobs_found = getTestResults({ results, names: ['validate'] });
 
   expect(jobs_found.length).toEqual(1);
 });

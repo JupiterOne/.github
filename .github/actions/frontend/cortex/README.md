@@ -1,14 +1,15 @@
 # Frontend - Cortex
 
-This [composite action](./action.yml) is responsible for running Cortex related jobs for Frontend Projects.
+This [composite action](./action.yml) is responsible for running Cortex related
+jobs for Frontend Projects.
 
 ## Inputs
 
 This action takes the following inputs:
 
-| Name                        | Type    | Default                            | Required  | Description                                               |
-| --------------------------- | ------- | ---------------------------------- | --------- | --------------------------------------------------------- |
-| `cortex_api_key`            | String  |                                    | True      | The key that allows us to push data to Cortex 
+| Name             | Type   | Default | Required | Description                                   |
+| ---------------- | ------ | ------- | -------- | --------------------------------------------- |
+| `cortex_api_key` | String |         | True     | The key that allows us to push data to Cortex |
 
 ## Outputs
 

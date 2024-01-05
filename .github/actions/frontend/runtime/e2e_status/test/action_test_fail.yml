@@ -1,5 +1,5 @@
 on: [push]
-  
+
 jobs:
   e2e_status:
     runs-on: ubuntu-latest

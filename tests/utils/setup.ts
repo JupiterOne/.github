@@ -2,7 +2,12 @@ import { join, resolve } from 'node:path';
 import { cwd } from 'node:process';
 import { Act } from '@kie/act-js';
 import { MockGithub } from '@kie/mock-github';
-import { updateCompositeWithMocks, updateWorkflowWithMocks, MockSteps, MockCompositeSteps } from './mocking';
+import {
+  updateCompositeWithMocks,
+  updateWorkflowWithMocks,
+  MockSteps,
+  MockCompositeSteps,
+} from './mocking';
 
 export const getCompositeActionConfig = ({
   directory,
@@ -13,7 +18,7 @@ export const getCompositeActionConfig = ({
   directory: string;
   repoName: string;
   actionTriggeringComposite?: string;
-  additionalFiles?: { src: string; dest: string; }[];
+  additionalFiles?: { src: string; dest: string }[];
 }) => {
   return {
     repo: {
@@ -32,7 +37,7 @@ export const getCompositeActionConfig = ({
             src: resolve(cwd(), 'tests', 'package.json'),
             dest: 'package.json',
           },
-          ...(additionalFiles ? additionalFiles : [])
+          ...(additionalFiles ? additionalFiles : []),
         ],
       },
     },
@@ -44,7 +49,7 @@ export const getWorkflowConfig = ({
   additionalFiles,
 }: {
   repoName: string;
-  additionalFiles?: { src: string; dest: string; }[];
+  additionalFiles?: { src: string; dest: string }[];
 }) => {
   return {
     repo: {
@@ -63,9 +68,9 @@ export const getWorkflowConfig = ({
           {
             src: resolve(cwd(), '.github/actions'),
             dest: `.github/actions`,
-            filter: ['**/test'] // Don't copy over the tests in composite actions
+            filter: ['**/test'], // Don't copy over the tests in composite actions
           },
-          ...(additionalFiles ? additionalFiles : [])
+          ...(additionalFiles ? additionalFiles : []),
         ],
       },
     },
@@ -81,16 +86,18 @@ export const runCompositeAction = async ({
   act: Act;
   repoName: string;
   originDirectory: string;
-  mockSteps?: MockCompositeSteps,
+  mockSteps?: MockCompositeSteps;
 }) => {
   await updateCompositeWithMocks({
     repoName,
     originDirectory,
-    mockSteps
+    mockSteps,
   });
 
-  const result = await act.runEventAndJob('push', repoName, { logFile: process.env.ACT_LOG ? `log-${repoName}.log` : undefined });
-  
+  const result = await act.runEventAndJob('push', repoName, {
+    logFile: process.env.ACT_LOG ? `log-${repoName}.log` : undefined,
+  });
+
   /*
   The first two and last item in the returned results are the same for every composite action test.
   Therefore we want to remove those to make our test results cleaner.
@@ -110,7 +117,7 @@ export const runWorkflow = async ({
   act: Act;
   repoName: string;
   mockGithub: MockGithub;
-  mockSteps?: MockSteps,
+  mockSteps?: MockSteps;
   config?: object;
 }) => {
   await updateWorkflowWithMocks({
@@ -121,10 +128,10 @@ export const runWorkflow = async ({
 
   // Need to leverage ubuntu-latest for tests to operate
   act.setInput('fallback_runner', 'true');
- 
+
   const result = await act.runEvent('workflow_call', {
     ...config,
-    logFile: process.env.ACT_LOG ? `log-${repoName}.log` : undefined
+    logFile: process.env.ACT_LOG ? `log-${repoName}.log` : undefined,
   });
 
   return result;

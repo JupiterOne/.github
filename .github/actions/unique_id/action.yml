@@ -3,7 +3,9 @@ name: Returns a unique ID
 inputs:
   sha:
     type: string
-    description: 'The github.sha which is the SHA for a temporary commit created for validating the pull request'
+    description:
+      'The github.sha which is the SHA for a temporary commit created for
+      validating the pull request'
     required: true
 
 outputs:
@@ -11,7 +13,7 @@ outputs:
     value: ${{ steps.unique_id.outputs.value }}
 
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
     - name: unique_id
       id: unique_id
@@ -19,4 +21,5 @@ runs:
       # take the current commit + timestamp together
       # the typical value would be something like
       # "sha-5d3fe...35d3-time-1620841214"
-      run: echo "value=sha-${{ inputs.sha }}-time-$(date +"%s")" >> $GITHUB_OUTPUT
+      run:
+        echo "value=sha-${{ inputs.sha }}-time-$(date +"%s")" >> $GITHUB_OUTPUT

@@ -1,34 +1,40 @@
-name: Default workflow for a runtime when a PR is merged to main triggering the deploy flow
+name:
+  Default workflow for a runtime when a PR is merged to main triggering the
+  deploy flow
 
 on:
   workflow_call:
     inputs:
       fallback_runner:
-        description: "If true will leverage ubuntu-latest, otherwise will fall back to the J1 in-house runner"
+        description:
+          'If true will leverage ubuntu-latest, otherwise will fall back to the
+          J1 in-house runner'
         default: false
         type: boolean
       publish_chromatic:
-        description: "If true, will publish to Chromatic"
+        description: 'If true, will publish to Chromatic'
         type: boolean
     secrets:
       NPM_TOKEN:
-        description: "A J1 npm.com Publish token"
+        description: 'A J1 npm.com Publish token'
         required: true
       CORTEX_API_KEY:
-        description: "A key that allows us to push data to Cortex"
+        description: 'A key that allows us to push data to Cortex'
         required: true
       CHROMATIC_PROJECT_TOKEN:
-        description: "A token that allows us to publish to Chromatic"
+        description: 'A token that allows us to publish to Chromatic'
         required: false
 
 env:
   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-  
+
 jobs:
   validate:
     # Name targeted by branch protections, do not change
     name: Validate
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
+    runs-on:
+      ${{ (inputs.fallback_runner && 'ubuntu-latest') ||
+      'scaleset-jupiterone-infra-arm64' }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -43,9 +49,11 @@ jobs:
         uses: jupiterone/.github/.github/actions/validate@v3.0.42
       - name: build
         uses: jupiterone/.github/.github/actions/build@v3.0.42
-          
+
   chromatic_publish:
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
+    runs-on:
+      ${{ (inputs.fallback_runner && 'ubuntu-latest') ||
+      'scaleset-jupiterone-infra-arm64' }}
     needs: validate
     if: ${{ inputs.publish_chromatic }}
     steps:
@@ -64,7 +72,9 @@ jobs:
           publish_chromatic: true
 
   cortex:
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
+    runs-on:
+      ${{ (inputs.fallback_runner && 'ubuntu-latest') ||
+      'scaleset-jupiterone-infra-arm64' }}
     needs: validate
     steps:
       - uses: actions/checkout@v3

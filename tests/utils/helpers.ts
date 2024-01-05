@@ -4,7 +4,10 @@ import { Act } from '@kie/act-js';
 Helpers methods for finding and extracting a test result
 from the act-js output.
 */
-interface Result { name: string; output: string; }
+interface Result {
+  name: string;
+  output: string;
+}
 
 export const getTestResult = ({
   results,
@@ -23,7 +26,7 @@ export const getTestResults = ({
   names,
 }: {
   results: Result[];
-  names: string[]
+  names: string[];
 }) => {
   const resultsFound = results.filter((result) =>
     names.includes(result?.name?.replace('Main ', ''))
@@ -37,8 +40,9 @@ export const setInputs = ({
   mockInputs,
 }: {
   act: Act;
-  mockInputs: object
-}) =>  Object.keys(mockInputs).forEach((key) => act.setInput(key, mockInputs[key]));
+  mockInputs: object;
+}) =>
+  Object.keys(mockInputs).forEach((key) => act.setInput(key, mockInputs[key]));
 
 export const setSecrets = ({
   act,
@@ -46,4 +50,5 @@ export const setSecrets = ({
 }: {
   act: Act;
   mockSecrets: string[];
-}) =>  mockSecrets.forEach((mockSecret) => act.setSecret(mockSecret, mockSecret));
+}) =>
+  mockSecrets.forEach((mockSecret) => act.setSecret(mockSecret, mockSecret));

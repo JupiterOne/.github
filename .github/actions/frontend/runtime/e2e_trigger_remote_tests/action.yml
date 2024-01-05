@@ -2,21 +2,21 @@ name: Triggers tests in other repos and waits for the results
 
 inputs:
   e2e_pass_on_error:
-    description: "Pass the workflow even if the E2E test fail"
+    description: 'Pass the workflow even if the E2E test fail'
     required: false
     default: false
     type: boolean
   e2e_auto:
-    description: "A J1 token for kicking off cypress tests"
+    description: 'A J1 token for kicking off cypress tests'
     required: true
   repo_name:
-    description: "The name of the repo to target"
+    description: 'The name of the repo to target'
     required: true
   repo_spec:
-    description: "The name of the spec(s) to target"
+    description: 'The name of the spec(s) to target'
     required: true
   pr_branch:
-    description: "The name of the branch associated with this trigger"
+    description: 'The name of the branch associated with this trigger'
     required: true
 
 outputs:
@@ -24,7 +24,7 @@ outputs:
     value: ${{ steps.test_results.outputs.test_passed }}
 
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
     - name: e2e_trigger_remote_tests_inputs
       shell: bash
@@ -49,7 +49,14 @@ runs:
         # This is the name of the file in the external repo that we're kicking the tests off in, do not change this!
         workflow_file_name: e2e_trigger.yml
         propagate_failure: ${{ !fromJSON(inputs.e2e_pass_on_error) }}
-        client_payload: '{"spec_to_run":"${{ inputs.repo_spec }}","external_pr_number":"${{ github.event.issue.number }}","external_pr_title":"${{ github.event.issue.title }}","external_pr_repo_name":"${{ github.event.repository.name }}","external_pr_branch":"${{ inputs.pr_branch }}","external_pr_author":"${{ steps.get_author_name.outputs.commit_info_author }}","external_pr_sha":"${{ github.sha }}"}'
+        client_payload:
+          '{"spec_to_run":"${{ inputs.repo_spec }}","external_pr_number":"${{
+          github.event.issue.number }}","external_pr_title":"${{
+          github.event.issue.title }}","external_pr_repo_name":"${{
+          github.event.repository.name }}","external_pr_branch":"${{
+          inputs.pr_branch }}","external_pr_author":"${{
+          steps.get_author_name.outputs.commit_info_author
+          }}","external_pr_sha":"${{ github.sha }}"}'
     # We have to manually output an exit code of 0 to ensure the action passes if e2e_pass_on_error is true
     - name: pass_with_failures
       shell: bash
@@ -59,11 +66,16 @@ runs:
       shell: bash
       # Need to check previous TEST_PASSED to ensure it hasn't already failed
       # important if multiple containers are in use to ensure the correct status is reported
-      if: ${{ contains(steps.cypress_run.outcome, 'success') || contains(steps.mock_step.outcome, 'success') && !contains(env.TEST_PASSED, false) }}
+      if:
+        ${{ contains(steps.cypress_run.outcome, 'success') ||
+        contains(steps.mock_step.outcome, 'success') &&
+        !contains(env.TEST_PASSED, false) }}
       run: echo "TEST_PASSED=true" >> $GITHUB_ENV
     - name: set_failure_vars
       shell: bash
-      if: ${{ !contains(steps.cypress_run.outcome, 'success') || contains(steps.mock_step.outcome, 'success') }}
+      if:
+        ${{ !contains(steps.cypress_run.outcome, 'success') ||
+        contains(steps.mock_step.outcome, 'success') }}
       run: echo "TEST_PASSED=false" >> $GITHUB_ENV
     - name: test_results
       id: test_results

@@ -1,7 +1,12 @@
 import { MockGithub } from '@kie/mock-github';
 import { Act } from '@kie/act-js';
 import { getWorkflowConfig, runWorkflow } from 'tests/utils/setup';
-import { getTestResult, getTestResults, setInputs, setSecrets } from 'tests/utils/helpers';
+import {
+  getTestResult,
+  getTestResults,
+  setInputs,
+  setSecrets,
+} from 'tests/utils/helpers';
 import mockPackageJson from 'tests/package.json';
 import mockArtemisRun from '~/actions/frontend/runtime/e2e_prepare/test/artemis-run.json';
 import { resolve } from 'node:path';
@@ -18,18 +23,32 @@ const mockArtemisData = {
   users: {
     tokenSecret: mockArtemisRun[1].metadata.token.tokenSecret,
     tokenCsrf: mockArtemisRun[1].metadata.token.tokenCsrf,
-    groupName: mockArtemisRun[1].metadata.groupName
-  }
+    groupName: mockArtemisRun[1].metadata.groupName,
+  },
 };
 
 beforeEach(async () => {
-  mockGithub = new MockGithub(getWorkflowConfig({ repoName, additionalFiles: [
-    {
-      src: resolve(cwd(), '.github', 'actions', 'frontend', 'runtime', 'e2e_prepare', 'test', 'artemis-run.json'),
-      dest: 'artemis-run.json',
-    }
-  ] }));
-  
+  mockGithub = new MockGithub(
+    getWorkflowConfig({
+      repoName,
+      additionalFiles: [
+        {
+          src: resolve(
+            cwd(),
+            '.github',
+            'actions',
+            'frontend',
+            'runtime',
+            'e2e_prepare',
+            'test',
+            'artemis-run.json'
+          ),
+          dest: 'artemis-run.json',
+        },
+      ],
+    })
+  );
+
   await mockGithub.setup();
 });
 
@@ -43,7 +62,7 @@ test('validate inputs and secrets', async () => {
     'CYPRESS_RECORD_KEY',
     'CYPRESS_PROJECT_ID',
     'CYPRESS_PASSWORD',
-    'DOCKER_HUB_SRE'
+    'DOCKER_HUB_SRE',
   ];
   const mockInputs = {
     spec_to_run: 'spec_to_run_test',
@@ -52,7 +71,7 @@ test('validate inputs and secrets', async () => {
     external_pr_title: 'external_pr_title_test',
     external_pr_branch: 'external_pr_branch_test',
     external_pr_author: 'external_pr_author_test',
-    external_pr_repo_name: 'external_pr_repo_name_test'
+    external_pr_repo_name: 'external_pr_repo_name_test',
   };
 
   setSecrets({ act, mockSecrets });
@@ -63,21 +82,48 @@ test('validate inputs and secrets', async () => {
   // e2e_run
   const e2e_run_inputs = getTestResult({ results, name: 'e2e_run_inputs' });
 
-  expect(e2e_run_inputs.output).toContain(`artemis_account_name=${mockArtemisData.accountName}`);
-  expect(e2e_run_inputs.output).toContain(`artemis_account_subdomain=${mockArtemisData.accountSubdomain}`);
-  expect(e2e_run_inputs.output).toContain(`artemis_account_id=${mockArtemisData.id}`);
-  expect(e2e_run_inputs.output).toContain(`artemis_users=[${JSON.stringify(mockArtemisData.users).replace(/"([^"]+)"/g, '$1')}]`);
+  expect(e2e_run_inputs.output).toContain(
+    `artemis_account_name=${mockArtemisData.accountName}`
+  );
+  expect(e2e_run_inputs.output).toContain(
+    `artemis_account_subdomain=${mockArtemisData.accountSubdomain}`
+  );
+  expect(e2e_run_inputs.output).toContain(
+    `artemis_account_id=${mockArtemisData.id}`
+  );
+  expect(e2e_run_inputs.output).toContain(
+    `artemis_users=[${JSON.stringify(mockArtemisData.users).replace(
+      /"([^"]+)"/g,
+      '$1'
+    )}]`
+  );
   expect(e2e_run_inputs.output).toContain(`cypress_record_key=***`);
   expect(e2e_run_inputs.output).toContain(`cypress_project_id=***`);
   expect(e2e_run_inputs.output).toContain(`cypress_password=***`);
-  expect(e2e_run_inputs.output).toContain(`migration_number=${mockPackageJson.config.migration}`);
-  expect(e2e_run_inputs.output).toContain(`spec_to_run=${mockInputs.spec_to_run}`);
-  expect(e2e_run_inputs.output).toContain(`commit_info_sha=${mockInputs.external_pr_sha}`);
-  expect(e2e_run_inputs.output).toContain(`commit_info_pr_number=${mockInputs.external_pr_number}`);
-  expect(e2e_run_inputs.output).toContain(`commit_info_pr_title=${mockInputs.external_pr_title}`);
-  expect(e2e_run_inputs.output).toContain(`commit_info_branch=${mockInputs.external_pr_branch}`);
-  expect(e2e_run_inputs.output).toContain(`commit_info_author=${mockInputs.external_pr_author}`);
-  expect(e2e_run_inputs.output).toContain(`commit_info_repo_name=${mockInputs.external_pr_repo_name}`);
+  expect(e2e_run_inputs.output).toContain(
+    `migration_number=${mockPackageJson.config.migration}`
+  );
+  expect(e2e_run_inputs.output).toContain(
+    `spec_to_run=${mockInputs.spec_to_run}`
+  );
+  expect(e2e_run_inputs.output).toContain(
+    `commit_info_sha=${mockInputs.external_pr_sha}`
+  );
+  expect(e2e_run_inputs.output).toContain(
+    `commit_info_pr_number=${mockInputs.external_pr_number}`
+  );
+  expect(e2e_run_inputs.output).toContain(
+    `commit_info_pr_title=${mockInputs.external_pr_title}`
+  );
+  expect(e2e_run_inputs.output).toContain(
+    `commit_info_branch=${mockInputs.external_pr_branch}`
+  );
+  expect(e2e_run_inputs.output).toContain(
+    `commit_info_author=${mockInputs.external_pr_author}`
+  );
+  expect(e2e_run_inputs.output).toContain(
+    `commit_info_repo_name=${mockInputs.external_pr_repo_name}`
+  );
 });
 
 test('default flow', async () => {
@@ -87,12 +133,10 @@ test('default flow', async () => {
 
   const results = await runWorkflow({ act, repoName, mockGithub });
 
-  const jobs_found = getTestResults({ results, names: [
-    'migration_number',
-    'e2e_prepare',
-    'unique_id',
-    'e2e_run'
-  ] });
+  const jobs_found = getTestResults({
+    results,
+    names: ['migration_number', 'e2e_prepare', 'unique_id', 'e2e_run'],
+  });
 
   expect(jobs_found.length).toEqual(4);
 });

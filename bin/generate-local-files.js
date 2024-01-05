@@ -15,8 +15,8 @@ if (!fs.existsSync(dest)) {
 fs.cpSync(src, dest, {
   recursive: true,
   filter: (name) => {
-    const include = 
-      !name.includes('/test') && 
+    const include =
+      !name.includes('/test') &&
       !name.includes('.md') &&
       !name.includes('.DS_Store') &&
       !name.includes('mocks.ts');
@@ -26,7 +26,7 @@ fs.cpSync(src, dest, {
     }
 
     return include;
-  }
+  },
 });
 
 filesToUpdate.forEach((file) => {

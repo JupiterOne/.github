@@ -5,11 +5,10 @@ outputs:
     value: ${{ steps.get_migration_number.outputs.migration }}
 
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
     - id: get_migration_number
       name: get_migration_number
       shell: bash
       run: |
         echo "migration=$(jq -r .config.migration < package.json)" >> $GITHUB_OUTPUT
-

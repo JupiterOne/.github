@@ -9,7 +9,7 @@ const repoName = 'frontend_npm_pr';
 
 beforeEach(async () => {
   mockGithub = new MockGithub(getWorkflowConfig({ repoName }));
-  
+
   await mockGithub.setup();
 });
 
@@ -19,10 +19,7 @@ afterEach(async () => {
 
 test('validate inputs and secrets', async () => {
   const act = new Act(mockGithub.repo.getPath(repoName));
-  const mockSecrets = [
-    'NPM_TOKEN',
-    'CHROMATIC_PROJECT_TOKEN',
-  ];
+  const mockSecrets = ['NPM_TOKEN', 'CHROMATIC_PROJECT_TOKEN'];
 
   setSecrets({ act, mockSecrets });
 
@@ -32,7 +29,7 @@ test('validate inputs and secrets', async () => {
 
   // chromatic_upload
   const chromatic_inputs = getTestResult({ results, name: 'chromatic_inputs' });
-  
+
   expect(chromatic_inputs.output).toContain(`chromatic_project_token=***`);
 });
 
@@ -41,10 +38,10 @@ test('default flow', async () => {
 
   const results = await runWorkflow({ act, repoName, mockGithub });
 
-  const jobs_found = getTestResults({ results, names: [
-    'validate',
-    'security'
-  ] });
+  const jobs_found = getTestResults({
+    results,
+    names: ['validate', 'security'],
+  });
 
   expect(jobs_found.length).toEqual(1);
 });
@@ -56,9 +53,7 @@ test('when use_chromatic is true', async () => {
 
   const results = await runWorkflow({ act, repoName, mockGithub });
 
-  const jobs_found = getTestResults({ results, names: [
-    'chromatic_upload'
-  ] });
+  const jobs_found = getTestResults({ results, names: ['chromatic_upload'] });
 
   expect(jobs_found.length).toEqual(1);
 });
@@ -70,9 +65,7 @@ test('when use_validate is false', async () => {
 
   const results = await runWorkflow({ act, repoName, mockGithub });
 
-  const jobs_found = getTestResults({ results, names: [
-    'validate'
-  ] });
+  const jobs_found = getTestResults({ results, names: ['validate'] });
 
   expect(jobs_found.length).toEqual(0);
 });

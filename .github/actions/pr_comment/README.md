@@ -1,19 +1,21 @@
 # PR Comment
 
-This [composite action](./action.yml) is responsible for leaving a comment on a PR. By default it will only leave a comment once of the same message (i.e. no duplicates), however this can be overridden.
+This [composite action](./action.yml) is responsible for leaving a comment on a
+PR. By default it will only leave a comment once of the same message (i.e. no
+duplicates), however this can be overridden.
 
 ## Inputs
 
 This action takes the following inputs:
 
-| Name                        | Type    | Default                      | Required  | Description                                               |
-| --------------------------- | ------- | ---------------------------- | --------- | --------------------------------------------------------- |
-| `message`                   | String  |                              | True      | The message to leave in the PR comment
-| `run_once`                  | Boolean | True                         | False     | Determines whether to leave one comment or add one on each call
-                                                                           
+| Name       | Type    | Default | Required | Description                                                     |
+| ---------- | ------- | ------- | -------- | --------------------------------------------------------------- |
+| `message`  | String  |         | True     | The message to leave in the PR comment                          |
+| `run_once` | Boolean | True    | False    | Determines whether to leave one comment or add one on each call |
+
 ## Outputs
 
-No outputs provided.                                                  
+No outputs provided.
 
 ## Example Usage
 

@@ -10,12 +10,12 @@ inputs:
     required: true
     type: string
   publish_chromatic:
-    description: "If true, will publish to Chromatic. Otherwise will"
+    description: 'If true, will publish to Chromatic. Otherwise will'
     type: boolean
     default: false
 
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
     - name: chromatic_inputs
       shell: bash

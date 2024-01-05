@@ -1,5 +1,5 @@
 on: [push]
-  
+
 jobs:
   migration_number:
     runs-on: ubuntu-latest
@@ -12,5 +12,6 @@ jobs:
       - id: migration_number
         uses: ./migration_number
       - name: print_migration_number
-        run: echo migration_number ${{ steps.migration_number.outputs.migration }}
+        run:
+          echo migration_number ${{ steps.migration_number.outputs.migration }}
         shell: bash

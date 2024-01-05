@@ -1,15 +1,16 @@
 # Code QL
 
-This [composite action](./action.yml) is responsible for sending Github workflow build results to Slack to increase visibilty of build pipeline status.
+This [composite action](./action.yml) is responsible for sending Github workflow
+build results to Slack to increase visibilty of build pipeline status.
 
 ## Inputs
 
 This action takes the following inputs:
 
-| Name                        | Type    | Default                      | Required  | Description                                               |
-| --------------------------- | ------- | ---------------------------- | --------- | --------------------------------------------------------- |
-| `slack_bot_token`                  | String  |                              | True      | The Oauth token for the Github Slack Send Slack app.
-| `slack_channel_id`                 | String  |                              | True      | The ID of the Slack channel to send notifications to.
+| Name               | Type   | Default | Required | Description                                           |
+| ------------------ | ------ | ------- | -------- | ----------------------------------------------------- |
+| `slack_bot_token`  | String |         | True     | The Oauth token for the Github Slack Send Slack app.  |
+| `slack_channel_id` | String |         | True     | The ID of the Slack channel to send notifications to. |
 
 ## Outputs
 

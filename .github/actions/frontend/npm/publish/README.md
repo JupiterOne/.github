@@ -1,15 +1,16 @@
 # Frontend NPM - Release
 
-This [composite action](./action.yml) is responsible for deploying a frontend npm package.
+This [composite action](./action.yml) is responsible for deploying a frontend
+npm package.
 
 ## Inputs
 
 This action takes the following inputs:
 
-| Name                        | Type    | Default                      | Required  | Description                                               |
-| --------------------------- | ------- | ---------------------------- | --------- | --------------------------------------------------------- |
-| `use_esbuild`               | Boolean | False                        | False     | If using esbuild, ensure its required build scripts are run
-| `auto_token`                | String  |                              | True      | Used for publishing the GitHub release and creating labels                                                   
+| Name          | Type    | Default | Required | Description                                                 |
+| ------------- | ------- | ------- | -------- | ----------------------------------------------------------- |
+| `use_esbuild` | Boolean | False   | False    | If using esbuild, ensure its required build scripts are run |
+| `auto_token`  | String  |         | True     | Used for publishing the GitHub release and creating labels  |
 
 ## Outputs
 

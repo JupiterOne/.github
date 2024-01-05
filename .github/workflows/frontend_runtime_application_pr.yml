@@ -4,27 +4,29 @@ on:
   workflow_call:
     inputs:
       fallback_runner:
-        description: "If true will leverage ubuntu-latest, otherwise will fall back to the J1 in-house runner"
+        description:
+          'If true will leverage ubuntu-latest, otherwise will fall back to the
+          J1 in-house runner'
         default: false
         type: boolean
       use_validate:
-        description: "Run validation, in most case we want this"
+        description: 'Run validation, in most case we want this'
         default: true
         type: boolean
       use_chromatic:
-        description: "Run VRT Storybook tests with chromatic"
+        description: 'Run VRT Storybook tests with chromatic'
         default: false
         type: boolean
-      magic_url_route: 
+      magic_url_route:
         description: 'The relative route the magic url should go to'
         type: string
         default: '/'
     secrets:
       NPM_TOKEN:
-        description: "A J1 npm.com Publish token"
+        description: 'A J1 npm.com Publish token'
         required: true
       CHROMATIC_PROJECT_TOKEN:
-        description: "The Chromatic API token"
+        description: 'The Chromatic API token'
         required: false
 
 env:
@@ -36,16 +38,22 @@ concurrency:
 
 jobs:
   pr_comment:
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
+    runs-on:
+      ${{ (inputs.fallback_runner && 'ubuntu-latest') ||
+      'scaleset-jupiterone-infra-arm64' }}
     steps:
       - uses: actions/checkout@v3
       - name: pr_comment
         uses: jupiterone/.github/.github/actions/pr_comment@v3.0.42
         with:
-          message: To run E2E tests leave a comment on the PR in the form of '/run-e2e-tests'
+          message:
+            To run E2E tests leave a comment on the PR in the form of
+            '/run-e2e-tests'
 
   migration_number:
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
+    runs-on:
+      ${{ (inputs.fallback_runner && 'ubuntu-latest') ||
+      'scaleset-jupiterone-infra-arm64' }}
     outputs:
       migration: ${{ steps.migration_number.outputs.migration }}
     steps:
@@ -57,7 +65,9 @@ jobs:
   validate:
     # Name targeted by branch protections, do not change
     name: Validate
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
+    runs-on:
+      ${{ (inputs.fallback_runner && 'ubuntu-latest') ||
+      'scaleset-jupiterone-infra-arm64' }}
     if: ${{ inputs.use_validate }}
     steps:
       - uses: actions/checkout@v3
@@ -71,11 +81,13 @@ jobs:
         uses: jupiterone/.github/.github/actions/frontend/runtime/remote_types_install@v3.0.42
       - name: validate
         uses: jupiterone/.github/.github/actions/validate@v3.0.42
-  
+
   chromatic_upload:
     # Name targeted by branch protections, do not change
     name: Visual Regression
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
+    runs-on:
+      ${{ (inputs.fallback_runner && 'ubuntu-latest') ||
+      'scaleset-jupiterone-infra-arm64' }}
     if: ${{ inputs.use_chromatic }}
     steps:
       - uses: actions/checkout@v3
@@ -92,7 +104,9 @@ jobs:
           chromatic_project_token: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
 
   magic_url:
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
+    runs-on:
+      ${{ (inputs.fallback_runner && 'ubuntu-latest') ||
+      'scaleset-jupiterone-infra-arm64' }}
     needs: [migration_number]
     permissions:
       id-token: write
