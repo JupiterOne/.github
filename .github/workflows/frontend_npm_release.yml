@@ -19,6 +19,10 @@ on:
           need to make sure we don't break the pipeline."
         default: true
         type: boolean
+      use_dev_deps_for_publish:
+        description: 'If true will leverage the npm dev deps for publishing'
+        default: false
+        type: boolean
     secrets:
       NPM_TOKEN:
         description: 'A J1 npm.com Publish token'
@@ -94,6 +98,8 @@ jobs:
           fetch-depth: 0
       - name: setup_env
         uses: jupiterone/.github/.github/actions/setup_env@v3.0.42
+        with:
+          use_dev: ${{ inputs.use_dev_deps_for_publish }}
       - name: build
         uses: jupiterone/.github/.github/actions/build@v3.0.42
       - name: publish
