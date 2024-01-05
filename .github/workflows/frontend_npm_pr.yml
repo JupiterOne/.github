@@ -4,15 +4,17 @@ on:
   workflow_call:
     inputs:
       fallback_runner:
-        description: "If true will leverage ubuntu-latest, otherwise will fall back to the J1 in-house runner"
+        description:
+          'If true will leverage ubuntu-latest, otherwise will fall back to the
+          J1 in-house runner'
         default: false
         type: boolean
       use_validate:
-        description: "Run validation, in most case we want this"
+        description: 'Run validation, in most case we want this'
         default: true
         type: boolean
       use_chromatic:
-        description: "Run VRT Storybook tests with chromatic"
+        description: 'Run VRT Storybook tests with chromatic'
         default: false
         type: boolean
     secrets:
@@ -34,7 +36,9 @@ jobs:
   validate:
     # Name targeted by branch protections, do not change
     name: Validate
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
+    runs-on:
+      ${{ (inputs.fallback_runner && 'ubuntu-latest') ||
+      'scaleset-jupiterone-infra-arm64' }}
     if: ${{ inputs.use_validate }}
     steps:
       - uses: actions/checkout@v3
@@ -50,7 +54,9 @@ jobs:
   chromatic_upload:
     # Name targeted by branch protections, do not change
     name: Visual Regression
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
+    runs-on:
+      ${{ (inputs.fallback_runner && 'ubuntu-latest') ||
+      'scaleset-jupiterone-infra-arm64' }}
     if: ${{ inputs.use_chromatic }}
     steps:
       - uses: actions/checkout@v3

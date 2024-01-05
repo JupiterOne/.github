@@ -1,6 +1,9 @@
 import { MockGithub } from '@kie/mock-github';
 import { Act } from '@kie/act-js';
-import { getCompositeActionConfig, runCompositeAction } from 'tests/utils/setup';
+import {
+  getCompositeActionConfig,
+  runCompositeAction,
+} from 'tests/utils/setup';
 import { getTestResult } from 'tests/utils/helpers';
 
 const repoName = 'validate';
@@ -12,18 +15,20 @@ afterEach(async () => {
 });
 
 test('remote types test is called', async () => {
-  mockGithub = new MockGithub(getCompositeActionConfig({
-    directory: __dirname,
-    repoName,
-    actionTriggeringComposite: 'action_test_default.yml'
-  }));
-  
+  mockGithub = new MockGithub(
+    getCompositeActionConfig({
+      directory: __dirname,
+      repoName,
+      actionTriggeringComposite: 'action_test_default.yml',
+    })
+  );
+
   await mockGithub.setup();
 
   const results = await runCompositeAction({
     act: new Act(mockGithub.repo.getPath(repoName)),
     repoName,
-    originDirectory: __dirname
+    originDirectory: __dirname,
   });
 
   const result = getTestResult({ results, name: 'remote_type_test' });
@@ -32,18 +37,20 @@ test('remote types test is called', async () => {
 });
 
 test('remote types test is skipped if HAS_SKIP is present', async () => {
-  mockGithub = new MockGithub(getCompositeActionConfig({
-    directory: __dirname,
-    repoName,
-    actionTriggeringComposite: 'action_test_skip.yml'
-  }));
-  
+  mockGithub = new MockGithub(
+    getCompositeActionConfig({
+      directory: __dirname,
+      repoName,
+      actionTriggeringComposite: 'action_test_skip.yml',
+    })
+  );
+
   await mockGithub.setup();
- 
+
   const results = await runCompositeAction({
     act: new Act(mockGithub.repo.getPath(repoName)),
     repoName,
-    originDirectory: __dirname
+    originDirectory: __dirname,
   });
 
   const result = getTestResult({ results, name: 'remote_type_test' });

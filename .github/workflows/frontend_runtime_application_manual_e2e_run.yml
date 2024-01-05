@@ -1,21 +1,28 @@
-name: Default workflow for a runtime application when E2E tests get triggred by a comment on the PR
+name:
+  Default workflow for a runtime application when E2E tests get triggred by a
+  comment on the PR
 
 on:
   workflow_call:
     inputs:
       fallback_runner:
-        description: "If true will leverage ubuntu-latest, otherwise will fall back to the J1 in-house runner"
+        description:
+          'If true will leverage ubuntu-latest, otherwise will fall back to the
+          J1 in-house runner'
         default: false
         type: boolean
       e2e_filter_tags:
-        description: "Tests will be filtered based on the tags defined here"
-        type: string  
+        description: 'Tests will be filtered based on the tags defined here'
+        type: string
       e2e_containers:
-        description: "The number of tests that you want Cypress to run in parallel. For example to run your tests via 3 containers you would set the value to the following: '[`1`, `2`, `3`]'."
+        description:
+          "The number of tests that you want Cypress to run in parallel. For
+          example to run your tests via 3 containers you would set the value to
+          the following: '[`1`, `2`, `3`]'."
         type: string
         default: '["1"]'
       e2e_pass_on_error:
-        description: "Pass the workflow even if the E2E test fail"
+        description: 'Pass the workflow even if the E2E test fail'
         type: boolean
         default: false
       e2e_artemis_config_path:
@@ -26,7 +33,7 @@ on:
         description: 'Used to determine which test to run'
         type: string
         default: 'cypress/e2e/**/*.feature'
-      magic_url_route: 
+      magic_url_route:
         description: 'The relative route the magic url should go to'
         type: string
         default: '/'
@@ -36,19 +43,19 @@ on:
         type: number
     secrets:
       NPM_TOKEN:
-        description: "A J1 npm.com Publish token"
+        description: 'A J1 npm.com Publish token'
         required: true
       CYPRESS_RECORD_KEY:
-        description: "The record key associated with the project in Cypress"
+        description: 'The record key associated with the project in Cypress'
         required: true
       CYPRESS_PROJECT_ID:
-        description: "The project ID associated with the project in Cypress"
+        description: 'The project ID associated with the project in Cypress'
         required: true
       CYPRESS_PASSWORD:
-        description: "The password of the E2E username"
+        description: 'The password of the E2E username'
         required: false
       DOCKER_HUB_SRE:
-        description: "The password to login to docker hub sre"
+        description: 'The password to login to docker hub sre'
         required: true
 
 env:
@@ -60,7 +67,9 @@ concurrency:
 
 jobs:
   get_branch:
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
+    runs-on:
+      ${{ (inputs.fallback_runner && 'ubuntu-latest') ||
+      'scaleset-jupiterone-infra-arm64' }}
     outputs:
       name: ${{ steps.get_branch.outputs.name }}
     steps:
@@ -70,7 +79,9 @@ jobs:
         uses: jupiterone/.github/.github/actions/get_branch@v3.0.42
 
   e2e_pending_status:
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
+    runs-on:
+      ${{ (inputs.fallback_runner && 'ubuntu-latest') ||
+      'scaleset-jupiterone-infra-arm64' }}
     needs: [get_branch]
     steps:
       - uses: actions/checkout@v3
@@ -82,7 +93,9 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
   migration_number:
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
+    runs-on:
+      ${{ (inputs.fallback_runner && 'ubuntu-latest') ||
+      'scaleset-jupiterone-infra-arm64' }}
     needs: [get_branch]
     outputs:
       migration: ${{ steps.migration_number.outputs.migration }}
@@ -95,7 +108,9 @@ jobs:
         uses: jupiterone/.github/.github/actions/frontend/runtime/migration_number@v3.0.42
 
   magic_url:
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
+    runs-on:
+      ${{ (inputs.fallback_runner && 'ubuntu-latest') ||
+      'scaleset-jupiterone-infra-arm64' }}
     needs: [get_branch, migration_number]
     permissions:
       id-token: write
@@ -122,7 +137,9 @@ jobs:
           pr_number: ${{ github.event.issue.number }}
 
   e2e_prepare:
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
+    runs-on:
+      ${{ (inputs.fallback_runner && 'ubuntu-latest') ||
+      'scaleset-jupiterone-infra-arm64' }}
     needs: [get_branch]
     permissions:
       id-token: write
@@ -130,9 +147,11 @@ jobs:
       issues: read
       pull-requests: read
     outputs:
-      artemis_account_name: ${{ steps.e2e_prepare.outputs.artemis_account_name }}
+      artemis_account_name:
+        ${{ steps.e2e_prepare.outputs.artemis_account_name }}
       artemis_account_id: ${{ steps.e2e_prepare.outputs.artemis_account_id }}
-      artemis_account_subdomain: ${{ steps.e2e_prepare.outputs.artemis_account_subdomain }}
+      artemis_account_subdomain:
+        ${{ steps.e2e_prepare.outputs.artemis_account_subdomain }}
       artemis_users: ${{ steps.e2e_prepare.outputs.artemis_users }}
     steps:
       - uses: actions/checkout@v3
@@ -150,7 +169,9 @@ jobs:
           user_count: $(echo '${{ inputs.e2e_containers }}' | jq '. | length')
 
   unique_id:
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
+    runs-on:
+      ${{ (inputs.fallback_runner && 'ubuntu-latest') ||
+      'scaleset-jupiterone-infra-arm64' }}
     needs: [get_branch]
     outputs:
       unique_id: ${{ steps.unique_id.outputs.unique_id }}
@@ -166,7 +187,9 @@ jobs:
 
   e2e_run:
     # Note this is the only job that leverages amd64
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-amd64' }}
+    runs-on:
+      ${{ (inputs.fallback_runner && 'ubuntu-latest') ||
+      'scaleset-jupiterone-infra-amd64' }}
     container:
       # Available containers here: https://hub.docker.com/r/cypress/browsers/tags
       image: cypress/browsers:node-20.9.0-chrome-118.0.5993.88-1-ff-118.0.2-edge-118.0.2088.46-1
@@ -179,7 +202,7 @@ jobs:
     needs: [get_branch, e2e_prepare, migration_number, magic_url, unique_id]
     strategy:
       # when one test fails, DO NOT cancel the other containers, because this will kill Cypress processes
-      # leaving Cypress Cloud hanging: https://github.com/cypress-io/github-action/issues/48 
+      # leaving Cypress Cloud hanging: https://github.com/cypress-io/github-action/issues/48
       fail-fast: false
       matrix:
         # run copies of the current job in parallel
@@ -198,9 +221,12 @@ jobs:
         timeout-minutes: 120
         with:
           ci_build_id: ${{ needs.unique_id.outputs.unique_id }}
-          artemis_account_name: ${{ needs.e2e_prepare.outputs.artemis_account_name }}
-          artemis_account_id: ${{ needs.e2e_prepare.outputs.artemis_account_id }}
-          artemis_account_subdomain: ${{ needs.e2e_prepare.outputs.artemis_account_subdomain }}
+          artemis_account_name:
+            ${{ needs.e2e_prepare.outputs.artemis_account_name }}
+          artemis_account_id:
+            ${{ needs.e2e_prepare.outputs.artemis_account_id }}
+          artemis_account_subdomain:
+            ${{ needs.e2e_prepare.outputs.artemis_account_subdomain }}
           artemis_users: ${{ needs.e2e_prepare.outputs.artemis_users }}
           cypress_container: ${{ matrix.containers }}
           cypress_mailinator_api_key: ${{ secrets.CYPRESS_MAILINATOR_API_KEY }}
@@ -221,7 +247,9 @@ jobs:
 
   e2e_status:
     name: E2E Status
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
+    runs-on:
+      ${{ (inputs.fallback_runner && 'ubuntu-latest') ||
+      'scaleset-jupiterone-infra-arm64' }}
     needs: [get_branch, e2e_pending_status, e2e_run]
     steps:
       - uses: actions/checkout@v3

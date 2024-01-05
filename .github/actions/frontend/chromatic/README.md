@@ -1,20 +1,21 @@
 # Frontend Runtime - Chromatic
 
-This [composite action](./action.yml) is responsible for building nad publishing your Storybook to Chromatic and running visual regression tests.
+This [composite action](./action.yml) is responsible for building nad publishing
+your Storybook to Chromatic and running visual regression tests.
 
 ## Inputs
 
 This action takes the following inputs:
 
-| Name                        | Type    | Default                      | Required  | Description                                               |
-| --------------------------- | ------- | ---------------------------- | --------- | --------------------------------------------------------- |
-| `github_token`              | String  |                              | True      | Github access token
-| `chromatic_project_token`   | String  |                              | True      | The Chromatic API token
-| `publish_chromatic`   | String  |                              | True      | The Chromatic API token
-                                                                           
+| Name                      | Type   | Default | Required | Description             |
+| ------------------------- | ------ | ------- | -------- | ----------------------- |
+| `github_token`            | String |         | True     | Github access token     |
+| `chromatic_project_token` | String |         | True     | The Chromatic API token |
+| `publish_chromatic`       | String |         | True     | The Chromatic API token |
+
 ## Outputs
 
-No outputs provided.                                              
+No outputs provided.
 
 ## Example Usage
 
@@ -27,4 +28,3 @@ steps:
   - name: validate
     uses: jupiterone/.github/.github/actions/frontend/runtime/chromatic
 ```
-

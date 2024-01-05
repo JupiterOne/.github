@@ -1,6 +1,7 @@
 # Frontend Runtime - Extract Migration Number
 
-This [composite action](./action.yml) is responsible for extracting the `migration` number from the root `package.json` file.
+This [composite action](./action.yml) is responsible for extracting the
+`migration` number from the root `package.json` file.
 
 ## Inputs
 
@@ -10,9 +11,9 @@ No inputs necessary.
 
 This action returns the following outputs:
 
-| Name                        | Type    | Description                                                   |
-| --------------------------- | ------- | ------------------------------------------------------------- |
-| `migration`                 | String  | Returns the migration number defined in the root package.json                                               
+| Name        | Type   | Description                                                   |
+| ----------- | ------ | ------------------------------------------------------------- |
+| `migration` | String | Returns the migration number defined in the root package.json |
 
 ## Example Usage
 

@@ -37,7 +37,7 @@ jobs:
           echo "version=$(jq -r .version < package.json)" >> $GITHUB_OUTPUT
       - name: semver_versions
         id: semver_versions
-        uses: "WyriHaximus/github-action-next-semvers@v1"
+        uses: 'WyriHaximus/github-action-next-semvers@v1'
         with:
           version: ${{ steps.package_json.outputs.version }}
       - name: patch_version
@@ -80,15 +80,14 @@ jobs:
           git push --follow-tags --set-upstream origin main
       # Parse the current version so we can extract only the major part of the semver (1 from 1.0.0)
       - name: current_semver_parser
-        id: current_semver_parser 
+        id: current_semver_parser
         uses: booxmedialtd/ws-action-parse-semver@v1
         with:
           input_string: ${{ steps.package_json.outputs.version }}
-      # We reset the major tag so workflow consumers automatically receive these changes 
+      # We reset the major tag so workflow consumers automatically receive these changes
       - name: reset_major_tag
         if: ${{ env.NEW_VERSION != steps.current_semver_parser.outputs.major }}
         run: |
           echo "Major tag v${{ steps.current_semver_parser.outputs.major }} is being reset to the latest"
           git tag -af v${{ steps.current_semver_parser.outputs.major }} -m "Resetting v${{ steps.current_semver_parser.outputs.major }} tag"
           git push origin v${{ steps.current_semver_parser.outputs.major }} --force
-

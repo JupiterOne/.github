@@ -4,12 +4,14 @@ on:
   workflow_call:
     inputs:
       fallback_runner:
-        description: "If true will leverage ubuntu-latest, otherwise will fall back to the J1 in-house runner"
+        description:
+          'If true will leverage ubuntu-latest, otherwise will fall back to the
+          J1 in-house runner'
         default: false
         type: boolean
     secrets:
       NPM_TOKEN:
-        description: "A J1 npm.com Publish token"
+        description: 'A J1 npm.com Publish token'
         required: true
 
 env:
@@ -23,7 +25,9 @@ jobs:
   validate:
     # Name targeted by branch protections, do not change
     name: Validate
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
+    runs-on:
+      ${{ (inputs.fallback_runner && 'ubuntu-latest') ||
+      'scaleset-jupiterone-infra-arm64' }}
     steps:
       - uses: actions/checkout@v3
         with:

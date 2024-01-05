@@ -10,34 +10,41 @@ inputs:
     type: string
     required: true
   artemis_account_subdomain:
-    description: 'The account subdomain extracted from the artemis-run.json file'
+    description:
+      'The account subdomain extracted from the artemis-run.json file'
     type: string
     required: true
   artemis_users:
     description: 'The users extracted from the artemis-run.json file'
     type: string
     required: true
-  commit_info_sha:    
-    description: 'The commit sha associated with the repo that triggered the e2e_run'
+  commit_info_sha:
+    description:
+      'The commit sha associated with the repo that triggered the e2e_run'
     type: string
     required: true
   commit_info_pr_number:
-    description: 'The PR number associated with the repo that triggered the e2e_run'
+    description:
+      'The PR number associated with the repo that triggered the e2e_run'
     type: string
     required: true
   commit_info_pr_title:
-    description: 'The PR title sha associated with the repo that triggered the e2e_run'
+    description:
+      'The PR title sha associated with the repo that triggered the e2e_run'
     type: string
     required: true
   commit_info_branch:
-    description: 'The branch associated with the repo that triggered the e2e_run'
+    description:
+      'The branch associated with the repo that triggered the e2e_run'
     type: string
     required: true
   commit_info_author:
-    description: 'The author associated with the repo that triggered the e2e_run'
+    description:
+      'The author associated with the repo that triggered the e2e_run'
     type: string
   commit_info_repo_name:
-    description: 'The repo name associated with the repo that triggered the e2e_run'
+    description:
+      'The repo name associated with the repo that triggered the e2e_run'
     type: string
     required: true
   cypress_container:
@@ -45,7 +52,8 @@ inputs:
     type: string
     default: 1
   cypress_mailinator_api_key:
-    description: 'The mailinator api key needed when going through the default login flow'
+    description:
+      'The mailinator api key needed when going through the default login flow'
     type: string
     required: true
   cypress_record_key:
@@ -83,7 +91,8 @@ inputs:
     default: 2
     type: number
   ci_build_id:
-    description: 'Used to link separate machines running tests into a single parallel run'
+    description:
+      'Used to link separate machines running tests into a single parallel run'
     required: true
 
 outputs:
@@ -91,7 +100,7 @@ outputs:
     value: ${{ steps.test_results.outputs.test_passed }}
 
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
     - name: e2e_run_inputs
       shell: bash
@@ -136,14 +145,18 @@ runs:
         # It's important this is unique to the commit/repo this is running against
         ci-build-id: ${{ inputs.ci_build_id }}
         browser: chrome
-        tag: ${{ inputs.commit_info_repo_name || github.event.repository.name }},${{ github.event_name }}
+        tag:
+          ${{ inputs.commit_info_repo_name || github.event.repository.name
+          }},${{ github.event_name }}
       env:
         # https://github.com/cypress-io/cypress/issues/25357#issuecomment-1426992422
         ELECTRON_EXTRA_LAUNCH_ARGS: '--disable-gpu'
         CYPRESS_BROWSER: chrome
         COMMIT_INFO_MESSAGE: ${{ inputs.commit_info_pr_title }}
         COMMIT_INFO_BRANCH: ${{ inputs.commit_info_branch }}
-        COMMIT_INFO_AUTHOR: ${{ inputs.commit_info_author || steps.get_author_name.outputs.commit_info_author }}
+        COMMIT_INFO_AUTHOR:
+          ${{ inputs.commit_info_author ||
+          steps.get_author_name.outputs.commit_info_author }}
         COMMIT_INFO_SHA: ${{ inputs.commit_info_sha || github.sha }}
         CYPRESS_CONTAINER: ${{ inputs.cypress_container }}
         CYPRESS_MAILINATOR_API_KEY: ${{ inputs.cypress_mailinator_api_key }}
@@ -170,11 +183,16 @@ runs:
       shell: bash
       # Need to check previous TEST_PASSED to ensure it hasn't already failed
       # important if multiple containers are in use to ensure the correct status is reported
-      if: ${{ contains(steps.cypress_run.outcome, 'success') || contains(steps.mock_step.outcome, 'success') && !contains(env.TEST_PASSED, false) }}
+      if:
+        ${{ contains(steps.cypress_run.outcome, 'success') ||
+        contains(steps.mock_step.outcome, 'success') &&
+        !contains(env.TEST_PASSED, false) }}
       run: echo "TEST_PASSED=true" >> $GITHUB_ENV
     - name: set_failure_vars
       shell: bash
-      if: ${{ !contains(steps.cypress_run.outcome, 'success') || contains(steps.mock_step.outcome, 'success') }}
+      if:
+        ${{ !contains(steps.cypress_run.outcome, 'success') ||
+        contains(steps.mock_step.outcome, 'success') }}
       run: echo "TEST_PASSED=false" >> $GITHUB_ENV
     - name: test_results
       id: test_results

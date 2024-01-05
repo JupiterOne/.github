@@ -5,7 +5,7 @@ outputs:
     value: ${{ steps.comment_branch.outputs.head_ref }}
 
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
     - id: comment_branch
       name: comment_branch

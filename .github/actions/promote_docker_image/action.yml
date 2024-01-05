@@ -1,4 +1,5 @@
-name: Promotes built Docker images to target environment registries for consumption
+name:
+  Promotes built Docker images to target environment registries for consumption
 
 inputs:
   project_name:
@@ -12,7 +13,7 @@ inputs:
     description: A comma separated list of image tags to promote.
   source_account_id:
     required: false
-    default: "081157560428"
+    default: '081157560428'
   source_region:
     required: false
     default: us-east-1
@@ -25,12 +26,13 @@ inputs:
     default: dev
 
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
     - name: configure_source_account_aws_credentials
       uses: aws-actions/configure-aws-credentials@v3
       with:
-        role-to-assume: arn:aws:iam::${{ inputs.source_account_id }}:role/github-main-role
+        role-to-assume:
+          arn:aws:iam::${{ inputs.source_account_id }}:role/github-main-role
         role-session-name: main-role-session-${{ inputs.image_name }}
         aws-region: us-east-1
     - name: ecr_login
@@ -52,7 +54,8 @@ runs:
     - name: configure_target_account_aws_credentials
       uses: aws-actions/configure-aws-credentials@v3
       with:
-        role-to-assume: arn:aws:iam::${{ inputs.target_account_id }}:role/github-main-role
+        role-to-assume:
+          arn:aws:iam::${{ inputs.target_account_id }}:role/github-main-role
         role-session-name: main-role-session-${{ inputs.image_name }}
         aws-region: us-east-1
     - name: copy_to_target_registry

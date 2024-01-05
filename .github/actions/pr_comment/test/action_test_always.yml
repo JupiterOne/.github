@@ -1,5 +1,5 @@
 on: [push]
-  
+
 jobs:
   pr_comment:
     runs-on: ubuntu-latest
@@ -13,4 +13,4 @@ jobs:
         uses: ./pr_comment
         with:
           run_once: false
-          message: "hello world"
+          message: 'hello world'

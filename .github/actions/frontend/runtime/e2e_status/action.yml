@@ -10,7 +10,7 @@ inputs:
     default: false
 
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
     - name: e2e_status_inputs
       shell: bash

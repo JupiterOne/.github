@@ -9,7 +9,7 @@ inputs:
     default: true
 
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
     - name: pr_comment_inputs
       shell: bash
@@ -24,7 +24,9 @@ runs:
         body-includes: ${{ inputs.message }}
         direction: last
     - name: add_pr_comment_once
-      if: ${{ fromJSON(inputs.run_once) && !contains(steps.find_comment.outputs.comment-body, inputs.message) }}
+      if:
+        ${{ fromJSON(inputs.run_once) &&
+        !contains(steps.find_comment.outputs.comment-body, inputs.message) }}
       uses: actions/github-script@v6
       with:
         script: |

@@ -6,5 +6,5 @@ mocked, they would break the test.
 export const PR_COMMENT_MOCK_STEPS = [
   { name: 'find_comment' },
   { name: 'add_pr_comment_once' },
-  { name: 'add_pr_comment_always' }
+  { name: 'add_pr_comment_always' },
 ];

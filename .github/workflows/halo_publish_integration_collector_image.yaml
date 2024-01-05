@@ -16,12 +16,12 @@ on:
         default: ${{ github.repository }}
         required: false
     secrets:
-        GHCR_USERNAME:
-          description: 'GHCR Username to authenticate and publish with'
-          required: true
-        GHCR_PASSWORD:
-          description: 'GHCR password to authenticate and publish with'
-          required: true
+      GHCR_USERNAME:
+        description: 'GHCR Username to authenticate and publish with'
+        required: true
+      GHCR_PASSWORD:
+        description: 'GHCR password to authenticate and publish with'
+        required: true
 
 jobs:
   build:

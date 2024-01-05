@@ -1,9 +1,8 @@
 name: Installs the remote-types if applicable
 
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
     - name: install_remote_types
       run: npm run postinstall --if-present && npm run dependencies --if-present
       shell: bash
-

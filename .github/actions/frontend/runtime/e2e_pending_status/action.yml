@@ -6,7 +6,7 @@ inputs:
     required: true
 
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
     - name: e2e_pr_status_inputs
       shell: bash

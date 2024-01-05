@@ -1,9 +1,8 @@
 name: Runs validation on the repo
 
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
     - name: validate
       shell: bash
       run: npm run validate:ci
-

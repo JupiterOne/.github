@@ -10,19 +10,24 @@ const updateFlow = async (fileName) => {
   const pathToPrFlow = `${pathToWorkflows}/${fileName}`;
   const workflow = await readFile(pathToPrFlow, 'utf8');
   const tagVersion = TAG_VERSION.replace('v', '');
-  const newWorkflow = workflow.replace(/(jupiterone\/.github\/.github\/actions.*@).*/g, `$1v${tagVersion}`);
+  const newWorkflow = workflow.replace(
+    /(jupiterone\/.github\/.github\/actions.*@).*/g,
+    `$1v${tagVersion}`
+  );
 
   await writeFile(pathToPrFlow, newWorkflow);
 };
 
 const update = async () => {
   const files = await readdir(pathToWorkflows);
-  const filteredFiles = files.filter(file => file.includes('.yaml') || file.includes('.yml'));
-  
+  const filteredFiles = files.filter(
+    (file) => file.includes('.yaml') || file.includes('.yml')
+  );
+
   for await (const file of filteredFiles) {
     await updateFlow(file);
   }
-}
+};
 
 (async () => {
   if (!TAG_VERSION) {

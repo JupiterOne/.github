@@ -9,17 +9,18 @@ inputs:
     description: 'The migration number defined in the root package.json'
     required: true
     type: string
-  magic_url_route: 
+  magic_url_route:
     description: 'The relative route the magic url should go to'
     type: string
     default: '/'
-  pr_number: 
-    description: 'The number associated with the PR that is triggering this action'
+  pr_number:
+    description:
+      'The number associated with the PR that is triggering this action'
     type: string
     required: true
 
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
     - name: magic_url_inputs
       shell: bash
@@ -50,4 +51,7 @@ runs:
         token: ${{ inputs.github_token }}
         status: success
         context: 'Magic URL'
-        targetUrl: https://apps.dev.jupiterone.io${{ inputs.magic_url_route }}?magic2=%7B%22${{ github.event.repository.name }}%40${{ inputs.migration_number }}%22:%22PR-${{ inputs.pr_number }}%22%7D
+        targetUrl:
+          https://apps.dev.jupiterone.io${{ inputs.magic_url_route
+          }}?magic2=%7B%22${{ github.event.repository.name }}%40${{
+          inputs.migration_number }}%22:%22PR-${{ inputs.pr_number }}%22%7D

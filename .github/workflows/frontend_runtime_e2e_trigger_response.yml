@@ -1,11 +1,15 @@
 # This file is extended by the e2e_trigger.yml in each application repo
-name: Default workflow for running tests in an application repo when triggered by an external repo
+name:
+  Default workflow for running tests in an application repo when triggered by an
+  external repo
 
 on:
   workflow_call:
     inputs:
       fallback_runner:
-        description: "If true will levarege ubuntu-latest, otherwise will fall back to the J1 in-house runner"
+        description:
+          'If true will levarege ubuntu-latest, otherwise will fall back to the
+          J1 in-house runner'
         default: false
         type: boolean
       spec_to_run:
@@ -13,44 +17,56 @@ on:
         type: string
         default: 'cypress/e2e/**/*.feature'
       external_pr_number:
-        description: 'Used by the e2e_trigger to pass in the PR number associated with the PR that triggered the flow'
+        description:
+          'Used by the e2e_trigger to pass in the PR number associated with the
+          PR that triggered the flow'
         type: string
         required: true
       external_pr_title:
-        description: 'Used by the e2e_trigger to give builds in Cypress the correct title associated with the PR that triggered the flow'
+        description:
+          'Used by the e2e_trigger to give builds in Cypress the correct title
+          associated with the PR that triggered the flow'
         type: string
         required: true
       external_pr_branch:
-        description: 'Used by the e2e_trigger to give builds in Cypress the correct branch name'
+        description:
+          'Used by the e2e_trigger to give builds in Cypress the correct branch
+          name'
         type: string
         required: true
       external_pr_author:
-        description: 'Used by the e2e_trigger to give builds in Cypress the correct author name associated with the owner of the PR'
+        description:
+          'Used by the e2e_trigger to give builds in Cypress the correct author
+          name associated with the owner of the PR'
         type: string
         required: true
       external_pr_sha:
-        description: 'Used by the e2e_trigger to give builds in Cypress the correct SHA associated with the PR that triggered the flow'
+        description:
+          'Used by the e2e_trigger to give builds in Cypress the correct SHA
+          associated with the PR that triggered the flow'
         type: string
         required: true
       external_pr_repo_name:
-        description: 'Used by the e2e_trigger to tag builds in Cypress with the appropriate repo name associated with the repo that triggered the flow'
+        description:
+          'Used by the e2e_trigger to tag builds in Cypress with the appropriate
+          repo name associated with the repo that triggered the flow'
         type: string
         required: true
     secrets:
       NPM_TOKEN:
-        description: "A J1 npm.com Publish token"
+        description: 'A J1 npm.com Publish token'
         required: true
       CYPRESS_RECORD_KEY:
-        description: "The record key associated with the project in Cypress"
+        description: 'The record key associated with the project in Cypress'
         required: false
       CYPRESS_PROJECT_ID:
-        description: "The project ID associated with the project in Cypress"
+        description: 'The project ID associated with the project in Cypress'
         required: false
       CYPRESS_PASSWORD:
-        description: "The password of the E2E username"
+        description: 'The password of the E2E username'
         required: false
       DOCKER_HUB_SRE:
-        description: "The password to login to docker hub sre"
+        description: 'The password to login to docker hub sre'
         required: true
 
 env:
@@ -62,7 +78,9 @@ concurrency:
 
 jobs:
   migration_number:
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
+    runs-on:
+      ${{ (inputs.fallback_runner && 'ubuntu-latest') ||
+      'scaleset-jupiterone-infra-arm64' }}
     outputs:
       migration: ${{ steps.migration_number.outputs.migration }}
     steps:
@@ -76,15 +94,19 @@ jobs:
         uses: jupiterone/.github/.github/actions/frontend/runtime/migration_number@v3.0.42
 
   e2e_prepare:
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
+    runs-on:
+      ${{ (inputs.fallback_runner && 'ubuntu-latest') ||
+      'scaleset-jupiterone-infra-arm64' }}
     needs: [migration_number]
     permissions:
       id-token: write
       contents: read
     outputs:
-      artemis_account_name: ${{ steps.e2e_prepare.outputs.artemis_account_name }}
+      artemis_account_name:
+        ${{ steps.e2e_prepare.outputs.artemis_account_name }}
       artemis_account_id: ${{ steps.e2e_prepare.outputs.artemis_account_id }}
-      artemis_account_subdomain: ${{ steps.e2e_prepare.outputs.artemis_account_subdomain }}
+      artemis_account_subdomain:
+        ${{ steps.e2e_prepare.outputs.artemis_account_subdomain }}
       artemis_users: ${{ steps.e2e_prepare.outputs.artemis_users }}
     steps:
       - uses: actions/checkout@v3
@@ -97,7 +119,9 @@ jobs:
         uses: jupiterone/.github/.github/actions/frontend/runtime/e2e_prepare@v3.0.42
 
   unique_id:
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-arm64' }}
+    runs-on:
+      ${{ (inputs.fallback_runner && 'ubuntu-latest') ||
+      'scaleset-jupiterone-infra-arm64' }}
     outputs:
       unique_id: ${{ steps.unique_id.outputs.unique_id }}
     steps:
@@ -110,7 +134,9 @@ jobs:
 
   e2e_run:
     # Note this is the only job that leverages amd64
-    runs-on: ${{ (inputs.fallback_runner && 'ubuntu-latest') || 'scaleset-jupiterone-infra-amd64' }}
+    runs-on:
+      ${{ (inputs.fallback_runner && 'ubuntu-latest') ||
+      'scaleset-jupiterone-infra-amd64' }}
     container:
       # Available containers here: https://hub.docker.com/r/cypress/browsers/tags
       image: cypress/browsers:node-20.9.0-chrome-118.0.5993.88-1-ff-118.0.2-edge-118.0.2088.46-1
@@ -122,7 +148,7 @@ jobs:
     needs: [migration_number, e2e_prepare, unique_id]
     strategy:
       # when one test fails, DO NOT cancel the other containers, because this will kill Cypress processes
-      # leaving Cypress Cloud hanging: https://github.com/cypress-io/github-action/issues/48 
+      # leaving Cypress Cloud hanging: https://github.com/cypress-io/github-action/issues/48
       fail-fast: false
     outputs:
       test_passed: ${{ steps.e2e_run.outputs.test_passed }}
@@ -138,9 +164,12 @@ jobs:
         timeout-minutes: 120
         with:
           ci_build_id: ${{ needs.unique_id.outputs.unique_id }}
-          artemis_account_name: ${{ needs.e2e_prepare.outputs.artemis_account_name }}
-          artemis_account_id: ${{ needs.e2e_prepare.outputs.artemis_account_id }}
-          artemis_account_subdomain: ${{ needs.e2e_prepare.outputs.artemis_account_subdomain }}
+          artemis_account_name:
+            ${{ needs.e2e_prepare.outputs.artemis_account_name }}
+          artemis_account_id:
+            ${{ needs.e2e_prepare.outputs.artemis_account_id }}
+          artemis_account_subdomain:
+            ${{ needs.e2e_prepare.outputs.artemis_account_subdomain }}
           artemis_users: ${{ needs.e2e_prepare.outputs.artemis_users }}
           cypress_record_key: ${{ secrets.CYPRESS_RECORD_KEY }}
           cypress_project_id: ${{ secrets.CYPRESS_PROJECT_ID }}

@@ -1,10 +1,11 @@
 # Frontend Runtime - Test Remote Types
 
-This [composite action](./action.yml) is responsible for testing the remote types for a runtime and identifying breaking changes.
+This [composite action](./action.yml) is responsible for testing the remote
+types for a runtime and identifying breaking changes.
 
 ## Inputs
 
-No inputs necessary.                                                       
+No inputs necessary.
 
 ## Outputs
 

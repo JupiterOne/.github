@@ -6,16 +6,17 @@ inputs:
     type: string
     required: true
 
-
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
     - name: cortex_inputs
       shell: bash
       run: |
         echo "cortex_api_key=${{ inputs.cortex_api_key }}"
     - name: push_to_cortex
-      run: npx --yes -p @jupiterone/web-tools-platform-analytics@latest platform-analytics all
+      run:
+        npx --yes -p @jupiterone/web-tools-platform-analytics@latest
+        platform-analytics all
       shell: bash
       env:
         CORTEX_API_KEY: ${{ inputs.cortex_api_key }}
