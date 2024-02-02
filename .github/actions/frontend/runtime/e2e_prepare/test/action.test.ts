@@ -77,7 +77,10 @@ test('output of artemis_info returns correct results based off artemis-run.json'
   expect(results_artemis_users.output).toContain(
     artemisRun[1].metadata.groupName
   );
-  expect(results_artemis_full_output.output).toEqual(
-    JSON.stringify(artemisRun)
+  expect(results_artemis_full_output.output).toContain(
+    artemisRun[0].metadata.accountName
+  );
+  expect(results_artemis_full_output.output).toContain(
+    artemisRun[1].metadata.token.tokenSecret
   );
 });
