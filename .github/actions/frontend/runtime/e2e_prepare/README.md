@@ -23,6 +23,7 @@ This action returns the following outputs:
 | `artemis_account_subdomain` | String | The account subdomain extracted from the artemis-run.json file |
 | `artemis_account_id`        | String | The id extracted from the artemis-run.json file                |
 | `artemis_users`             | String | The users extracted from the artemis-run.json file             |
+| `artemis_full_output`       | String | The full output of the artemis-run.json file                   |
 
 ## Example Usage
 
@@ -39,5 +40,6 @@ steps:
       echo ${{ steps.e2e_prepare.outputs.artemis_account_subdomain }}
       echo ${{ steps.e2e_prepare.outputs.artemis_account_id }}
       echo ${{ steps.e2e_prepare.outputs.artemis_users }}
+      echo ${{ steps.e2e_prepare.outputs.artemis_full_output }}
     shell: bash
 ```

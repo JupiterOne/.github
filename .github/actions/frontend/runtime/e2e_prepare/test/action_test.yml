@@ -23,3 +23,6 @@ jobs:
       - name: results_artemis_users
         run: echo ${{ steps.e2e_prepare.outputs.artemis_users }}
         shell: bash
+      - name: results_artemis_full_output
+        run: echo ${{ steps.e2e_prepare.outputs.artemis_full_output }}
+        shell: bash

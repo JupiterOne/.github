@@ -56,6 +56,10 @@ test('output of artemis_info returns correct results based off artemis-run.json'
     results,
     name: 'results_artemis_users',
   });
+  const results_artemis_full_output = getTestResult({
+    results,
+    name: 'results_artemis_full_output',
+  });
 
   expect(results_artemis_account_name.output).toEqual(
     artemisRun[0].metadata.accountName
@@ -72,5 +76,8 @@ test('output of artemis_info returns correct results based off artemis-run.json'
   );
   expect(results_artemis_users.output).toContain(
     artemisRun[1].metadata.groupName
+  );
+  expect(results_artemis_full_output.output).toEqual(
+    JSON.stringify(artemisRun)
   );
 });
