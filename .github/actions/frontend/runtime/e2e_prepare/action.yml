@@ -17,8 +17,6 @@ outputs:
     value: ${{ steps.artemis_info.outputs.artemis_account_id }}
   artemis_users:
     value: ${{ steps.artemis_info.outputs.artemis_users }}
-  artemis_full_output:
-    value: ${{ steps.artemis_info.outputs.artemis_full_output }}
 
 runs:
   using: 'composite'
@@ -55,4 +53,3 @@ runs:
         echo "artemis_account_subdomain=$(jq -r .[0].metadata.accountSubdomain < artemis-run.json)" >> $GITHUB_OUTPUT
         echo "artemis_account_id=$(jq -r .[0].id < artemis-run.json)" >> $GITHUB_OUTPUT
         echo "artemis_users=$(jq -c 'map((select(. | .type == "User")) | { tokenSecret: .metadata.token.tokenSecret, tokenCsrf: .metadata.token.tokenCsrf, groupName: .metadata.groupName })' < artemis-run.json)" >> $GITHUB_OUTPUT
-        echo "artemis_full_output='$(jq -c . < artemis-run.json)'" >> $GITHUB_OUTPUT

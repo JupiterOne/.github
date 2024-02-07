@@ -172,8 +172,6 @@ jobs:
           artemis_account_subdomain:
             ${{ needs.e2e_prepare.outputs.artemis_account_subdomain }}
           artemis_users: ${{ needs.e2e_prepare.outputs.artemis_users }}
-          artemis_full_output:
-            ${{ needs.e2e_prepare.outputs.artemis_full_output }}
           cypress_record_key: ${{ secrets.CYPRESS_RECORD_KEY }}
           cypress_project_id: ${{ secrets.CYPRESS_PROJECT_ID }}
           cypress_password: ${{ secrets.CYPRESS_PASSWORD }}
