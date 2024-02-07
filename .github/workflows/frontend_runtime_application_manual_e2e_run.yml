@@ -153,6 +153,7 @@ jobs:
       artemis_account_subdomain:
         ${{ steps.e2e_prepare.outputs.artemis_account_subdomain }}
       artemis_users: ${{ steps.e2e_prepare.outputs.artemis_users }}
+      artemis_full_output: ${{ steps.e2e_prepare.outputs.artemis_full_output }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -228,6 +229,8 @@ jobs:
           artemis_account_subdomain:
             ${{ needs.e2e_prepare.outputs.artemis_account_subdomain }}
           artemis_users: ${{ needs.e2e_prepare.outputs.artemis_users }}
+          artemis_full_output:
+            ${{ needs.e2e_prepare.outputs.artemis_full_output }}
           cypress_container: ${{ matrix.containers }}
           cypress_mailinator_api_key: ${{ secrets.CYPRESS_MAILINATOR_API_KEY }}
           cypress_record_key: ${{ secrets.CYPRESS_RECORD_KEY }}
