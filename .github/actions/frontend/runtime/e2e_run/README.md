@@ -13,7 +13,6 @@ This action takes the following inputs:
 | `artemis_account_subdomain`  | String |                                    | True     | The account subdomain extracted from the artemis-run.json file                                                                                                                |
 | `artemis_account_id`         | String |                                    | True     | The id extracted from the artemis-run.json file                                                                                                                               |
 | `artemis_users`              | String |                                    | True     | The users extracted from the artemis-run.json file                                                                                                                            |
-| `artemis_full_output`        | String |                                    | True     | The full output of the artemis-run.json file                                                                                                                                  |
 | `commit_info_sha`            | String | github.sha                         | True     | The sha associated with the PR that triggered the e2e_run                                                                                                                     |
 | `commit_info_pr_number`      | String | github.event.pull_request.number   | True     | The PR number associated with the PR that triggered the e2e_run                                                                                                               |
 | `commit_info_pr_title`       | String | github.event.pull_request.title    | True     | The PR title associated with the PR that triggered the e2e_run                                                                                                                |
@@ -54,7 +53,6 @@ steps:
       artemis_account_subdomain:
         ${{ needs.e2e_prepare.outputs.artemis_account_subdomain }}
       artemis_users: ${{ needs.e2e_prepare.outputs.artemis_users }}
-      artemis_full_output: ${{ needs.e2e_prepare.outputs.artemis_full_output }}
       cypress_container: ${{ matrix.containers }}
       cypress_tag: ${{ github.event.repository.name }},${{ github.event_name }}
       cypress_mailinator_api_key: ${{ secrets.CYPRESS_MAILINATOR_API_KEY }}

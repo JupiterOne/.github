@@ -18,10 +18,6 @@ inputs:
     description: 'The users extracted from the artemis-run.json file'
     type: string
     required: true
-  artemis_full_output:
-    description: 'The full output of the artemis-run.json file'
-    type: string
-    required: true
   commit_info_sha:
     description:
       'The commit sha associated with the repo that triggered the e2e_run'
@@ -114,7 +110,6 @@ runs:
         echo "artemis_account_id=${{ inputs.artemis_account_id }}"
         echo "artemis_account_subdomain=${{ inputs.artemis_account_subdomain }}"
         echo "artemis_users=${{ inputs.artemis_users }}"
-        echo "artemis_full_output=${{ inputs.artemis_full_output }}"
         echo "commit_info_sha=${{ inputs.commit_info_sha }}"
         echo "commit_info_pr_number=${{ inputs.commit_info_pr_number }}"
         echo "commit_info_pr_title=${{ inputs.commit_info_pr_title }}"
@@ -169,7 +164,6 @@ runs:
         CYPRESS_PROJECT_ID: ${{ inputs.cypress_project_id }}
         CYPRESS_PASSWORD: ${{ inputs.cypress_password }}
         CYPRESS_ENVIRONMENT_NAME: jupiterone-dev
-        CYPRESS_ARTEMIS_OUTPUT: ${{ inputs.artemis_full_output }}
         GITHUB_TOKEN: ${{ inputs.github_token }}
         MIGRATION_NUMBER: ${{ inputs.migration_number }}
         PR_NUMBER: ${{ inputs.commit_info_pr_number }}
