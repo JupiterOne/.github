@@ -53,3 +53,7 @@ runs:
         echo "artemis_account_subdomain=$(jq -r .[0].metadata.accountSubdomain < artemis-run.json)" >> $GITHUB_OUTPUT
         echo "artemis_account_id=$(jq -r .[0].id < artemis-run.json)" >> $GITHUB_OUTPUT
         echo "artemis_users=$(jq -c 'map((select(. | .type == "User")) | { tokenSecret: .metadata.token.tokenSecret, tokenCsrf: .metadata.token.tokenCsrf, groupName: .metadata.groupName })' < artemis-run.json)" >> $GITHUB_OUTPUT
+    - uses: actions/upload-artifact@v4
+      with:
+        name: artemis-run
+        path: artemis-run.json
