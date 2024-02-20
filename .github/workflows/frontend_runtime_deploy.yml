@@ -40,15 +40,15 @@ jobs:
         with:
           fetch-depth: 2
       - name: setup_env
-        uses: jupiterone/.github/.github/actions/setup_env@v3.0.45
+        uses: jupiterone/.github/.github/actions/setup_env@v3.0.46
         with:
           use_dev: true
       - name: remote_types_install
-        uses: jupiterone/.github/.github/actions/frontend/runtime/remote_types_install@v3.0.45
+        uses: jupiterone/.github/.github/actions/frontend/runtime/remote_types_install@v3.0.46
       - name: validate
-        uses: jupiterone/.github/.github/actions/validate@v3.0.45
+        uses: jupiterone/.github/.github/actions/validate@v3.0.46
       - name: build
-        uses: jupiterone/.github/.github/actions/build@v3.0.45
+        uses: jupiterone/.github/.github/actions/build@v3.0.46
 
   chromatic_publish:
     runs-on:
@@ -61,11 +61,11 @@ jobs:
         with:
           fetch-depth: 0
       - name: setup_env
-        uses: jupiterone/.github/.github/actions/setup_env@v3.0.45
+        uses: jupiterone/.github/.github/actions/setup_env@v3.0.46
         with:
           use_dev: true
       - name: chromatic_publish
-        uses: jupiterone/.github/.github/actions/frontend/chromatic@v3.0.45
+        uses: jupiterone/.github/.github/actions/frontend/chromatic@v3.0.46
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           chromatic_project_token: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
@@ -79,10 +79,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: setup_env
-        uses: jupiterone/.github/.github/actions/setup_env@v3.0.45
+        uses: jupiterone/.github/.github/actions/setup_env@v3.0.46
         with:
           use_dev: true
       - name: cortex
-        uses: jupiterone/.github/.github/actions/frontend/cortex@v3.0.45
+        uses: jupiterone/.github/.github/actions/frontend/cortex@v3.0.46
         with:
           cortex_api_key: ${{ secrets.CORTEX_API_KEY }}
