@@ -131,6 +131,10 @@ runs:
       shell: bash
       run:
         echo "commit_info_author=$(git show -s --pretty=%an)" >> $GITHUB_OUTPUT
+    - name: download_artemis_run
+      uses: actions/download-artifact@v4
+      with:
+        name: artemis-run
     - name: cypress_run
       id: cypress_run
       continue-on-error: ${{ fromJSON(inputs.e2e_pass_on_error) }}
