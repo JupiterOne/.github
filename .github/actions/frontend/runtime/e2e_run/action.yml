@@ -131,7 +131,8 @@ runs:
       shell: bash
       run:
         echo "commit_info_author=$(git show -s --pretty=%an)" >> $GITHUB_OUTPUT
-    - uses: actions/download-artifact@v4
+    - name: download_artemis_run
+      uses: actions/download-artifact@v4
       with:
         name: artemis-run
     - name: cypress_run
