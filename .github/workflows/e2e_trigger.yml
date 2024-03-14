@@ -81,8 +81,8 @@ jobs:
           client_payload:
             '{"spec_to_run":"${{ matrix.repos.repo.spec
             }}","external_pr_number":"${{ github.event.pull_request.number
-            }}","external_pr_title":"${{ github.event.pull_request.title
-            }}","external_pr_repo_name":"${{ github.event.repository.name
+            }}","external_pr_title":${{ toJSON(github.event.pull_request.title)
+            }},"external_pr_repo_name":"${{ github.event.repository.name
             }}","external_pr_branch":"${{ github.event.pull_request.head.ref
             }}","external_pr_author":"${{ env.COMMIT_INFO_AUTHOR
             }}","external_pr_sha":"${{ github.event.pull_request.base.sha }}"}'
