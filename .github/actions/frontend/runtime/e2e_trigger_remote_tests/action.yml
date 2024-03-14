@@ -51,8 +51,8 @@ runs:
         propagate_failure: ${{ !fromJSON(inputs.e2e_pass_on_error) }}
         client_payload:
           '{"spec_to_run":"${{ inputs.repo_spec }}","external_pr_number":"${{
-          github.event.issue.number }}","external_pr_title":"${{
-          github.event.issue.title }}","external_pr_repo_name":"${{
+          github.event.issue.number }}","external_pr_title":${{
+          toJSON(github.event.issue.title) }},"external_pr_repo_name":"${{
           github.event.repository.name }}","external_pr_branch":"${{
           inputs.pr_branch }}","external_pr_author":"${{
           steps.get_author_name.outputs.commit_info_author
