@@ -137,7 +137,7 @@ jobs:
     # Note this is the only job that leverages amd64
     runs-on:
       ${{ (inputs.fallback_runner && 'ubuntu-latest') ||
-      'scaleset-jupiterone-infra-amd64' }}
+      'scaleset-jupiterone-infra-e2e' }}
     container:
       # Available containers here: https://hub.docker.com/r/cypress/browsers/tags
       image: cypress/browsers:node-20.9.0-chrome-118.0.5993.88-1-ff-118.0.2-edge-118.0.2088.46-1
