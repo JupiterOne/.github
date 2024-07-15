@@ -40,12 +40,12 @@ jobs:
         with:
           fetch-depth: 2
       - name: setup_env
-        uses: jupiterone/.github/.github/actions/setup_env@v3.0.48
+        uses: jupiterone/.github/.github/actions/setup_env@v3.0.49
         with:
           use_dev: true
       - uses: hashicorp/setup-terraform@v2
       - name: validate
-        uses: jupiterone/.github/.github/actions/validate@v3.0.48
+        uses: jupiterone/.github/.github/actions/validate@v3.0.49
 
   version_artifact:
     runs-on:
@@ -55,6 +55,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: version_artifact
-        uses: jupiterone/.github/.github/actions/version_artifact@v3.0.48
+        uses: jupiterone/.github/.github/actions/version_artifact@v3.0.49
         with:
           github_token: ${{ secrets.AUTO_GITHUB_PAT_TOKEN }}
