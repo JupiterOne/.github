@@ -32,7 +32,7 @@ runs:
     - name: Sign the images with GH OIDC Token
       shell: bash
       run: |
-        cosign sign -d -y $IMAGE
+        cosign sign -d -a tag=latest -y $IMAGE
       env:
         COSIGN_REPOSITORY: ghcr.io/${{ inputs.image-name }}-signatures
         IMAGE: ghcr.io/${{ inputs.image-name }}@${{ inputs.image-digest }}
