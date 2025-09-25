@@ -28,8 +28,6 @@ runs:
         echo "github_token=${{ inputs.github_token }}"
         echo "migration=${{ inputs.migration_number }}"
         echo "magic_url_route=${{ inputs.magic_url_route }}"
-        echo "github.sha=${{ github.sha }}"
-        echo "github.event.pull_request.head.sha=${{ github.event.pull_request.head.sha }}"
     - name: configure_aws_credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
@@ -43,10 +41,13 @@ runs:
       # This bucket file location is static and editing it will break the Magic URL. This pushes the entire directory which includes the bundle and remote types if applicable
       run: |
         aws s3 sync deploy/dist s3://apps.dev.jupiterone.io/static/manual-deploy/${{ github.event.repository.name }}@${{ inputs.migration_number }}/PR-${{ inputs.pr_number }}/
+    - name: get_branch_of_pr
+      id: get_branch_of_pr
+      uses: xt0rted/pull-request-comment-branch@v2
     - name: show_magic_url_in_pr
       uses: myrotvorets/set-commit-status-action@v2.0.0
       with:
-        sha: ${{ github.sha }}
+        sha: ${{ steps.get_branch_of_pr.outputs.head_sha }}
         token: ${{ inputs.github_token }}
         status: success
         context: 'Magic URL'
