@@ -52,10 +52,10 @@ test('default flow', async () => {
 
   const jobs_found = getTestResults({
     results,
-    names: ['validate', 'publish', 'cortex'],
+    names: ['validate', 'publish'],
   });
 
-  expect(jobs_found.length).toEqual(3);
+  expect(jobs_found.length).toEqual(2);
 });
 
 test('when use_chromatic is true', async () => {
@@ -67,8 +67,8 @@ test('when use_chromatic is true', async () => {
 
   const jobs_found = getTestResults({
     results,
-    names: ['validate', 'chromatic_publish', 'publish', 'cortex'],
+    names: ['validate', 'chromatic_publish', 'publish'],
   });
 
-  expect(jobs_found.length).toEqual(4);
+  expect(jobs_found.length).toEqual(3);
 });
