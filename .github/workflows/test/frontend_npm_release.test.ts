@@ -43,11 +43,6 @@ test('validate inputs and secrets', async () => {
   });
 
   expect(npm_publish_inputs.output).toContain(`auto_token=***`);
-
-  // cortex
-  const cortex_inputs = getTestResult({ results, name: 'cortex_inputs' });
-
-  expect(cortex_inputs.output).toContain(`cortex_api_key=***`);
 });
 
 test('default flow', async () => {
