@@ -106,20 +106,3 @@ jobs:
         uses: jupiterone/.github/.github/actions/frontend/npm/publish@v3.0.51
         with:
           auto_token: ${{ secrets.AUTO_GITHUB_PAT_TOKEN }}
-
-  cortex:
-    runs-on:
-      ${{ (inputs.fallback_runner && 'ubuntu-latest') ||
-      'scaleset-jupiterone-infra-arm64' }}
-    needs: validate
-    if: ${{ inputs.use_cortex }}
-    steps:
-      - uses: actions/checkout@v3
-      - name: setup_env
-        uses: jupiterone/.github/.github/actions/setup_env@v3.0.51
-        with:
-          use_dev: true
-      - name: cortex
-        uses: jupiterone/.github/.github/actions/frontend/cortex@v3.0.51
-        with:
-          cortex_api_key: ${{ secrets.CORTEX_API_KEY }}

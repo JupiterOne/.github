@@ -28,11 +28,6 @@ test('validate inputs and secrets', async () => {
 
   const results = await runWorkflow({ act, repoName, mockGithub });
 
-  // cortex
-  const cortex_inputs = getTestResult({ results, name: 'cortex_inputs' });
-
-  expect(cortex_inputs.output).toContain(`cortex_api_key=***`);
-
   // chromatic_upload
   const chromatic_inputs = getTestResult({ results, name: 'chromatic_inputs' });
 
@@ -44,9 +39,9 @@ test('default flow', async () => {
 
   const results = await runWorkflow({ act, repoName, mockGithub });
 
-  const jobs_found = getTestResults({ results, names: ['validate', 'cortex'] });
+  const jobs_found = getTestResults({ results, names: ['validate'] });
 
-  expect(jobs_found.length).toEqual(2);
+  expect(jobs_found.length).toEqual(1);
 });
 
 test('flow with chromatic turned on', async () => {
@@ -58,8 +53,8 @@ test('flow with chromatic turned on', async () => {
 
   const jobs_found = getTestResults({
     results,
-    names: ['validate', 'cortex', 'chromatic_publish'],
+    names: ['validate', 'chromatic_publish'],
   });
 
-  expect(jobs_found.length).toEqual(3);
+  expect(jobs_found.length).toEqual(2);
 });

@@ -50,7 +50,6 @@ This makes our workflows DRY, easier to reason about and more stable.
 #### Common
 
 - [chromatic](.github/actions/frontend/chromatic/README.md)
-- [cortex](.github/actions/frontend/cortex/README.md)
 
 #### Runtime
 
