@@ -43,13 +43,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: setup_env
-        uses: jupiterone/.github/.github/actions/setup_env@v3.0.52
+        uses: jupiterone/.github/.github/actions/setup_env@v3.0.53
         with:
           use_dev: true
       - name: validate
-        uses: jupiterone/.github/.github/actions/validate@v3.0.52
+        uses: jupiterone/.github/.github/actions/validate@v3.0.53
       - name: build
-        uses: jupiterone/.github/.github/actions/build@v3.0.52
+        uses: jupiterone/.github/.github/actions/build@v3.0.53
 
   chromatic_upload:
     # Name targeted by branch protections, do not change
@@ -63,11 +63,11 @@ jobs:
         with:
           fetch-depth: 0
       - name: setup_env
-        uses: jupiterone/.github/.github/actions/setup_env@v3.0.52
+        uses: jupiterone/.github/.github/actions/setup_env@v3.0.53
         with:
           use_dev: true
       - name: chromatic_upload
-        uses: jupiterone/.github/.github/actions/frontend/chromatic@v3.0.52
+        uses: jupiterone/.github/.github/actions/frontend/chromatic@v3.0.53
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           chromatic_project_token: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
