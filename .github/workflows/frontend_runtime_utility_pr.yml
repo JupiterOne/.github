@@ -100,31 +100,3 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           chromatic_project_token: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
-
-  magic_url:
-    runs-on:
-      ${{ (inputs.fallback_runner && 'ubuntu-latest') ||
-      'scaleset-jupiterone-infra-arm64' }}
-    needs: [migration_number]
-    permissions:
-      id-token: write
-      statuses: write
-      contents: read
-      issues: read
-      pull-requests: read
-    steps:
-      - uses: actions/checkout@v3
-      - name: setup_env
-        uses: jupiterone/.github/.github/actions/setup_env@v3.0.52
-        with:
-          use_dev: true
-      - name: build
-        uses: jupiterone/.github/.github/actions/build@v3.0.52
-      - name: magic_url
-        uses: jupiterone/.github/.github/actions/frontend/runtime/magic_url@v3.0.52
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          migration_number: ${{ needs.migration_number.outputs.migration }}
-          # runtime utilities do not have a route of there own, so we default to home
-          magic_url_route: '/home'
-          pr_number: ${{ github.event.pull_request.number }}
