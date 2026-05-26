@@ -66,25 +66,17 @@ jobs:
         uses: jupiterone/.github/.github/actions/build@v3.0.53
 
   chromatic_publish:
+    # The JupiterOne Chromatic account is being decommissioned — this job is
+    # preserved as a no-op so callers don't see a missing-job error. The
+    # actual chromatic publish step is removed.
     runs-on:
       ${{ (inputs.fallback_runner && 'ubuntu-latest') ||
       'scaleset-jupiterone-infra-arm64' }}
     needs: validate
     if: ${{ inputs.use_chromatic }}
     steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - name: setup_env
-        uses: jupiterone/.github/.github/actions/setup_env@v3.0.53
-        with:
-          use_dev: true
       - name: chromatic_publish
-        uses: jupiterone/.github/.github/actions/frontend/chromatic@v3.0.53
-        with:
-          publish_chromatic: true
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          chromatic_project_token: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+        run: echo "Chromatic publishing is disabled — workflow preserved as a no-op."
 
   publish:
     runs-on:

@@ -81,22 +81,15 @@ jobs:
         uses: jupiterone/.github/.github/actions/frontend/runtime/remote_types_tests@v3.0.53
 
   chromatic_upload:
-    # Name targeted by branch protections, do not change
+    # Name targeted by branch protections, do not change.
+    # The JupiterOne Chromatic account is being decommissioned — this job is
+    # preserved as a no-op so the "Visual Regression" required check still
+    # posts a success status. The actual chromatic upload step is removed.
     name: Visual Regression
     runs-on:
       ${{ (inputs.fallback_runner && 'ubuntu-latest') ||
       'scaleset-jupiterone-infra-arm64' }}
     if: ${{ inputs.use_chromatic }}
     steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - name: setup_env
-        uses: jupiterone/.github/.github/actions/setup_env@v3.0.53
-        with:
-          use_dev: true
       - name: chromatic_upload
-        uses: jupiterone/.github/.github/actions/frontend/chromatic@v3.0.53
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          chromatic_project_token: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+        run: echo "Chromatic publishing is disabled — workflow preserved as a no-op."
