@@ -7,7 +7,6 @@ import {
   setInputs,
   setSecrets,
 } from 'tests/utils/helpers';
-import mockPackageJson from 'tests/package.json';
 
 const repoName = 'frontend_runtime_utility_pr';
 
@@ -41,13 +40,6 @@ test('validate inputs and secrets', async () => {
 
   expect(chromatic_inputs.output).toContain(`chromatic_project_token=***`);
 
-  // magic_url
-  const magic_url_inputs = getTestResult({ results, name: 'magic_url_inputs' });
-
-  expect(magic_url_inputs.output).toContain(
-    `migration=${mockPackageJson.config.migration}`
-  );
-
   // pr_comment
   const pr_comment_inputs = getTestResult({
     results,
@@ -65,10 +57,10 @@ test('default flow', async () => {
 
   const jobs_found = getTestResults({
     results,
-    names: ['pr_comment', 'migration_number', 'validate', 'magic_url'],
+    names: ['pr_comment', 'migration_number', 'validate'],
   });
 
-  expect(jobs_found.length).toEqual(4);
+  expect(jobs_found.length).toEqual(3);
 });
 
 test('when use_validate is false', async () => {
