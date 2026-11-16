@@ -16,7 +16,7 @@
     "validate": "npm run lint && npm run typecheck && npm run test",
     "generate-local-files": "node ./bin/generate-local-files",
     "update-composite-tags": "node ./bin/update-composite-tags",
-    "postinstall": "patch-package"
+    "postinstall": "node ./bin/patch-mock-github"
   },
   "config": {
     "migration": 1
@@ -32,10 +32,7 @@
     "@vitest/coverage-v8": "^4.1.12",
     "@vitest/ui": "^4.1.12",
     "eslint": "^8.46.0",
-    "happy-dom": "^20.14.6",
     "js-yaml": "^4.1.0",
-    "patch-package": "^8.0.1",
-    "typescript": "^5.9.3",
     "vitest": "^4.1.12"
   },
   "overrides": {
