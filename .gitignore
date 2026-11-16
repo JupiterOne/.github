@@ -3,3 +3,4 @@ repo
 *.log
 .DS_Store
 temp
+*.tsbuildinfo

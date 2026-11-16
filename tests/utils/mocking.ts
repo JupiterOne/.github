@@ -130,12 +130,16 @@ export const updateWorkflowWithMocks = async ({
   const jobs: {
     [key: string]: {
       steps: [Step];
+      container?: { credentials?: object };
     };
   } = workflowYaml?.jobs;
 
   // Loop through each job and the corresponding steps in the workflow
   for await (const entry of Object.entries(jobs)) {
     const [key, value] = entry;
+    // Secrets are placeholders in tests, so registry login fails; job images are public.
+    if (value.container?.credentials) delete value.container.credentials;
+
     for await (const step of value.steps) {
       // Only update steps that leverage a jupiterone composite action
       if (step?.uses?.includes('jupiterone')) {
